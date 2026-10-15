@@ -8,8 +8,12 @@
   const loader=$('#intro-loader'), contact=$('#contact-dialog'), menu=$('#menu-dialog'), privacy=$('#privacy-dialog');
   const form=$('#qualification-form'), steps=$$('[data-form-step]'), stage=$('#mechanism-stage'), explore=$('#explore-mechanism');
   const originalDescription=$('#mechanism-description').textContent;
+  const hero=$('#inicio'),mechanismImage=$('.mechanism-image');
+  const gearImage={src:mechanismImage.getAttribute('src'),srcset:mechanismImage.getAttribute('srcset'),alt:mechanismImage.alt};
+  const originalImage={src:'assets/images/mechanism-original.webp',srcset:'assets/images/mechanism-original-small.webp 1086w, assets/images/mechanism-original.webp 2172w',alt:'Três peças industriais originais em aço escuro, azul e prata, em perspectiva oblíqua.'};
+  let heroVariant=new URL(location.href).searchParams.get('abertura')==='original'?'original':'gears';
   let introDone=false, formStep=0, formCompleted=false, opener=null;
-  let scene=null, sceneActive=false, sceneProgress=0, selectedPiece=null;
+  let scene=null, sceneActive=false, sceneProgress=0, selectedPiece=null, sceneStarting=false, sceneAttempt=0;
   let counterStarted=false, contactStarted=false, counterStart=0, elapsed=0, interval=0;
   let heroVisible=true, contactVisible=false, footerVisible=false, scrollFrame=0;
   const money=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
@@ -55,7 +59,7 @@
     loader.classList.add('leaving');loader.setAttribute('aria-hidden','true');
     $('#skip-intro').disabled=true;$('#skip-intro').tabIndex=-1;storage.set();
     if(window.gsap&&!reduced.matches)gsap.fromTo('.hero-heading',{y:16},{y:0,duration:.7,ease:'power2.out',clearProps:'transform'});
-    setTimeout(()=>{loader.hidden=true},reduced.matches?0:450);
+    setTimeout(()=>{loader.hidden=true;startScene()},reduced.matches?0:450);
   }
   const symbolsReady=loadSymbols();
   if(reduced.matches||storage.get()==='seen')finishIntro();
@@ -194,36 +198,62 @@
     $('#mechanism-description').textContent=selectedPiece===null?originalDescription:descriptions[selectedPiece];
     scene?.setFocus(selectedPiece);
   }));
-  function exploreLabel(active){
-    explore.replaceChildren(document.createTextNode(active?'Ver imagem do mecanismo':'Explorar em 3D'));
-    const plus=document.createElement('span');plus.className='small-plus';plus.setAttribute('aria-hidden','true');plus.textContent='+';
-    explore.append(plus);explore.setAttribute('aria-pressed',String(active));
+  function exploreLabel(playing){
+    explore.replaceChildren(document.createTextNode(sceneActive?(playing?'Pausar animação':'Retomar animação'):'Ativar animação'));
+    const icon=document.createElement('span');icon.className='loop-control-icon';icon.classList.toggle('is-playing',playing);icon.setAttribute('aria-hidden','true');
+    explore.append(icon);explore.setAttribute('aria-pressed',String(playing));
   }
-  if(!reduced.matches&&!saveData&&location.protocol!=='file:')explore.hidden=false;
+  function canAnimate(){return heroVariant==='gears'&&!reduced.matches&&!saveData&&location.protocol!=='file:'}
+  function selectHeroVariant(variant,updateURL=true){
+    heroVariant=variant==='original'?'original':'gears';sceneAttempt++;
+    scene?.dispose();scene=null;sceneActive=false;
+    const image=heroVariant==='original'?originalImage:gearImage;
+    mechanismImage.srcset=image.srcset;mechanismImage.src=image.src;mechanismImage.alt=image.alt;
+    hero.dataset.heroVariant=heroVariant;
+    $$('button[data-hero-variant]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.heroVariant===heroVariant)));
+    explore.hidden=!canAnimate();exploreLabel(false);
+    if(updateURL){
+      const url=new URL(location.href);
+      if(heroVariant==='original')url.searchParams.set('abertura','original');else url.searchParams.delete('abertura');
+      history.replaceState(null,'',url);
+    }
+    if(introDone&&canAnimate())startScene();
+  }
+  $('#hero-comparison').hidden=false;$('.header-context').hidden=true;
+  $$('button[data-hero-variant]').forEach(button=>button.addEventListener('click',()=>selectHeroVariant(button.dataset.heroVariant)));
+  selectHeroVariant(heroVariant,false);
   stage.addEventListener('mechanism:fallback',()=>{
     scene=null;sceneActive=false;exploreLabel(false);
-    $('#mechanism-description').textContent='O mecanismo continua disponível na imagem. Você pode seguir explorando a Engrena.';
+    $('#mechanism-description').textContent=selectedPiece===null?originalDescription:descriptions[selectedPiece];
   });
-  explore.addEventListener('click',async()=>{
-    if(sceneActive){
-      sceneActive=false;scene?.dispose();scene=null;stage.classList.remove('scene-ready');exploreLabel(false);return;
-    }
-    explore.disabled=true;explore.textContent='Preparando mecanismo';
+  async function startScene(){
+    if(!canAnimate()||sceneStarting||sceneActive)return;
+    const attempt=++sceneAttempt;sceneStarting=true;
+    explore.hidden=false;explore.disabled=true;explore.textContent='Preparando animação';
     try{
-      const {initMechanism}=await import(new URL('hero-scene.js',appURL));
-      scene=await initMechanism(stage);
-      if(scene.stats.fallback)throw new Error('Fallback active');
+      const {initMechanism}=await import(new URL('hero-scene.js?v=1.3',appURL));
+      if(attempt!==sceneAttempt||!canAnimate())return;
+      const nextScene=await initMechanism(stage);
+      if(attempt!==sceneAttempt||!canAnimate()){nextScene.dispose();return}
+      scene=nextScene;if(scene.stats.fallback)throw new Error('Fallback active');
       scene.setProgress(sceneProgress);scene.setFocus(selectedPiece);sceneActive=true;exploreLabel(true);
     }catch{
       scene?.dispose();scene=null;stage.classList.remove('scene-ready');
-      $('#mechanism-description').textContent='O modo 3D não está disponível aqui. Você pode continuar explorando o mecanismo na imagem.';
-      exploreLabel(false);
-    }finally{explore.disabled=false}
+      sceneActive=false;exploreLabel(false);
+    }finally{
+      sceneStarting=false;explore.disabled=false;explore.hidden=!canAnimate();
+      if(attempt!==sceneAttempt&&canAnimate()&&!sceneActive)queueMicrotask(startScene);
+    }
+  }
+  explore.addEventListener('click',()=>{
+    if(!sceneActive){startScene();return}
+    const pause=!scene.stats.paused;scene.setPaused(pause);exploreLabel(!pause);
   });
   reduced.addEventListener('change',()=>{
     if(reduced.matches){
+      sceneAttempt++;
       scene?.dispose();scene=null;sceneActive=false;stage.classList.remove('scene-ready');explore.hidden=true;finishIntro();
-    }else{explore.hidden=saveData||location.protocol==='file:';exploreLabel(false)}
+    }else{explore.hidden=!canAnimate();exploreLabel(false);if(introDone)startScene()}
   });
 
   const visibility=new IntersectionObserver(entries=>{
@@ -268,7 +298,8 @@
     counterObserver.disconnect();visibility.disconnect();sections.disconnect();
   });
   window.engrenaPreview=Object.freeze({
-    version:'1.2',externalTransmission:false,
+    version:'1.3',externalTransmission:false,
+    get heroVariant(){return heroVariant},
     get counter(){return{started:counterStarted,elapsed,stopped:contactStarted}},
     get scene(){return scene?{...scene.stats,active:sceneActive}:{active:false}}
   });

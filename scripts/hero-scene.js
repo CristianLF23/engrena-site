@@ -1,297 +1,272 @@
 import * as THREE from '../vendor/three/three.module.min.js';
 
-const COLORS = {
-  steel: 0x222b32,
-  blue: 0x1261f4,
-  silver: 0xb9c4cc,
-  dark: 0x071018,
-};
+const TAU = Math.PI * 2;
+const LOOP_SECONDS = 12;
+const clamp01 = value => Math.min(1, Math.max(0, Number(value) || 0));
 
-const clamp01 = (value) => Math.min(1, Math.max(0, Number(value) || 0));
-
-function makeGearGeometry(three) {
+function makeGearGeometry() {
+  const shape = new THREE.Shape();
   const teeth = 18;
-  const outerRadius = 1.48;
-  const rootRadius = 1.18;
-  const boreRadius = 0.28;
-  const shape = new three.Shape();
-  const points = teeth * 4;
-  for (let i = 0; i < points; i += 1) {
-    const a = (i / points) * Math.PI * 2;
-    const radius = [rootRadius, outerRadius, outerRadius, rootRadius][i % 4];
-    const x = Math.cos(a) * radius;
-    const y = Math.sin(a) * radius;
-    if (i === 0) shape.moveTo(x, y);
-    else shape.lineTo(x, y);
+  const pitch=1.39,base=pitch*Math.cos(Math.PI/9),root=1.20,tip=1.51;
+  const involute=radius=>{const alpha=Math.acos(base/radius);return Math.tan(alpha)-alpha;};
+  const halfAtPitch=Math.PI/(2*teeth),invPitch=involute(pitch),period=TAU/teeth;
+  const flank=[base,(base+tip)/2,tip].map(radius=>[halfAtPitch+invPitch-involute(radius),radius]);
+  const profile=[[-.5*period,root],[-.35*period,root],...flank.map(([angle,radius])=>[-angle,radius]),[0,tip],...[...flank].reverse(),[.35*period,root],[.5*period,root]];
+  for (let tooth = 0; tooth < teeth; tooth++) {
+    profile.forEach(([offset,radius], step) => {
+      const angle = tooth/teeth*TAU+offset;
+      const x = Math.cos(angle) * radius, y = Math.sin(angle) * radius;
+      if (!tooth && !step) shape.moveTo(x,y);
+      else shape.lineTo(x,y);
+    });
   }
   shape.closePath();
-
-  const hole = new three.Path();
-  hole.absarc(0, 0, boreRadius, 0, Math.PI * 2, false);
-  shape.holes.push(hole);
-
-  return new three.ExtrudeGeometry(shape, {
-    depth: 0.78,
-    bevelEnabled: true,
-    bevelSegments: 2,
-    steps: 1,
-    bevelSize: 0.055,
-    bevelThickness: 0.055,
-    curveSegments: 18,
+  const bore = new THREE.Path();
+  bore.absarc(0,0,.285,0,TAU,true);
+  shape.holes.push(bore);
+  const geometry = new THREE.ExtrudeGeometry(shape,{
+    depth:.76,bevelEnabled:true,bevelSegments:2,steps:1,
+    bevelSize:.045,bevelThickness:.045,curveSegments:24,
   });
+  geometry.translate(0,0,-.38);
+  const positions=geometry.attributes.position,colors=[];
+  for(let i=0;i<positions.count;i++){
+    const radius=Math.hypot(positions.getX(i),positions.getY(i));
+    const depth=THREE.MathUtils.smoothstep(positions.getZ(i),-.43,.43);
+    const valley=THREE.MathUtils.smoothstep(radius,1.19,1.39);
+    const shade=radius<.34?.48+depth*.28:(.76+valley*.24)*(.80+depth*.20);
+    colors.push(shade,shade,shade);
+  }
+  geometry.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));
+  return geometry;
 }
 
-function makePiece(three, material, index, gearGeometry) {
-  const group = new three.Group();
-  group.name = `mechanism-piece-${index}`;
-  group.rotation.y = -0.52 + index * 0.02;
-  group.rotation.z = index === 1 ? -0.018 : index === 0 ? 0.028 : 0.02;
+function makeTurnedFace() {
+  const profile=[[.293,.432],[.302,.451],[.328,.458],[.349,.453],[.373,.434],[.40,.429],[.44,.427],[.65,.426],[1.05,.426],[1.10,.429],[1.14,.439],[1.175,.439]];
+  const geometry=new THREE.LatheGeometry([...profile].reverse().map(([r,z])=>new THREE.Vector2(r,z)),80);
+  geometry.rotateX(Math.PI/2);
+  const position=geometry.attributes.position,uv=geometry.attributes.uv;
+  for(let i=0;i<position.count;i++)uv.setXY(i,position.getX(i)/2.35+.5,position.getY(i)/2.35+.5);
+  uv.needsUpdate=true;return geometry;
+}
 
-  const gear = new three.Mesh(gearGeometry, material);
-  gear.castShadow = false;
-  gear.receiveShadow = false;
-  group.add(gear);
+function makeMachiningTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = 512;
+  const context = canvas.getContext('2d');
+  const pixels = context.createImageData(512,512);
+  let seed = 9137;
+  for (let y=0;y<512;y++) for (let x=0;x<512;x++) {
+    seed = (Math.imul(seed,1664525) + 1013904223) >>> 0;
+    const radius = Math.hypot(x-255.5,y-255.5);
+    const value = Math.round(184 + Math.sin(radius*2.1)*5 + Math.sin(radius*.41)*3 + (seed/4294967296-.5)*12);
+    const i = (y*512+x)*4;
+    pixels.data[i] = pixels.data[i+1] = pixels.data[i+2] = value;
+    pixels.data[i+3] = 255;
+  }
+  context.putImageData(pixels,0,0);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.anisotropy = 2;
+  return texture;
+}
 
-  const rimMaterial = material.clone();
-  rimMaterial.roughness = 0.24;
-  rimMaterial.metalness = 0.94;
-  const rim = new three.Mesh(new three.TorusGeometry(0.34, 0.025, 6, 40), rimMaterial);
-  rim.position.z = 0.81;
-  group.add(rim);
-  const faceLine = new three.Mesh(new three.TorusGeometry(1.06, 0.014, 5, 48), rimMaterial);
-  faceLine.position.z = 0.81;
-  group.add(faceLine);
+function makeAnisotropyTexture() {
+  const canvas=document.createElement('canvas');canvas.width=canvas.height=256;
+  const context=canvas.getContext('2d'),pixels=context.createImageData(256,256);
+  for(let y=0;y<256;y++)for(let x=0;x<256;x++){
+    const angle=Math.atan2(y-127.5,x-127.5)+Math.PI/2,i=(y*256+x)*4;
+    pixels.data[i]=Math.round(Math.cos(angle)*127+128);
+    pixels.data[i+1]=Math.round(Math.sin(angle)*127+128);
+    pixels.data[i+2]=230;pixels.data[i+3]=255;
+  }
+  context.putImageData(pixels,0,0);return new THREE.CanvasTexture(canvas);
+}
 
-  group.userData = { material, rimMaterial, restX: [-3.45, 0, 3.45][index], joinedX: [-3.05, 0, 3.05][index] };
-  return group;
+function makeEnvironment(renderer) {
+  const faces = Array.from({length:6},(_,index) => {
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 128;
+    const context = canvas.getContext('2d');
+    const gradient = context.createLinearGradient(0,0,128,128);
+    gradient.addColorStop(0,index===3?'#1c2329':'#909aa0');
+    gradient.addColorStop(.5,'#5a6268');
+    gradient.addColorStop(1,'#323940');
+    context.fillStyle = gradient;context.fillRect(0,0,128,128);
+    context.fillStyle = '#f5f7f9';context.fillRect(index%2?12:78,0,index===2?42:22,104);
+    context.fillStyle = '#151c22';context.fillRect(44,0,13,128);
+    context.fillStyle = '#bec7cc';context.fillRect(0,108,128,11);
+    return canvas;
+  });
+  const source = new THREE.CubeTexture(faces);
+  source.colorSpace = THREE.SRGBColorSpace;source.needsUpdate = true;
+  const generator = new THREE.PMREMGenerator(renderer);
+  try { return generator.fromCubemap(source); }
+  finally { generator.dispose();source.dispose(); }
+}
+
+function makeShadowTexture() {
+  const canvas = document.createElement('canvas');canvas.width=canvas.height=128;
+  const context = canvas.getContext('2d');
+  const gradient = context.createRadialGradient(64,64,4,64,64,64);
+  gradient.addColorStop(0,'rgba(7,16,24,.48)');
+  gradient.addColorStop(.33,'rgba(7,16,24,.25)');
+  gradient.addColorStop(.72,'rgba(7,16,24,.055)');
+  gradient.addColorStop(1,'rgba(7,16,24,0)');
+  context.fillStyle=gradient;context.fillRect(0,0,128,128);
+  return new THREE.CanvasTexture(canvas);
+}
+
+function makePiece(material,faceMaterial,geometry,index,details) {
+  // The outer group owns the oblique pose; only its child spins on the shaft.
+  const pose = new THREE.Group();pose.name=`mechanism-piece-${index}`;
+  const rotor = new THREE.Group();rotor.name=`mechanism-rotor-${index}`;
+  pose.add(rotor);
+  rotor.add(new THREE.Mesh(geometry,material));
+  rotor.add(new THREE.Mesh(details.face,faceMaterial));
+  const back = new THREE.Mesh(details.back,faceMaterial);back.position.z=-.428;back.rotation.y=Math.PI;rotor.add(back);
+  const rim = new THREE.Mesh(details.bore,material);rim.position.z=.449;rotor.add(rim);
+  const line = new THREE.Mesh(details.line,material);line.position.z=.431;rotor.add(line);
+  pose.userData={rotor,material,faceMaterial,index,restX:[-3.42,0,3.42][index],joinedX:[-3.18,0,3.18][index]};
+  return pose;
 }
 
 export async function initMechanism(stage) {
   if (!stage) throw new Error('mechanism-stage não encontrado');
-
-  const fallback = stage.querySelector('.mechanism-image');
-  const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const saveData = Boolean(navigator.connection?.saveData);
-  let canvas = null;
-  let renderer = null;
-  let scene = null;
-  let camera = null;
-  let animationFrame = 0;
-  let observer = null;
-  let resizeObserver = null;
-  let visible = true;
-  let disposed = false;
-  let targetProgress = reduced || saveData ? 1 : 0;
-  let currentProgress = targetProgress;
-  let focusIndex = null;
-  let cleanup = () => {};
-  const pointer = { x: 0, y: 0 };
-  const pieces = [];
-  const disposables = [];
-
-  const stats = {
-    renderer: 'three-webgl',
-    vertices: 0,
-    pieces: 3,
-    dpr: 1,
-    running: false,
-    fallback: false,
-  };
-
-  const stop = () => {
-    if (animationFrame) cancelAnimationFrame(animationFrame);
-    animationFrame = 0;
-    stats.running = false;
-  };
-
-  const fail = (error) => {
-    stop();
-    cleanup();
-    if (canvas?.parentNode) canvas.parentNode.removeChild(canvas);
-    stage.classList.remove('scene-ready');
-    stats.fallback = true;
-    throw error instanceof Error ? error : new Error('Falha ao iniciar a cena mecânica');
-  };
-
+  const stats = {renderer:'three-webgl',vertices:0,pieces:3,dpr:1,running:false,paused:false,fallback:false,frames:0,elapsedSeconds:0,loopDuration:LOOP_SECONDS,rotationAngles:[0,0,0],poseY:[0,0,0]};
   if (reduced || saveData) {
-    stats.fallback = true;
-    return {
-      setProgress: (progress) => { targetProgress = clamp01(progress); currentProgress = targetProgress; },
-      setFocus: () => {},
-      dispose: () => {},
-      stats,
-    };
+    stats.fallback=true;
+    return {stats,setProgress(){},setFocus(){},setPaused(){},dispose(){}};
   }
-
+  let renderer,scene,camera,canvas,observer,resizeObserver;
+  let animationFrame=0,disposed=false,visible=true,playing=true;
+  let targetProgress=0,currentProgress=0,focusIndex=null,lastTime=0,lastRender=0;
+  const pointer={x:0,y:0},pieces=[],shadows=[],resources=new Set(),cleanups=[];
+  const track=resource => {resources.add(resource);return resource;};
+  function stop() {
+    cancelAnimationFrame(animationFrame);animationFrame=0;lastTime=0;lastRender=0;stats.running=false;
+  }
+  function dispose() {
+    if (disposed) return;
+    disposed=true;stop();observer?.disconnect();resizeObserver?.disconnect();
+    cleanups.forEach(cleanup=>cleanup());
+    resources.forEach(resource=>resource.dispose());
+    renderer?.dispose();renderer?.forceContextLoss?.();canvas?.remove();
+    stage.classList.remove('scene-ready');
+  }
+  function listen(target,event,listener,options) {
+    target.addEventListener(event,listener,options);
+    cleanups.push(()=>target.removeEventListener(event,listener,options));
+  }
   try {
-    canvas = document.createElement('canvas');
-    canvas.className = 'mechanism-canvas';
-    canvas.setAttribute('aria-hidden', 'true');
+    canvas=document.createElement('canvas');canvas.className='mechanism-canvas';canvas.setAttribute('aria-hidden','true');
     stage.appendChild(canvas);
-
-    renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: window.innerWidth > 720, powerPreference: 'high-performance' });
-    const dpr = Math.min(window.devicePixelRatio || 1, window.innerWidth < 720 ? 1 : 1.5);
-    stats.dpr = dpr;
-    renderer.setPixelRatio(dpr);
-    renderer.setClearColor(0x000000, 0);
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.08;
-
-    scene = new THREE.Scene();
-    camera = new THREE.OrthographicCamera(-6, 6, 1.7, -1.7, 0.1, 100);
-    camera.position.set(1.5, 1.2, 12);
-    camera.lookAt(0, 0, 0);
-
-    scene.add(new THREE.HemisphereLight(0xdbe8f1, 0x10151b, 2.4));
-    const key = new THREE.DirectionalLight(0xffffff, 4.2);
-    key.position.set(4, 5, 6);
-    scene.add(key);
-    const rim = new THREE.DirectionalLight(0x4d8dff, 2.4);
-    rim.position.set(-5, 1, -4);
-    scene.add(rim);
-    const fill = new THREE.PointLight(0x00cfff, 13, 14, 2);
-    fill.position.set(0, -2, 4);
-    scene.add(fill);
-
-    // A tiny authored lightbox provides metal reflections without an external HDR.
-    const faces = Array.from({ length: 6 }, (_, index) => {
-      const face = document.createElement('canvas'); face.width = 128; face.height = 128;
-      const context = face.getContext('2d');
-      context.fillStyle = index === 3 ? '#2b333b' : '#8b969e'; context.fillRect(0, 0, 128, 128);
-      context.fillStyle = '#f4f8fc'; context.fillRect(index % 2 ? 13 : 72, 0, 22, 128);
-      context.fillStyle = '#37424d'; context.fillRect(0, 90, 128, 38);
-      return face;
+    renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true,powerPreference:'low-power'});
+    stats.dpr=Math.min(devicePixelRatio||1,innerWidth<720?1:1.5);
+    renderer.setPixelRatio(stats.dpr);renderer.setClearColor(0,0);
+    renderer.outputColorSpace=THREE.SRGBColorSpace;
+    renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
+    scene=new THREE.Scene();
+    camera=new THREE.OrthographicCamera(-6,6,1.8,-1.8,.1,100);
+    camera.position.set(.6,1.9,14);camera.lookAt(0,-.02,0);
+    scene.add(new THREE.HemisphereLight(0xf3f6fa,0x373c40,1.25));
+    const key=new THREE.DirectionalLight(0xffffff,3.4);key.position.set(-3,6,7);scene.add(key);
+    const fill=new THREE.DirectionalLight(0xe6eff9,1.8);fill.position.set(6,1,4);scene.add(fill);
+    const edge=new THREE.DirectionalLight(0xffffff,2.3);edge.position.set(-5,2,-4);scene.add(edge);
+    const environment=track(makeEnvironment(renderer));scene.environment=environment.texture;
+    const machining=track(makeMachiningTexture());
+    const anisotropy=track(makeAnisotropyTexture());
+    const geometry=track(makeGearGeometry());
+    const details={
+      face:track(makeTurnedFace()),
+      back:track(new THREE.RingGeometry(.293,1.175,64,1)),
+      bore:track(new THREE.TorusGeometry(.302,.012,6,48)),
+      line:track(new THREE.TorusGeometry(1.108,.004,5,64)),
+    };
+    const colors=[0x72777a,0x2476ff,0xd3d9dd];
+    colors.forEach((color,index)=>{
+      const material=track(new THREE.MeshStandardMaterial({color,metalness:index===1?.78:.92,roughness:index===0?.34:.27,envMapIntensity:1.2,vertexColors:true}));
+      const faceMaterial=track(new THREE.MeshPhysicalMaterial({color,metalness:index===1?.78:.92,roughness:.48,roughnessMap:machining,bumpMap:machining,bumpScale:.0015,anisotropy:.58,anisotropyMap:anisotropy,envMapIntensity:1.35}));
+      const piece=makePiece(material,faceMaterial,geometry,index,details);pieces.push(piece);scene.add(piece);
     });
-    const environment = new THREE.CubeTexture(faces);
-    environment.colorSpace = THREE.SRGBColorSpace;
-    environment.needsUpdate = true;
-    scene.environment = environment;
-    disposables.push(environment);
-
-    const gearGeometry = makeGearGeometry(THREE);
-    const materials = [
-      new THREE.MeshStandardMaterial({ color: COLORS.steel, metalness: 0.95, roughness: 0.31 }),
-      new THREE.MeshStandardMaterial({ color: COLORS.blue, metalness: 0.84, roughness: 0.24, emissive: 0x061a52, emissiveIntensity: 0.12 }),
-      new THREE.MeshStandardMaterial({ color: COLORS.silver, metalness: 0.98, roughness: 0.22 }),
-    ];
-    materials.forEach((material) => disposables.push(material));
-    disposables.push(gearGeometry);
-    materials.forEach((material, index) => {
-      const piece = makePiece(THREE, material, index, gearGeometry);
-      pieces.push(piece);
-      scene.add(piece);
+    const shadowTexture=track(makeShadowTexture());
+    const shadowMaterial=track(new THREE.MeshBasicMaterial({map:shadowTexture,transparent:true,depthWrite:false,opacity:.8,toneMapped:false}));
+    const shadowGeometry=track(new THREE.PlaneGeometry(3.5,1.6));
+    pieces.forEach(()=>{
+      const shadow=new THREE.Mesh(shadowGeometry,shadowMaterial);shadow.rotation.x=-Math.PI/2;shadow.position.y=-1.57;
+      shadows.push(shadow);scene.add(shadow);
     });
-    stats.vertices = 0;
-    pieces.forEach(piece => piece.traverse(object => { if (object.geometry) stats.vertices += object.geometry.attributes.position.count; }));
+    scene.traverse(object=>{if(object.geometry)stats.vertices+=object.geometry.attributes.position.count;});
 
-    const resize = () => {
-      if (!renderer || !camera) return;
-      const width = Math.max(1, stage.clientWidth);
-      const height = Math.max(1, stage.clientHeight);
-      const aspect = width / height;
-      const viewHeight = aspect < 2.4 ? 9.2 / aspect : 3.55;
-      camera.left = -viewHeight * aspect / 2;
-      camera.right = viewHeight * aspect / 2;
-      camera.top = viewHeight / 2;
-      camera.bottom = -viewHeight / 2;
-      camera.updateProjectionMatrix();
-      renderer.setSize(width, height, false);
-      if (camera && pieces.length) requestAnimationFrame(() => { if (!disposed) renderer.render(scene, camera); });
-    };
-    resize();
-    resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(stage);
-
-    const setVisible = (entries) => { visible = entries[0]?.isIntersecting ?? true; if (!visible) stop(); else schedule(); };
-    observer = new IntersectionObserver(setVisible, { threshold: 0.01 });
-    observer.observe(stage);
-
-    const onVisibility = () => { if (document.hidden) stop(); else schedule(); };
-    const onContextLost = (event) => {
-      event.preventDefault(); stop(); cleanup();
-      stage.classList.remove('scene-ready'); stats.fallback = true;
-      canvas?.remove();
-      stage.dispatchEvent(new CustomEvent('mechanism:fallback'));
-    };
-    document.addEventListener('visibilitychange', onVisibility);
-    canvas.addEventListener('webglcontextlost', onContextLost, false);
-    const onPointer = event => {
-      const rect = stage.getBoundingClientRect();
-      pointer.x = ((event.clientX - rect.left) / rect.width - .5) * 2;
-      pointer.y = ((event.clientY - rect.top) / rect.height - .5) * 2;
-      schedule();
-    };
-    const onPointerLeave = () => { pointer.x = 0; pointer.y = 0; schedule(); };
-    stage.addEventListener('pointermove', onPointer);
-    stage.addEventListener('pointerleave', onPointerLeave);
-    disposables.push({ dispose: () => { stage.removeEventListener('pointermove', onPointer); stage.removeEventListener('pointerleave', onPointerLeave); } });
-    disposables.push({ dispose: () => document.removeEventListener('visibilitychange', onVisibility) });
-    disposables.push({ dispose: () => canvas?.removeEventListener('webglcontextlost', onContextLost) });
-
-    const render = () => {
-      animationFrame = 0;
-      if (disposed || !visible || document.hidden) return;
-      currentProgress += (targetProgress - currentProgress) * 0.085;
-      if (Math.abs(targetProgress - currentProgress) < 0.0005) currentProgress = targetProgress;
-      pieces.forEach((piece, index) => {
-        const x = THREE.MathUtils.lerp(piece.userData.restX, piece.userData.joinedX, currentProgress);
-        piece.position.x = x;
-        piece.position.z = Math.sin((index + 1) * 1.5 + currentProgress * Math.PI) * 0.08;
-        piece.rotation.y = -0.52 + index * 0.02 + pointer.x * .08 + currentProgress * .07;
-        piece.rotation.x = pointer.y * .07;
-        const active = focusIndex === null || focusIndex === index;
-        piece.scale.setScalar(active ? 1 : 0.94);
-        piece.userData.material.emissiveIntensity = focusIndex === index ? 0.32 : index === 1 ? 0.12 : 0;
+    function posePieces() {
+      pieces.forEach((piece,index)=>{
+        piece.position.x=THREE.MathUtils.lerp(piece.userData.restX,piece.userData.joinedX,currentProgress);
+        piece.rotation.y=-.56+index*.012+pointer.x*.035;
+        piece.rotation.x=pointer.y*.025;
+        const active=focusIndex===null||focusIndex===index;
+        piece.scale.setScalar(active?1:.97);
+        shadows[index].position.x=piece.position.x+.05;
+        piece.userData.rotor.rotation.z=(index===1?-1:1)*(stats.elapsedSeconds%LOOP_SECONDS)/LOOP_SECONDS*TAU;
       });
-      camera.position.x = 1.5 + (currentProgress - 0.5) * 0.18;
-      camera.lookAt(0, 0, 0);
-      renderer.render(scene, camera);
-      if (Math.abs(targetProgress - currentProgress) > 0.0005) schedule();
-      else stats.running = false;
-    };
+      stats.rotationAngles=pieces.map(piece=>piece.userData.rotor.rotation.z);
+      stats.poseY=pieces.map(piece=>piece.rotation.y);
+    }
+    function render(time) {
+      animationFrame=0;
+      if (disposed||!visible||document.hidden) {stop();return;}
+      const interval=innerWidth<720?1000/30:1000/60;
+      if (playing&&lastRender&&time-lastRender<interval-.7) {schedule();return;}
+      const delta=lastTime?Math.min((time-lastTime)/1000,.1):0;
+      lastTime=time;lastRender=time;
+      if (playing) stats.elapsedSeconds+=delta;
+      currentProgress+=(targetProgress-currentProgress)*.085;
+      if (Math.abs(targetProgress-currentProgress)<.0005) currentProgress=targetProgress;
+      posePieces();renderer.render(scene,camera);stats.frames++;
+      if (playing||Math.abs(targetProgress-currentProgress)>.0005) schedule();
+      else stats.running=false;
+    }
     function schedule() {
-      if (!animationFrame && !disposed && visible && !document.hidden) {
-        animationFrame = requestAnimationFrame(render);
-        stats.running = true;
+      if (!animationFrame&&!disposed&&visible&&!document.hidden) {
+        animationFrame=requestAnimationFrame(render);stats.running=true;
       }
     }
-
-    const controller = {
-      setProgress(progress) { targetProgress = clamp01(progress); schedule(); },
-      setFocus(indexOrNull) { focusIndex = Number.isInteger(indexOrNull) && indexOrNull >= 0 && indexOrNull < 3 ? indexOrNull : null; schedule(); },
-      dispose() {
-        if (disposed) return;
-        disposed = true;
-        stop();
-        observer?.disconnect();
-        resizeObserver?.disconnect();
-        const geometries = new Set();
-        const materialsToDispose = new Set();
-        pieces.forEach((piece) => piece.traverse((object) => {
-          if (object.geometry) geometries.add(object.geometry);
-          if (object.material) {
-            const list = Array.isArray(object.material) ? object.material : [object.material];
-            list.forEach((material) => materialsToDispose.add(material));
-          }
-        }));
-        geometries.forEach((geometry) => geometry.dispose());
-        materialsToDispose.forEach((material) => material.dispose());
-        disposables.forEach((resource) => resource?.dispose?.());
-        renderer?.dispose();
-        renderer?.forceContextLoss?.();
-        if (canvas?.parentNode) canvas.parentNode.removeChild(canvas);
-        stage.classList.remove('scene-ready');
-        stats.running = false;
-      },
+    function resize() {
+      const width=Math.max(1,stage.clientWidth),height=Math.max(1,stage.clientHeight),aspect=width/height;
+      const viewHeight=Math.max(3.65,10.3/aspect);
+      camera.left=-viewHeight*aspect/2;camera.right=viewHeight*aspect/2;camera.top=viewHeight/2;camera.bottom=-viewHeight/2;
+      camera.updateProjectionMatrix();renderer.setSize(width,height,false);
+      stats.dpr=Math.min(devicePixelRatio||1,innerWidth<720?1:1.5);renderer.setPixelRatio(stats.dpr);
+      schedule();
+    }
+    resize();posePieces();renderer.render(scene,camera);stats.frames++;
+    resizeObserver=new ResizeObserver(resize);resizeObserver.observe(stage);
+    observer=new IntersectionObserver(entries=>{
+      visible=entries[0]?.isIntersecting??true;
+      if (!visible) stop();else schedule();
+    },{threshold:.01});observer.observe(stage);
+    listen(document,'visibilitychange',()=>{if(document.hidden)stop();else schedule();});
+    listen(canvas,'webglcontextlost',event=>{
+      event.preventDefault();dispose();stats.fallback=true;
+      stage.dispatchEvent(new CustomEvent('mechanism:fallback'));
+    });
+    listen(stage,'pointermove',event=>{
+      if(event.pointerType==='touch')return;
+      const rect=stage.getBoundingClientRect();
+      pointer.x=Math.max(-1,Math.min(1,(event.clientX-rect.left)/rect.width*2-1));
+      pointer.y=Math.max(-1,Math.min(1,(event.clientY-rect.top)/rect.height*2-1));schedule();
+    },{passive:true});
+    listen(stage,'pointerleave',()=>{pointer.x=pointer.y=0;schedule();});
+    stage.classList.add('scene-ready');schedule();
+    return {
       stats,
+      setProgress(progress){targetProgress=clamp01(progress);schedule();},
+      setFocus(index){focusIndex=Number.isInteger(index)&&index>=0&&index<3?index:null;schedule();},
+      setPaused(paused){playing=!paused;stats.paused=Boolean(paused);stop();if(playing)schedule();},
+      dispose,
     };
-    cleanup = () => controller.dispose();
-    renderer.render(scene, camera);
-    stage.classList.add('scene-ready');
-    schedule();
-    return controller;
-  } catch (error) {
-    return fail(error);
+  } catch(error) {
+    dispose();stats.fallback=true;
+    throw error instanceof Error?error:new Error('Falha ao iniciar a cena mecânica');
   }
 }

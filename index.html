@@ -13,11 +13,11 @@
   <link rel="preload" href="assets/fonts/BarlowCondensed-SemiBold.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="preload" href="assets/fonts/Barlow-Regular.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="preload" href="assets/images/gears-hybrid.webp" as="image" type="image/webp" imagesrcset="assets/images/gears-hybrid-small.webp 1086w, assets/images/gears-hybrid.webp 2172w" imagesizes="(max-width: 600px) calc(100vw - 28px), calc(100vw - 120px)" fetchpriority="high">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=1.3">
   <script>document.documentElement.classList.add('js');</script>
   <script defer src="vendor/gsap/gsap.min.js"></script>
   <script defer src="vendor/gsap/ScrollTrigger.min.js"></script>
-  <script defer src="scripts/app.js"></script>
+  <script defer src="scripts/app.js?v=1.3"></script>
 </head>
 <body>
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
@@ -39,11 +39,12 @@
     <header class="site-header" id="site-header">
       <a class="brand-link" href="#inicio" aria-label="Engrena, início"><img src="assets/brand/logo-color.svg" alt="Engrena" width="173" height="42"></a>
       <span class="header-context">Especialistas em oficinas automotivas</span>
+      <div class="hero-comparison" id="hero-comparison"><span class="comparison-label">Teste de abertura</span><div class="hero-variants" role="group" aria-label="Comparar as duas aberturas"><button id="hero-gears" type="button" data-hero-variant="gears" aria-pressed="true" aria-controls="inicio">Engrenagens 3D</button><button id="hero-original" type="button" data-hero-variant="original" aria-pressed="false" aria-controls="inicio">Peças originais</button></div></div>
       <div class="header-actions"><a class="header-contact" href="#contato" data-open-contact data-interest="ambos">Vamos conversar<span class="small-plus" aria-hidden="true">+</span></a><button class="menu-trigger" id="menu-trigger" type="button" aria-haspopup="dialog" aria-controls="menu-dialog">Menu<span class="menu-lines" aria-hidden="true"></span></button></div>
     </header>
 
     <main id="conteudo">
-      <section class="hero section-anchor" id="inicio" data-section="Início">
+      <section class="hero section-anchor" id="inicio" data-section="Início" data-hero-variant="gears">
         <div class="hero-heading">
           <h1>Crescer exige<br><span>mais que anúncios.</span></h1>
           <div class="hero-intro"><span class="eyebrow"><i class="status-dot" aria-hidden="true"></i> Sua oficina, em sintonia</span><p>Da primeira mensagem ao cliente que volta. Marketing, atendimento e gestão trabalhando juntos.</p></div>
@@ -58,7 +59,7 @@
           <div class="mechanism-stage" id="mechanism-stage">
             <img class="mechanism-image" src="assets/images/gears-hybrid.webp" srcset="assets/images/gears-hybrid-small.webp 1086w, assets/images/gears-hybrid.webp 2172w" sizes="(max-width: 600px) calc(100vw - 28px), calc(100vw - 120px)" alt="Três engrenagens robustas em aço escuro, azul e prata, em perspectiva oblíqua e alinhadas para trabalhar juntas." width="2172" height="724" fetchpriority="high" decoding="async">
           </div>
-          <div class="mechanism-toolbar"><p id="mechanism-description" aria-live="polite">O crescimento acontece quando as três peças se conectam.</p><button id="explore-mechanism" type="button" aria-pressed="false" hidden>Explorar em 3D<span class="small-plus" aria-hidden="true">+</span></button></div>
+          <div class="mechanism-toolbar"><p id="mechanism-description" aria-live="polite">O crescimento acontece quando as três peças se conectam.</p><button id="explore-mechanism" type="button" aria-pressed="false" aria-controls="mechanism-stage" hidden>Ativar animação<span class="loop-control-icon" aria-hidden="true"></span></button></div>
         </div>
 
         <div class="hero-dock"><p>Coloque sua operação<br class="mobile-only"> em sintonia.</p><a href="#contato" class="dock-cta" data-open-contact data-interest="ambos"><span>Conversar sobre minha oficina</span><span class="cta-square" aria-hidden="true">+</span></a></div>
