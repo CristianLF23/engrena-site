@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#F2F6F8">
+  <meta name="description" content="Estratégia, atendimento com IA e gestão conectados para oficinas automotivas. Conheça a assessoria ENGRENA, o método 3V e a plataforma ChatEngrena.">
+  <meta property="og:title" content="Engrena | Crescer exige mais que anúncios">
+  <meta property="og:description" content="Da primeira mensagem ao cliente que volta. Assessoria e tecnologia própria para oficinas automotivas de todo o Brasil.">
+  <meta property="og:type" content="website">
+  <title>Engrena | Crescer exige mais que anúncios</title>
+  <link rel="icon" type="image/svg+xml" href="assets/brand/favicon.svg">
+  <link rel="preload" href="assets/fonts/BarlowCondensed-SemiBold.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="assets/fonts/Barlow-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="assets/images/gears-hybrid.webp" as="image" type="image/webp" imagesrcset="assets/images/gears-hybrid-small.webp 1086w, assets/images/gears-hybrid.webp 2172w" imagesizes="(max-width: 600px) calc(100vw - 28px), calc(100vw - 120px)" fetchpriority="high">
+  <link rel="stylesheet" href="styles.css">
+  <script>document.documentElement.classList.add('js');</script>
+  <script defer src="vendor/gsap/gsap.min.js"></script>
+  <script defer src="vendor/gsap/ScrollTrigger.min.js"></script>
+  <script defer src="scripts/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <div class="intro-loader" id="intro-loader" aria-hidden="true">
+    <div class="loader-top"><span>Engrena</span><button type="button" id="skip-intro" tabindex="-1">Pular abertura</button></div>
+    <div class="loader-center"><div class="loader-symbol" data-brand-symbol></div><span class="loader-caption">Três peças. Uma nova direção.</span></div>
+    <div class="loader-bottom"><span>Estratégia / Tecnologia / Operação</span><span id="loader-state">Em sintonia</span></div>
+  </div>
+
+  <aside class="section-rail" aria-label="Progresso da página">
+    <a href="#inicio" class="rail-brand" aria-label="Engrena, início"><img src="assets/brand/symbol.svg" alt="" width="27" height="27"></a>
+    <div class="rail-track"><div class="rail-progress" id="rail-progress"></div></div>
+    <span class="rail-label" id="rail-label">Início</span>
+    <span class="rail-bottom">BR</span>
+  </aside>
+
+  <div class="site-shell">
+    <header class="site-header" id="site-header">
+      <a class="brand-link" href="#inicio" aria-label="Engrena, início"><img src="assets/brand/logo-color.svg" alt="Engrena" width="173" height="42"></a>
+      <span class="header-context">Especialistas em oficinas automotivas</span>
+      <div class="header-actions"><a class="header-contact" href="#contato" data-open-contact data-interest="ambos">Vamos conversar<span class="small-plus" aria-hidden="true">+</span></a><button class="menu-trigger" id="menu-trigger" type="button" aria-haspopup="dialog" aria-controls="menu-dialog">Menu<span class="menu-lines" aria-hidden="true"></span></button></div>
+    </header>
+
+    <main id="conteudo">
+      <section class="hero section-anchor" id="inicio" data-section="Início">
+        <div class="hero-heading">
+          <h1>Crescer exige<br><span>mais que anúncios.</span></h1>
+          <div class="hero-intro"><span class="eyebrow"><i class="status-dot" aria-hidden="true"></i> Sua oficina, em sintonia</span><p>Da primeira mensagem ao cliente que volta. Marketing, atendimento e gestão trabalhando juntos.</p></div>
+        </div>
+
+        <div class="mechanism-wrap">
+          <div class="mechanism-labels" aria-label="As três peças do crescimento">
+            <button class="mechanism-label" data-piece="0" type="button" aria-pressed="false"><span>1V</span><strong>Atrair</strong><small>As pessoas certas</small></button>
+            <button class="mechanism-label" data-piece="1" type="button" aria-pressed="false"><span>2V</span><strong>Atender</strong><small>Com processo e inteligência</small></button>
+            <button class="mechanism-label" data-piece="2" type="button" aria-pressed="false"><span>3V</span><strong>Fazer voltar</strong><small>Para a próxima revisão</small></button>
+          </div>
+          <div class="mechanism-stage" id="mechanism-stage">
+            <img class="mechanism-image" src="assets/images/gears-hybrid.webp" srcset="assets/images/gears-hybrid-small.webp 1086w, assets/images/gears-hybrid.webp 2172w" sizes="(max-width: 600px) calc(100vw - 28px), calc(100vw - 120px)" alt="Três engrenagens robustas em aço escuro, azul e prata, em perspectiva oblíqua e alinhadas para trabalhar juntas." width="2172" height="724" fetchpriority="high" decoding="async">
+          </div>
+          <div class="mechanism-toolbar"><p id="mechanism-description" aria-live="polite">O crescimento acontece quando as três peças se conectam.</p><button id="explore-mechanism" type="button" aria-pressed="false" hidden>Explorar em 3D<span class="small-plus" aria-hidden="true">+</span></button></div>
+        </div>
+
+        <div class="hero-dock"><p>Coloque sua operação<br class="mobile-only"> em sintonia.</p><a href="#contato" class="dock-cta" data-open-contact data-interest="ambos"><span>Conversar sobre minha oficina</span><span class="cta-square" aria-hidden="true">+</span></a></div>
+        <div class="hero-footnote"><span>Assessoria especializada + software próprio</span><span>Atuação nacional</span></div>
+      </section>
+
+      <section class="about section-pad section-anchor" id="engrena" data-section="A Engrena">
+        <div class="section-kicker"><span>Somos a Engrena</span><span>Feita para o seu setor</span></div>
+        <div class="about-grid"><h2>Oficina cheia é bom.<br><span>Crescer com controle<br>é outro nível.</span></h2><div class="about-copy"><p class="lead">Mais clientes, uma equipe que atende melhor e um dono que sabe o que acontece no próprio negócio.</p><p>Conectamos estratégia de marketing, processo comercial e tecnologia própria para ajudar sua oficina a vender mais, vender melhor e trazer o cliente de volta.</p><p>Da mecânica geral às redes de autocenters. O trabalho começa entendendo a sua operação, seus números e o que precisa mudar.</p></div></div>
+        <div class="segments" aria-label="Operações que atendemos"><span>Mecânicas</span><span>Autocenters</span><span>Lojas de pneus</span><span>Especialistas</span><span>Redes</span></div>
+        <div class="journey-grid"><div class="journey-block"><span class="eyebrow">Estratégia + execução</span><h3>Quero fazer minha<br>oficina crescer.</h3><p>Assessoria para conectar aquisição de clientes, atendimento e recorrência.</p><a href="#contato" class="text-cta" data-open-contact data-interest="assessoria">Conhecer a assessoria<span aria-hidden="true">+</span></a></div><div class="journey-block"><span class="eyebrow">Tecnologia própria</span><h3>Quero organizar<br>meu atendimento.</h3><p>ChatEngrena para ganhar agilidade, acompanhar a equipe e enxergar a operação.</p><a href="#chatengrena" class="text-cta">Explorar o ChatEngrena<span aria-hidden="true">+</span></a></div></div>
+      </section>
+
+      <section class="method section-pad section-anchor" id="metodo" data-section="Método 3V">
+        <div class="method-intro"><span class="eyebrow">O método 3V</span><h2>Três peças.<br>Um negócio<br>que avança.</h2><p>Anúncios trazem oportunidades.<br>O que acontece depois também precisa funcionar.</p><div class="method-symbol" data-brand-symbol aria-hidden="true"></div></div>
+        <div class="method-stack">
+          <article class="method-card method-one"><div class="method-card-top"><span class="method-number">1V</span><span class="eyebrow">Atrair</span></div><h3>Vender mais.</h3><p>Coloque sua oficina na frente de quem está procurando pelo serviço que você oferece.</p><ul><li>Campanhas com intenção de compra</li><li>Sites e criativos que explicam sua oferta</li><li>Estratégia voltada ao cliente pessoa física</li></ul><span class="method-card-foot">A oportunidade começa aqui.</span></article>
+          <article class="method-card method-two"><div class="method-card-top"><span class="method-number">2V</span><span class="eyebrow">Converter</span></div><h3>Vender melhor.</h3><p>Transforme mensagens em conversas bem conduzidas e orçamentos acompanhados.</p><ul><li>Atendimento com IA e processo comercial</li><li>Funil organizado no ChatEngrena</li><li>Visibilidade sobre a equipe e o faturamento</li></ul><span class="method-card-foot">Cada atendimento conta.</span></article>
+          <article class="method-card method-three"><div class="method-card-top"><span class="method-number">3V</span><span class="eyebrow">Fazer voltar</span></div><h3>Vender com<br>recorrência.</h3><p>Continue presente depois do serviço e dê ao cliente um motivo para voltar.</p><ul><li>Rotinas estruturadas de acompanhamento</li><li>Reativação e campanhas segmentadas</li><li>Relacionamento para a próxima revisão</li></ul><span class="method-card-foot">O próximo serviço também importa.</span></article>
+        </div>
+      </section>
+
+      <section class="product section-pad section-anchor" id="chatengrena" data-section="ChatEngrena">
+        <div class="section-kicker"><span>Conheça o ChatEngrena</span><span>Tecnologia da casa</span></div>
+        <div class="product-heading"><h2>Seu atendimento,<br><span>uma marcha à frente.</span></h2><p>Uma plataforma feita para facilitar a vida de quem atende e de quem precisa enxergar o negócio inteiro.</p></div>
+        <div class="product-layout">
+          <div class="product-demo"><div class="demo-topbar"><div class="demo-brand"><img src="assets/brand/symbol.svg" alt="" width="23" height="23"><strong>ChatEngrena</strong></div><span class="demo-label">Visão ilustrativa</span></div>
+            <div class="demo-tabs" role="tablist" aria-label="Explorar recursos do ChatEngrena"><button id="tab-atendimento" role="tab" aria-selected="true" aria-controls="panel-atendimento" data-tab="atendimento" type="button">Atendimento</button><button id="tab-gestao" role="tab" aria-selected="false" aria-controls="panel-gestao" data-tab="gestao" tabindex="-1" type="button">Gestão</button><button id="tab-retorno" role="tab" aria-selected="false" aria-controls="panel-retorno" data-tab="retorno" tabindex="-1" type="button">Recorrência</button></div>
+            <div class="demo-panel" id="panel-atendimento" role="tabpanel" aria-labelledby="tab-atendimento" tabindex="0">
+              <div class="demo-view-heading"><div><span class="mini-label">Sua operação em movimento</span><h3>Do contato ao serviço.</h3></div><span class="live-badge"><i class="status-dot" aria-hidden="true"></i> Fluxo organizado</span></div>
+              <div class="kanban"><div class="kanban-column"><h4><i class="column-dot cyan"></i>Novos contatos <span>02</span></h4><div class="kanban-ticket"><span class="ticket-tag">Google Ads</span><strong>Revisão preventiva</strong><small>Primeiro contato recebido</small><div class="ticket-bottom"><span>Cliente pessoa física</span><i>CL</i></div></div><div class="kanban-ticket"><span class="ticket-tag">WhatsApp</span><strong>Troca de pneus</strong><small>Cliente em qualificação</small><div class="ticket-bottom"><span>Atendimento com IA</span><i>IA</i></div></div></div><div class="kanban-column"><h4><i class="column-dot blue"></i>Em atendimento <span>01</span></h4><div class="kanban-ticket"><span class="ticket-tag">Orçamento</span><strong>Freios e suspensão</strong><small>Conversa atribuída à equipe</small><div class="ticket-bottom"><span>Próxima ação definida</span><i>EQ</i></div></div></div><div class="kanban-column"><h4><i class="column-dot green"></i>Agendados <span>01</span></h4><div class="kanban-ticket"><span class="ticket-tag">Confirmado</span><strong>Revisão completa</strong><small>Cliente com horário combinado</small><div class="ticket-bottom"><span>Oficina em sintonia</span><i>OK</i></div></div></div></div>
+              <div class="demo-notification"><span class="notification-icon" aria-hidden="true">+</span><div><strong>Um atendimento não precisa ficar para trás.</strong><p>A equipe enxerga a conversa, o responsável e a próxima etapa.</p></div></div>
+            </div>
+            <div class="demo-panel" id="panel-gestao" role="tabpanel" aria-labelledby="tab-gestao" tabindex="0" hidden><div class="demo-view-heading"><div><span class="mini-label">Menos achismo, mais visão</span><h3>O dono acompanha.</h3></div><span class="demo-label">Exemplo de organização</span></div><div class="report-rows"><div><span>Faturamento</span><strong>Por período e por origem</strong><i class="report-bar" style="--bar:86%"></i></div><div><span>Atendimento</span><strong>Conversas e etapas do funil</strong><i class="report-bar" style="--bar:64%"></i></div><div><span>Desempenho</span><strong>Visão individual da equipe</strong><i class="report-bar" style="--bar:75%"></i></div></div><div class="demo-notification"><span class="notification-icon" aria-hidden="true">+</span><div><strong>O que acontece na oficina chega até você.</strong><p>Avisos pelo WhatsApp e relatórios para acompanhar a operação.</p></div></div></div>
+            <div class="demo-panel" id="panel-retorno" role="tabpanel" aria-labelledby="tab-retorno" tabindex="0" hidden><div class="demo-view-heading"><div><span class="mini-label">O serviço terminou. A relação continua.</span><h3>Pronto para voltar.</h3></div></div><ol class="return-flow"><li><span>1</span><div><strong>Serviço concluído</strong><p>O histórico organiza o ponto de partida.</p></div></li><li><span>2</span><div><strong>Acompanhamento estruturado</strong><p>Rotinas e contatos no momento adequado.</p></div></li><li><span>3</span><div><strong>Nova oportunidade</strong><p>Reativação para a próxima necessidade do cliente.</p></div></li></ol></div>
+            <p class="demo-disclaimer">Exemplo visual de fluxo. A interface final da plataforma pode variar.</p>
+          </div>
+          <div class="product-copy"><h3>Inteligente para atender.<br>Claro para acompanhar.</h3><div class="feature-row"><span>IA no atendimento</span><p>Respostas automáticas com contexto, apoiando o trabalho dos seus atendentes.</p></div><div class="feature-row"><span>Conversas e ligações</span><p>Receba e realize chamadas, distribua atendimentos e organize o funil em kanban.</p></div><div class="feature-row"><span>Visão de quem está no comando</span><p>Relatórios de faturamento, atendimento e desempenho. Atualizações direto no seu WhatsApp.</p></div><div class="feature-row"><span>Conexão com seus anúncios</span><p>Integração via API com Google Ads e Meta Ads para melhorar os sinais de conversão.</p></div><a href="#contato" class="button button-cyan" data-open-contact data-interest="chatengrena">Quero conhecer o ChatEngrena<span aria-hidden="true">+</span></a></div>
+        </div>
+      </section>
+
+      <section class="results section-pad section-anchor" id="resultados" data-section="Resultados">
+        <div class="section-kicker"><span>O método na prática</span><span>Cases históricos de 2025</span></div>
+        <div class="results-heading"><h2>Da operação<br><span>para os números.</span></h2><p>Resultados apresentados por oficinas que trabalharam com a ENGRENA. Cada operação tem seu contexto, seu ritmo e seus desafios.</p></div>
+        <article class="featured-case"><div class="case-metric"><span class="eyebrow">Retorno informado no case</span><strong><span>21,35</span><small>x</small></strong><p>Para cada R$ 1 investido,<br>R$ 21,35 em retorno.</p></div><div class="case-context"><span class="case-index">Oficina automotiva / Junho de 2025</span><h3>Acompanhar também<br>faz parte de crescer.</h3><div class="case-evolution"><span class="eyebrow">Faturamento apresentado no mesmo case</span><div><p><span>Abril de 2025</span><strong>R$ 227,9 mil</strong></p><p><span>Maio de 2025</span><strong>R$ 213,7 mil</strong></p><p><span>Junho de 2025</span><strong>R$ 231,3 mil</strong></p></div></div><p>Dados do material comercial. A identificação do cliente foi preservada.</p><span class="case-source">Fonte: Apresentação Express, página 18.</span></div></article>
+        <div class="supporting-cases"><article><span class="eyebrow">Relacionamento que continua</span><strong>R$ 12 mil</strong><p>Gerados pelo sistema de acompanhamento após o serviço em um dos cases.</p><span class="case-source">Maio de 2025. Apresentação Express, página 28.</span></article><article><span class="eyebrow">Qualidade da venda</span><strong>R$ 3 mil</strong><p>De ticket médio entre os clientes vindos da assessoria em outro case.</p><span class="case-source">Junho de 2025. Apresentação Express, página 17.</span></article></div>
+        <p class="results-note">Casos distintos, dados históricos e anonimizados. Resultados anteriores não representam garantia de faturamento.</p>
+        <div class="testimonial-slot"><div class="video-placeholder" aria-label="Espaço reservado para futuros depoimentos em vídeo"><span class="video-frame-mark" aria-hidden="true"></span><span>Relatos de quem vive a operação</span><small>Espaço reservado para os próximos vídeos</small></div><div><span class="eyebrow">A experiência de quem está na oficina</span><h3>Os números contam<br>uma parte da história.</h3><p>Este espaço vai receber os depoimentos em vídeo dos nossos clientes.</p></div></div>
+      </section>
+
+      <section class="inertia section-pad section-anchor" id="oportunidades" data-section="O próximo passo">
+        <div class="inertia-intro"><span class="eyebrow">O custo de adiar</span><h2>Enquanto você espera,<br><span>oportunidades passam.</span></h2><p>A mensagem sem resposta. O orçamento esquecido. O cliente que nunca mais voltou. Pequenas falhas de rotina também pesam no caixa.</p></div>
+        <div class="counter-grid" aria-live="off"><div class="counter-block"><span class="eyebrow">Tempo sem dar o próximo passo</span><strong id="elapsed-time">00:00:00</strong><span class="counter-foot">O relógio segue.</span></div><div class="counter-block counter-money"><span class="eyebrow">Oportunidades deixadas na mesa</span><strong id="missed-value">R$ 0,00</strong><span class="counter-foot">A decisão pode começar agora.</span></div></div>
+        <div class="inertia-bottom"><p>Ilustração proporcional de R$ 1 por segundo. O valor começa do zero e não representa uma estimativa de perda da sua oficina.</p><a class="text-cta" href="#contato" data-open-contact data-interest="ambos">Quero mudar esse cenário<span aria-hidden="true">+</span></a></div>
+      </section>
+
+      <section class="contact section-pad section-anchor" id="contato" data-section="Vamos conversar">
+        <div class="section-kicker"><span>Sua próxima fase começa com uma conversa</span><span>Engrena + sua oficina</span></div>
+        <h2>Chega de deixar<br>oportunidade<br><span>na mesa.</span></h2>
+        <div class="contact-bottom"><div><p>Vamos entender onde a sua operação está travando e definir o próximo passo.</p><span>Estratégia e execução da ENGRENA.<br>Participação e compromisso dos dois lados.</span></div><a class="contact-cta" href="#contato" data-open-contact data-interest="ambos"><span>Conversar sobre<br>minha oficina</span><span class="contact-plus" aria-hidden="true">+</span></a></div>
+        <noscript><p class="noscript-contact">Esta prévia usa um formulário demonstrativo com JavaScript. Os dados de contato reais serão conectados antes da publicação.</p></noscript>
+      </section>
+
+      <section class="faq section-pad section-anchor" id="duvidas" data-section="Dúvidas">
+        <div class="faq-heading"><span class="eyebrow">Antes da nossa conversa</span><h2>É justo<br>ter dúvidas.</h2><p>Vamos ao que importa para o dono da oficina.</p></div><div class="faq-list">
+          <details open><summary>Isso é só gestão de tráfego?<span aria-hidden="true">+</span></summary><p>A ENGRENA conecta atração, atendimento, processo comercial, acompanhamento de desempenho e recorrência. Os anúncios fazem parte do trabalho. O método e o ChatEngrena ajudam a fazer a oportunidade avançar dentro da oficina.</p></details>
+          <details><summary>Já tenho alguém cuidando dos anúncios. Faz sentido conversar?<span aria-hidden="true">+</span></summary><p>Faz sentido entender o que acontece depois do clique: quem atende, como os orçamentos são acompanhados e o que faz o cliente voltar. Nossa especialização é a operação de oficinas automotivas. A conversa serve para identificar o que sua estrutura precisa e se a ENGRENA é adequada para ela.</p></details>
+          <details><summary>Como vocês definem o investimento?<span aria-hidden="true">+</span></summary><p>O pacote é ajustado ao momento, aos objetivos e à estrutura de cada oficina. A avaliação considera o trabalho completo, que pode reunir estratégia, campanhas, sites, criativos, tecnologia e processo comercial. O escopo é explicado antes de qualquer decisão.</p></details>
+          <details><summary>Posso conhecer apenas o ChatEngrena?<span aria-hidden="true">+</span></summary><p>Sim. A plataforma tem uma jornada própria. Conte como seu atendimento funciona hoje e nossa equipe apresenta as possibilidades adequadas para sua operação.</p></details>
+          <details><summary>A IA vai substituir meus atendentes?<span aria-hidden="true">+</span></summary><p>O ChatEngrena foi feito para facilitar o trabalho da equipe, automatizando respostas e rotinas e organizando as etapas. Pessoas continuam importantes nas negociações, nas decisões e nas situações que exigem contexto.</p></details>
+          <details><summary>Minha oficina precisa faturar mais de R$ 100 mil?<span aria-hidden="true">+</span></summary><p>Esse é o perfil que priorizamos, mas recebemos outros interessados. Informe seu momento no formulário para avaliarmos juntos se existe um caminho adequado.</p></details>
+          <details><summary>O resultado depende da minha equipe também?<span aria-hidden="true">+</span></summary><p>Sim. É um trabalho em conjunto. A ENGRENA estrutura estratégia, tecnologia e acompanhamento. A oficina participa com informações, envolvimento da equipe e execução dos processos combinados. Não prometemos faturamento garantido.</p></details>
+          <details><summary>Vocês atendem em todo o Brasil?<span aria-hidden="true">+</span></summary><p>Sim. Atendemos mecânicas, autocenters, lojas de pneus, especialistas e redes em todo o Brasil. Depois do primeiro contato, a equipe combina a reunião pelo WhatsApp.</p></details>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer section-pad"><div class="footer-top"><p>Da primeira mensagem<br>ao cliente que volta.</p><nav aria-label="Navegação do rodapé"><a href="#metodo">Método 3V</a><a href="#chatengrena">ChatEngrena</a><a href="#resultados">Resultados</a><a href="#contato" data-open-contact data-interest="ambos">Fale com a Engrena</a></nav><span class="footer-national"><i class="status-dot" aria-hidden="true"></i>Atuação nacional<br><small>Soluções para oficinas automotivas</small></span></div><a href="#inicio" class="footer-wordmark" aria-label="Engrena, voltar ao início"><img src="assets/brand/logo-white.svg" alt="Engrena" width="1140" height="256" loading="lazy"></a><div class="footer-bottom"><span>© 2026 Engrena</span><span>Uma operação em sintonia.</span><button id="privacy-trigger" type="button">Privacidade nesta prévia</button></div></footer>
+  </div>
+
+  <a href="#contato" class="floating-contact" id="floating-contact" data-open-contact data-interest="ambos"><span>Vamos conversar</span><span aria-hidden="true">+</span></a>
+
+  <dialog id="menu-dialog" class="menu-dialog" aria-labelledby="menu-title"><div class="menu-dialog-top"><h2 id="menu-title">Explore a Engrena</h2><button class="close-button" type="button" data-close-menu>Fechar<span aria-hidden="true">+</span></button></div><nav aria-label="Menu principal"><a href="#engrena">A Engrena</a><a href="#metodo">Método 3V</a><a href="#chatengrena">ChatEngrena</a><a href="#resultados">Resultados</a><a href="#duvidas">Dúvidas</a></nav><a href="#contato" class="button button-blue" data-open-contact data-interest="ambos">Conversar sobre minha oficina<span aria-hidden="true">+</span></a><p>Especialistas em oficinas automotivas. Atendimento nacional.</p></dialog>
+
+  <dialog id="contact-dialog" class="contact-dialog" aria-labelledby="form-title"><div class="form-side"><div class="form-brand" data-brand-symbol aria-hidden="true"></div><span class="eyebrow">Vamos colocar em sintonia</span><h2 id="form-title">Conte o momento<br> da sua oficina.</h2><p>Algumas informações para entendermos o seu cenário. Depois, nossa equipe combina a conversa pelo WhatsApp.</p><div class="form-side-bottom"><span>Assessoria Engrena</span><span>ChatEngrena</span><span>Método 3V</span></div></div><div class="form-main"><button type="button" class="close-button form-close" data-close-contact aria-label="Fechar formulário">Fechar<span aria-hidden="true">+</span></button><div class="form-steps" aria-label="Etapa do formulário"><span class="active" data-step-indicator="0">1. Sua oficina</span><span data-step-indicator="1">2. Seu contato</span></div><p class="demo-form-note">Prévia para revisão. Nenhum dado será enviado.</p>
+    <form id="qualification-form" novalidate>
+      <fieldset class="form-step" data-form-step="0"><legend>Vamos conhecer sua operação.</legend><div class="field"><label for="workshop">Nome da oficina</label><input id="workshop" name="workshop" autocomplete="organization" maxlength="100" required placeholder="Como sua oficina se chama?"></div><div class="field-row"><div class="field"><label for="city">Cidade</label><input id="city" name="city" autocomplete="address-level2" maxlength="100" required placeholder="Sua cidade"></div><div class="field"><label for="state">Estado</label><select id="state" name="state" autocomplete="address-level1" required><option value="">Selecione</option><option value="AC">Acre</option><option value="AL">Alagoas</option><option value="AP">Amapá</option><option value="AM">Amazonas</option><option value="BA">Bahia</option><option value="CE">Ceará</option><option value="DF">Distrito Federal</option><option value="ES">Espírito Santo</option><option value="GO">Goiás</option><option value="MA">Maranhão</option><option value="MT">Mato Grosso</option><option value="MS">Mato Grosso do Sul</option><option value="MG">Minas Gerais</option><option value="PA">Pará</option><option value="PB">Paraíba</option><option value="PR">Paraná</option><option value="PE">Pernambuco</option><option value="PI">Piauí</option><option value="RJ">Rio de Janeiro</option><option value="RN">Rio Grande do Norte</option><option value="RS">Rio Grande do Sul</option><option value="RO">Rondônia</option><option value="RR">Roraima</option><option value="SC">Santa Catarina</option><option value="SP">São Paulo</option><option value="SE">Sergipe</option><option value="TO">Tocantins</option></select></div></div><div class="field"><label for="revenue">Faturamento mensal aproximado</label><select id="revenue" name="revenue" required><option value="">Selecione uma faixa</option><option value="under100">Abaixo de R$ 100 mil</option><option value="100to200">De R$ 100 mil a R$ 200 mil</option><option value="200to500">De R$ 200 mil a R$ 500 mil</option><option value="over500">Acima de R$ 500 mil</option><option value="talk">Prefiro falar na conversa</option></select></div><div class="field"><label for="interest">O que você quer melhorar?</label><select id="interest" name="interest" required><option value="ambos">Crescimento e organização da operação</option><option value="assessoria">Atrair clientes e vender melhor com a assessoria</option><option value="chatengrena">Organizar o atendimento com o ChatEngrena</option></select></div><p class="form-error" id="step-error" role="alert"></p><button class="button button-blue form-next" id="form-next" type="button">Continuar<span aria-hidden="true">+</span></button></fieldset>
+      <fieldset class="form-step" data-form-step="1" hidden><legend>Com quem vamos conversar?</legend><div class="field"><label for="contact-name">Seu nome</label><input id="contact-name" name="name" autocomplete="name" maxlength="100" required placeholder="Como podemos chamar você?"></div><div class="field"><label for="whatsapp">Seu WhatsApp com DDD</label><input id="whatsapp" name="whatsapp" type="tel" inputmode="tel" autocomplete="tel-national" maxlength="20" required aria-describedby="phone-help" placeholder="(11) 99999 9999"><small id="phone-help">Usaremos esse contato para combinar a reunião.</small></div><div class="form-recap" id="form-recap"></div><p class="form-error" id="contact-error" role="alert"></p><button class="button button-blue" type="submit">Concluir demonstração<span aria-hidden="true">+</span></button><button class="form-back" id="form-back" type="button">Voltar para os dados da oficina</button></fieldset>
+    </form><div class="form-success" id="form-success" hidden tabindex="-1"><span class="success-mark" aria-hidden="true">✓</span><span class="eyebrow">Prévia concluída</span><h3>O próximo passo<br>é conversar.</h3><p>Nesta demonstração, nenhum dado foi enviado. No site conectado, a equipe recebe essas informações e combina a reunião com você pelo WhatsApp.</p><button class="button button-blue" type="button" data-close-contact>Continuar explorando<span aria-hidden="true">+</span></button></div>
+  </div></dialog>
+
+  <dialog id="privacy-dialog" class="privacy-dialog" aria-labelledby="privacy-title"><button type="button" class="close-button" data-close-privacy>Fechar<span aria-hidden="true">+</span></button><span class="eyebrow">Prévia local</span><h2 id="privacy-title">Seus dados<br>nesta demonstração.</h2><p>O formulário desta prévia não transmite informações, não abre uma conversa externa e não salva seus dados em um servidor. Os campos ficam apenas nesta página enquanto ela está aberta.</p><p>Não há ferramentas de publicidade ou análise de visitantes conectadas. A página pode lembrar, durante esta sessão do navegador, que a abertura já foi exibida.</p><p>Antes da publicação, os canais de contato, o tratamento das informações e a política definitiva serão conectados e revisados.</p></dialog>
+</body>
+</html>
