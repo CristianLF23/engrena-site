@@ -2,7 +2,7 @@
 
 Site de testes: https://cristianlf23.github.io/engrena-site/
 
-Versão 1.4: composições do PDF reintegradas ao Método 3V, ChatEngrena, oportunidades, convite, FAQ, rodapé e carregamento. Plataforma apresentada como ferramenta de organização de processos. Gráficos históricos de retorno, faturamento e ticket médio com números, barras e linhas animados ao entrar na seção. Contador ilustrativo negativo e vermelho, a R$ 10 por segundo, começando em zero junto ao relógio.
+Versão 1.5: revisão integral do layout desktop, com abertura e CTA dimensionados para notebook, peças completas dentro das seções e plataforma em colunas equilibradas. Gráficos com definição, período, unidade, valores mensais e interpretação. Retorno, faturamento e ticket médio têm histórias próprias e animação de números, barras e linhas.
 
 Abertura com engrenagens refinadas em Three.js, perspectiva oblíqua e looping infinito. O seletor no cabeçalho permite comparar com as peças originais: https://cristianlf23.github.io/engrena-site/?abertura=original
 

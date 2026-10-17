@@ -299,7 +299,7 @@
     counterObserver.disconnect();visibility.disconnect();sections.disconnect();
   });
   window.engrenaPreview=Object.freeze({
-    version:'1.4',externalTransmission:false,
+    version:'1.5',externalTransmission:false,
     get heroVariant(){return heroVariant},
     get counter(){return{started:counterStarted,elapsed,seconds:counterSeconds,rate:illustrativeRate,stopped:contactStarted}},
     get scene(){return scene?{...scene.stats,active:sceneActive}:{active:false}}

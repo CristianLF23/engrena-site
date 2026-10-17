@@ -23,19 +23,19 @@
       node.textContent=(node.dataset.prefix||'')+number(value,decimals)+(node.dataset.suffix||'');
     });
     record.charts.forEach(chart=>{
-      const xs=[86,328,570],baseline=246,height=206;
+      const xs=(chart.svg.dataset.xs||'86,328,570').split(',').map(Number),baseline=Number(chart.svg.dataset.base||246),height=Number(chart.svg.dataset.height||206);
       const ys=chart.values.map(value=>baseline-value/chart.maximum*height*eased);
       const d='M '+xs.map((x,i)=>x+','+ys[i].toFixed(3)).join(' L ');
       chart.line.setAttribute('d',d);
       chart.line.style.strokeDasharray='1';
       chart.line.style.strokeDashoffset=String(1-eased);
-      chart.area.setAttribute('d',d+' L570,246 L86,246 Z');
+      chart.area.setAttribute('d',d+' L'+xs[2]+','+baseline+' L'+xs[0]+','+baseline+' Z');
       chart.area.style.opacity=String(eased);
       chart.points.forEach((point,i)=>{point.setAttribute('cy',ys[i].toFixed(3));point.setAttribute('r',String(5*Math.min(1,progress*3)));});
       chart.labels.forEach((label,i)=>{
-        label.setAttribute('y',(ys[i]-15).toFixed(3));
-        const decimals=chart.svg.dataset.unit==='x'?2:1;
-        label.textContent=number(chart.values[i]*eased,decimals)+chart.svg.dataset.unit;
+        label.setAttribute('y',(ys[i]-18).toFixed(3));
+        const decimals=Number(chart.svg.dataset.labelDecimals||(chart.svg.dataset.unit==='x'?2:0));
+        label.textContent=(chart.svg.dataset.labelPrefix||'')+number(chart.values[i]*Number(chart.svg.dataset.labelScale||1)*eased,decimals)+(chart.svg.dataset.unit==='x'?'x':'');
         label.style.opacity=String(Math.min(1,progress*3));
       });
       chart.bars.forEach(bar=>bar.style.transform='scaleY('+eased+')');
