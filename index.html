@@ -12,24 +12,19 @@
   <link rel="icon" type="image/svg+xml" href="assets/brand/favicon.svg">
   <link rel="preload" href="assets/fonts/BarlowCondensed-SemiBold.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="preload" href="assets/fonts/Barlow-Regular.ttf" as="font" type="font/ttf" crossorigin>
-  <link rel="preload" href="assets/images/gears-hybrid.webp" as="image" type="image/webp" imagesrcset="assets/images/gears-hybrid-small.webp 1086w, assets/images/gears-hybrid.webp 2172w" imagesizes="(max-width: 600px) calc(100vw - 28px), calc(100vw - 120px)" fetchpriority="high">
+  <link rel="preload" href="assets/images/gears-coupled.webp" as="image" type="image/webp" imagesrcset="assets/images/gears-coupled-small.webp 960w, assets/images/gears-coupled.webp 1920w" imagesizes="(max-width: 600px) calc(100vw - 28px), calc(100vw - 120px)" fetchpriority="high">
   <link rel="stylesheet" href="styles.css?v=1.5">
   <link rel="stylesheet" href="sections.css?v=1.5">
   <link rel="stylesheet" href="desktop.css?v=1.5">
+  <link rel="stylesheet" href="opening.css?v=1.6">
   <script>document.documentElement.classList.add('js');</script>
   <script defer src="vendor/gsap/gsap.min.js"></script>
   <script defer src="vendor/gsap/ScrollTrigger.min.js"></script>
-  <script defer src="scripts/app.js?v=1.5"></script>
+  <script defer src="scripts/app.js?v=1.6"></script>
   <script defer src="scripts/reports.js?v=1.5"></script>
 </head>
 <body>
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
-
-  <div class="intro-loader" id="intro-loader" aria-hidden="true">
-    <div class="loader-top"><span>Engrena</span><button type="button" id="skip-intro" tabindex="-1">Pular abertura</button></div>
-    <div class="loader-center"><img class="loader-mechanism" src="assets/images/section-dark-complete.webp" alt="" width="600" height="600" aria-hidden="true"><div class="loader-identity"><img src="assets/brand/logo-white.svg" alt="Engrena" width="270" height="64"><div class="loader-symbol" data-brand-symbol hidden></div></div><span class="loader-caption">Atrair. Atender. Fazer voltar.</span></div>
-    <div class="loader-bottom"><span class="loader-progress" aria-hidden="true"><i></i></span><span>Estratégia / Tecnologia / Operação</span><span id="loader-state">Em sintonia</span></div>
-  </div>
 
   <aside class="section-rail" aria-label="Progresso da página">
     <a href="#inicio" class="rail-brand" aria-label="Engrena, início"><img src="assets/brand/symbol.svg" alt="" width="27" height="27"></a>
@@ -60,7 +55,12 @@
             <button class="mechanism-label" data-piece="2" type="button" aria-pressed="false"><span>3V</span><strong>Fazer voltar</strong><small>Para a próxima revisão</small></button>
           </div>
           <div class="mechanism-stage" id="mechanism-stage">
-            <img class="mechanism-image" src="assets/images/gears-hybrid.webp" srcset="assets/images/gears-hybrid-small.webp 1086w, assets/images/gears-hybrid.webp 2172w" sizes="(max-width: 600px) calc(100vw - 28px), calc(100vw - 120px)" alt="Três engrenagens robustas em aço escuro, azul e prata, em perspectiva oblíqua e alinhadas para trabalhar juntas." width="2172" height="724" fetchpriority="high" decoding="async">
+            <img class="mechanism-image" src="assets/images/gears-coupled.webp" srcset="assets/images/gears-coupled-small.webp 960w, assets/images/gears-coupled.webp 1920w" sizes="(max-width: 600px) calc(100vw - 28px), calc(100vw - 120px)" alt="Três engrenagens robustas em aço escuro, azul e prata, em perspectiva oblíqua e encaixadas para trabalhar juntas." width="1920" height="768" fetchpriority="high" decoding="async">
+            <div class="intro-loader" id="intro-loader" aria-hidden="true">
+              <div class="loader-top"><span>Engrena / Método 3V</span><button type="button" id="skip-intro" tabindex="-1">Pular abertura</button></div>
+              <div class="loader-center"><div class="loader-symbol" data-brand-symbol><img src="assets/brand/symbol.svg" alt="" width="128" height="128"></div><span class="loader-caption">Atrair. Atender. Fazer voltar.</span></div>
+              <div class="loader-bottom"><span class="loader-progress" aria-hidden="true"><i></i></span><span>Estratégia / Tecnologia / Operação</span><span id="loader-state">Em sintonia</span></div>
+            </div>
           </div>
           <div class="mechanism-toolbar"><p id="mechanism-description" aria-live="polite">O crescimento acontece quando as três peças se conectam.</p><button id="explore-mechanism" type="button" aria-pressed="false" aria-controls="mechanism-stage" hidden>Ativar animação<span class="loop-control-icon" aria-hidden="true"></span></button></div>
         </div>

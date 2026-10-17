@@ -2,6 +2,8 @@ import * as THREE from '../vendor/three/three.module.min.js';
 
 const TAU = Math.PI * 2;
 const LOOP_SECONDS = 12;
+const PITCH_DISTANCE = 2.78;
+const ASSEMBLY_SECONDS = 1.65;
 const clamp01 = value => Math.min(1, Math.max(0, Number(value) || 0));
 
 function makeGearGeometry() {
@@ -59,7 +61,7 @@ function makeMachiningTexture() {
   for (let y=0;y<512;y++) for (let x=0;x<512;x++) {
     seed = (Math.imul(seed,1664525) + 1013904223) >>> 0;
     const radius = Math.hypot(x-255.5,y-255.5);
-    const value = Math.round(184 + Math.sin(radius*2.1)*5 + Math.sin(radius*.41)*3 + (seed/4294967296-.5)*12);
+    const value = Math.round(220 + Math.sin(radius*2.1)*3 + Math.sin(radius*.41)*2 + (seed/4294967296-.5)*7);
     const i = (y*512+x)*4;
     pixels.data[i] = pixels.data[i+1] = pixels.data[i+2] = value;
     pixels.data[i+3] = 255;
@@ -83,24 +85,25 @@ function makeAnisotropyTexture() {
 }
 
 function makeEnvironment(renderer) {
-  const faces = Array.from({length:6},(_,index) => {
-    const canvas = document.createElement('canvas');
-    canvas.width = canvas.height = 128;
-    const context = canvas.getContext('2d');
-    const gradient = context.createLinearGradient(0,0,128,128);
-    gradient.addColorStop(0,index===3?'#1c2329':'#909aa0');
-    gradient.addColorStop(.5,'#5a6268');
-    gradient.addColorStop(1,'#323940');
-    context.fillStyle = gradient;context.fillRect(0,0,128,128);
-    context.fillStyle = '#f5f7f9';context.fillRect(index%2?12:78,0,index===2?42:22,104);
-    context.fillStyle = '#151c22';context.fillRect(44,0,13,128);
-    context.fillStyle = '#bec7cc';context.fillRect(0,108,128,11);
-    return canvas;
+  // Original studio environment: broad softboxes and dark flags, no external HDR.
+  const canvas=document.createElement('canvas');canvas.width=512;canvas.height=256;
+  const context=canvas.getContext('2d');
+  const background=context.createLinearGradient(0,0,0,256);
+  background.addColorStop(0,'#cdd5dc');background.addColorStop(.42,'#697782');
+  background.addColorStop(.7,'#28323b');background.addColorStop(1,'#111b24');
+  context.fillStyle=background;context.fillRect(0,0,512,256);
+  [[62,20,46,151],[241,28,108,61],[407,48,29,132]].forEach(([x,y,w,h])=>{
+    const softbox=context.createLinearGradient(x-12,0,x+w+12,0);
+    softbox.addColorStop(0,'rgba(246,250,255,0)');softbox.addColorStop(.22,'#f6faff');
+    softbox.addColorStop(.78,'#f6faff');softbox.addColorStop(1,'rgba(246,250,255,0)');
+    context.fillStyle=softbox;context.fillRect(x-12,y,w+24,h);
   });
-  const source = new THREE.CubeTexture(faces);
+  context.fillStyle='#15202a';context.fillRect(160,76,24,132);
+  const source = new THREE.CanvasTexture(canvas);
+  source.mapping=THREE.EquirectangularReflectionMapping;
   source.colorSpace = THREE.SRGBColorSpace;source.needsUpdate = true;
   const generator = new THREE.PMREMGenerator(renderer);
-  try { return generator.fromCubemap(source); }
+  try { return generator.fromEquirectangular(source); }
   finally { generator.dispose();source.dispose(); }
 }
 
@@ -126,23 +129,25 @@ function makePiece(material,faceMaterial,geometry,index,details) {
   const back = new THREE.Mesh(details.back,faceMaterial);back.position.z=-.428;back.rotation.y=Math.PI;rotor.add(back);
   const rim = new THREE.Mesh(details.bore,material);rim.position.z=.449;rotor.add(rim);
   const line = new THREE.Mesh(details.line,material);line.position.z=.431;rotor.add(line);
-  pose.userData={rotor,material,faceMaterial,index,restX:[-3.42,0,3.42][index],joinedX:[-3.18,0,3.18][index]};
+  pose.userData={rotor,material,faceMaterial,index,restX:(index-1)*3.55,joinedX:(index-1)*PITCH_DISTANCE};
   return pose;
 }
 
-export async function initMechanism(stage) {
+export async function initMechanism(stage,{holdAssembly=false}={}) {
   if (!stage) throw new Error('mechanism-stage não encontrado');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const saveData = Boolean(navigator.connection?.saveData);
-  const stats = {renderer:'three-webgl',vertices:0,pieces:3,dpr:1,running:false,paused:false,fallback:false,frames:0,elapsedSeconds:0,loopDuration:LOOP_SECONDS,rotationAngles:[0,0,0],poseY:[0,0,0]};
+  const stats = {renderer:'three-webgl',vertices:0,pieces:3,dpr:1,running:false,paused:false,fallback:false,frames:0,elapsedSeconds:0,loopDuration:LOOP_SECONDS,rotationAngles:[0,0,0],poseY:[0,0,0],assembly:0,gearCenters:[],meshDistance:PITCH_DISTANCE,introState:holdAssembly?'ready':'assembling'};
   if (reduced || saveData) {
     stats.fallback=true;
-    return {stats,setProgress(){},setFocus(){},setPaused(){},dispose(){}};
+    return {stats,setProgress(){},setFocus(){},setPaused(){},reveal(){},dispose(){}};
   }
   let renderer,scene,camera,canvas,observer,resizeObserver;
   let animationFrame=0,disposed=false,visible=true,playing=true;
   let targetProgress=0,currentProgress=0,focusIndex=null,lastTime=0,lastRender=0;
-  const pointer={x:0,y:0},pieces=[],shadows=[],resources=new Set(),cleanups=[];
+  let introReleased=!holdAssembly,assemblyTime=0,hasCoupled=false;
+  const pointer={x:0,y:0},targetPointer={x:0,y:0},pieces=[],shadows=[],resources=new Set(),cleanups=[];
+  const gearRig=new THREE.Group(),worldPoint=new THREE.Vector3();
   const track=resource => {resources.add(resource);return resource;};
   function stop() {
     cancelAnimationFrame(animationFrame);animationFrame=0;lastTime=0;lastRender=0;stats.running=false;
@@ -153,7 +158,8 @@ export async function initMechanism(stage) {
     cleanups.forEach(cleanup=>cleanup());
     resources.forEach(resource=>resource.dispose());
     renderer?.dispose();renderer?.forceContextLoss?.();canvas?.remove();
-    stage.classList.remove('scene-ready');
+    stage.classList.remove('scene-ready','is-coupled');
+    stage.closest('.mechanism-wrap')?.classList.remove('has-live-mechanism');
   }
   function listen(target,event,listener,options) {
     target.addEventListener(event,listener,options);
@@ -166,14 +172,14 @@ export async function initMechanism(stage) {
     stats.dpr=Math.min(devicePixelRatio||1,innerWidth<720?1:1.5);
     renderer.setPixelRatio(stats.dpr);renderer.setClearColor(0,0);
     renderer.outputColorSpace=THREE.SRGBColorSpace;
-    renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
-    scene=new THREE.Scene();
+    renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.12;
+    scene=new THREE.Scene();scene.add(gearRig);
     camera=new THREE.OrthographicCamera(-6,6,1.8,-1.8,.1,100);
     camera.position.set(.6,1.9,14);camera.lookAt(0,-.02,0);
-    scene.add(new THREE.HemisphereLight(0xf3f6fa,0x373c40,1.25));
-    const key=new THREE.DirectionalLight(0xffffff,3.4);key.position.set(-3,6,7);scene.add(key);
-    const fill=new THREE.DirectionalLight(0xe6eff9,1.8);fill.position.set(6,1,4);scene.add(fill);
-    const edge=new THREE.DirectionalLight(0xffffff,2.3);edge.position.set(-5,2,-4);scene.add(edge);
+    scene.add(new THREE.HemisphereLight(0xf3f6fa,0x373c40,.85));
+    const key=new THREE.DirectionalLight(0xffffff,2.8);key.position.set(-3,6,7);scene.add(key);
+    const fill=new THREE.DirectionalLight(0xdceaff,1.05);fill.position.set(6,1,4);scene.add(fill);
+    const edge=new THREE.DirectionalLight(0xffffff,2.1);edge.position.set(-5,2,-4);scene.add(edge);
     const environment=track(makeEnvironment(renderer));scene.environment=environment.texture;
     const machining=track(makeMachiningTexture());
     const anisotropy=track(makeAnisotropyTexture());
@@ -184,11 +190,11 @@ export async function initMechanism(stage) {
       bore:track(new THREE.TorusGeometry(.302,.012,6,48)),
       line:track(new THREE.TorusGeometry(1.108,.004,5,64)),
     };
-    const colors=[0x72777a,0x2476ff,0xd3d9dd];
+    const colors=[0x626b73,0x1261f4,0xcdd6dd];
     colors.forEach((color,index)=>{
-      const material=track(new THREE.MeshStandardMaterial({color,metalness:index===1?.78:.92,roughness:index===0?.34:.27,envMapIntensity:1.2,vertexColors:true}));
-      const faceMaterial=track(new THREE.MeshPhysicalMaterial({color,metalness:index===1?.78:.92,roughness:.48,roughnessMap:machining,bumpMap:machining,bumpScale:.0015,anisotropy:.58,anisotropyMap:anisotropy,envMapIntensity:1.35}));
-      const piece=makePiece(material,faceMaterial,geometry,index,details);pieces.push(piece);scene.add(piece);
+      const material=track(new THREE.MeshStandardMaterial({color,metalness:index===1?.72:.96,roughness:index===0?.32:.26,envMapIntensity:1.15,vertexColors:true}));
+      const faceMaterial=track(new THREE.MeshPhysicalMaterial({color,metalness:index===1?.72:.96,roughness:.4,roughnessMap:machining,bumpMap:machining,bumpScale:.0008,anisotropy:.35,anisotropyMap:anisotropy,clearcoat:index===1?.22:0,clearcoatRoughness:.28,envMapIntensity:1.2}));
+      const piece=makePiece(material,faceMaterial,geometry,index,details);pieces.push(piece);gearRig.add(piece);
     });
     const shadowTexture=track(makeShadowTexture());
     const shadowMaterial=track(new THREE.MeshBasicMaterial({map:shadowTexture,transparent:true,depthWrite:false,opacity:.8,toneMapped:false}));
@@ -200,17 +206,27 @@ export async function initMechanism(stage) {
     scene.traverse(object=>{if(object.geometry)stats.vertices+=object.geometry.attributes.position.count;});
 
     function posePieces() {
+      const t=clamp01(assemblyTime/ASSEMBLY_SECONDS);
+      const assembled=t*t*t*(t*(t*6-15)+10);
+      stats.assembly=assembled;
+      // A shared rig keeps shafts parallel and pitch circles tangent during motion.
+      gearRig.rotation.set(pointer.y*.018,-.56+pointer.x*.024-currentProgress*.025,0);
+      gearRig.position.y=currentProgress*.045;
+      gearRig.updateMatrixWorld(true);
       pieces.forEach((piece,index)=>{
-        piece.position.x=THREE.MathUtils.lerp(piece.userData.restX,piece.userData.joinedX,currentProgress);
-        piece.rotation.y=-.56+index*.012+pointer.x*.035;
-        piece.rotation.x=pointer.y*.025;
+        piece.position.x=THREE.MathUtils.lerp(piece.userData.restX,piece.userData.joinedX,assembled);
         const active=focusIndex===null||focusIndex===index;
-        piece.scale.setScalar(active?1:.97);
-        shadows[index].position.x=piece.position.x+.05;
-        piece.userData.rotor.rotation.z=(index===1?-1:1)*(stats.elapsedSeconds%LOOP_SECONDS)/LOOP_SECONDS*TAU;
+        // Highlight through light, never resize meshing geometry.
+        piece.userData.faceMaterial.envMapIntensity=active?1.2:.78;
+        worldPoint.copy(piece.position).applyMatrix4(gearRig.matrixWorld);
+        shadows[index].position.x=worldPoint.x+.05;shadows[index].position.z=worldPoint.z;
+        piece.userData.rotor.rotation.z=(index===1?-1:1)*(stats.elapsedSeconds%LOOP_SECONDS)/LOOP_SECONDS*TAU+(index===1?Math.PI/18:0);
       });
       stats.rotationAngles=pieces.map(piece=>piece.userData.rotor.rotation.z);
-      stats.poseY=pieces.map(piece=>piece.rotation.y);
+      stats.poseY=pieces.map(()=>gearRig.rotation.y);
+      stats.gearCenters=pieces.map(piece=>({x:piece.position.x,y:piece.position.y,z:piece.position.z}));
+      key.position.x=-3+pointer.x*.8;scene.environmentRotation.y=pointer.x*.045;
+      if(t===1&&!hasCoupled){hasCoupled=true;stats.introState='complete';stage.classList.add('is-coupled');}
     }
     function render(time) {
       animationFrame=0;
@@ -219,11 +235,12 @@ export async function initMechanism(stage) {
       if (playing&&lastRender&&time-lastRender<interval-.7) {schedule();return;}
       const delta=lastTime?Math.min((time-lastTime)/1000,.1):0;
       lastTime=time;lastRender=time;
-      if (playing) stats.elapsedSeconds+=delta;
+      if (playing&&introReleased) {stats.elapsedSeconds+=delta;assemblyTime=Math.min(ASSEMBLY_SECONDS,assemblyTime+delta);}
+      pointer.x+=(targetPointer.x-pointer.x)*.075;pointer.y+=(targetPointer.y-pointer.y)*.075;
       currentProgress+=(targetProgress-currentProgress)*.085;
       if (Math.abs(targetProgress-currentProgress)<.0005) currentProgress=targetProgress;
       posePieces();renderer.render(scene,camera);stats.frames++;
-      if (playing||Math.abs(targetProgress-currentProgress)>.0005) schedule();
+      if ((playing&&introReleased)||Math.abs(targetProgress-currentProgress)>.0005) schedule();
       else stats.running=false;
     }
     function schedule() {
@@ -233,13 +250,19 @@ export async function initMechanism(stage) {
     }
     function resize() {
       const width=Math.max(1,stage.clientWidth),height=Math.max(1,stage.clientHeight),aspect=width/height;
-      const viewHeight=Math.max(3.65,10.3/aspect);
+      const viewHeight=Math.max(3.8,9.5/aspect);
       camera.left=-viewHeight*aspect/2;camera.right=viewHeight*aspect/2;camera.top=viewHeight/2;camera.bottom=-viewHeight/2;
       camera.updateProjectionMatrix();renderer.setSize(width,height,false);
       stats.dpr=Math.min(devicePixelRatio||1,innerWidth<720?1:1.5);renderer.setPixelRatio(stats.dpr);
+      camera.updateMatrixWorld();gearRig.updateMatrixWorld(true);
+      const wrap=stage.closest('.mechanism-wrap');
+      pieces.forEach((piece,index)=>{
+        worldPoint.set(piece.userData.joinedX,0,0).applyMatrix4(gearRig.matrixWorld).project(camera);
+        wrap?.style.setProperty('--piece-'+index+'-x',((worldPoint.x+1)*50).toFixed(3)+'%');
+      });
       schedule();
     }
-    resize();posePieces();renderer.render(scene,camera);stats.frames++;
+    posePieces();resize();renderer.render(scene,camera);stats.frames++;
     resizeObserver=new ResizeObserver(resize);resizeObserver.observe(stage);
     observer=new IntersectionObserver(entries=>{
       visible=entries[0]?.isIntersecting??true;
@@ -253,13 +276,15 @@ export async function initMechanism(stage) {
     listen(stage,'pointermove',event=>{
       if(event.pointerType==='touch')return;
       const rect=stage.getBoundingClientRect();
-      pointer.x=Math.max(-1,Math.min(1,(event.clientX-rect.left)/rect.width*2-1));
-      pointer.y=Math.max(-1,Math.min(1,(event.clientY-rect.top)/rect.height*2-1));schedule();
+      if(!playing)return;
+      targetPointer.x=Math.max(-1,Math.min(1,(event.clientX-rect.left)/rect.width*2-1));
+      targetPointer.y=Math.max(-1,Math.min(1,(event.clientY-rect.top)/rect.height*2-1));schedule();
     },{passive:true});
-    listen(stage,'pointerleave',()=>{pointer.x=pointer.y=0;schedule();});
-    stage.classList.add('scene-ready');schedule();
+    listen(stage,'pointerleave',()=>{targetPointer.x=targetPointer.y=0;if(playing)schedule();});
+    stage.classList.add('scene-ready');stage.closest('.mechanism-wrap')?.classList.add('has-live-mechanism');schedule();
     return {
       stats,
+      reveal(){introReleased=true;stats.introState=hasCoupled?'complete':'assembling';schedule();},
       setProgress(progress){targetProgress=clamp01(progress);schedule();},
       setFocus(index){focusIndex=Number.isInteger(index)&&index>=0&&index<3?index:null;schedule();},
       setPaused(paused){playing=!paused;stats.paused=Boolean(paused);stop();if(playing)schedule();},
