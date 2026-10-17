@@ -14,7 +14,8 @@
   let heroVariant=new URL(location.href).searchParams.get('abertura')==='original'?'original':'gears';
   let introDone=false, formStep=0, formCompleted=false, opener=null;
   let scene=null, sceneActive=false, sceneProgress=0, selectedPiece=null, sceneStarting=false, sceneAttempt=0;
-  let counterStarted=false, contactStarted=false, counterStart=0, elapsed=0, interval=0;
+  let counterStarted=false, contactStarted=false, counterStart=0, elapsed=0, counterSeconds=0, interval=0;
+  const illustrativeRate=10;
   let heroVisible=true, contactVisible=false, footerVisible=false, scrollFrame=0;
   const money=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
   const storage={
@@ -92,17 +93,17 @@
 
   function renderCounter(){
     $('#elapsed-time').textContent=[Math.floor(elapsed/3600),Math.floor(elapsed%3600/60),elapsed%60].map(n=>String(n).padStart(2,'0')).join(':');
-    $('#missed-value').textContent=money.format(elapsed);
+    $('#missed-value').textContent='- '+money.format(counterSeconds*illustrativeRate);
   }
   function stopCounter(){
-    if(counterStarted&&!contactStarted){elapsed=Math.floor((performance.now()-counterStart)/1000);renderCounter()}
+    if(counterStarted&&!contactStarted){counterSeconds=(performance.now()-counterStart)/1000;elapsed=Math.floor(counterSeconds);renderCounter()}
     contactStarted=true;clearInterval(interval);
     $('.counter-block .counter-foot').textContent='Você deu o próximo passo.';
   }
   const counterObserver=new IntersectionObserver(entries=>{
     if(!entries.some(e=>e.isIntersecting)||counterStarted||contactStarted)return;
-    counterStarted=true;counterStart=performance.now();elapsed=0;renderCounter();
-    interval=setInterval(()=>{elapsed=Math.floor((performance.now()-counterStart)/1000);renderCounter()},1000);
+    counterStarted=true;counterStart=performance.now();elapsed=0;counterSeconds=0;renderCounter();
+    interval=setInterval(()=>{counterSeconds=(performance.now()-counterStart)/1000;elapsed=Math.floor(counterSeconds);renderCounter()},50);
     counterObserver.disconnect();
   },{threshold:.25});
   counterObserver.observe($('.counter-grid'));
@@ -289,7 +290,7 @@
       $$('.section-kicker,.about h2,.product-heading,.results-heading,.inertia-intro,.faq-heading').forEach(e=>{
         gsap.fromTo(e,{y:20,opacity:.45},{y:0,opacity:1,duration:.65,ease:'power2.out',clearProps:'transform,opacity',scrollTrigger:{trigger:e,start:'top 93%',once:true}});
       });
-      gsap.to('.method-symbol',{rotation:40,ease:'none',scrollTrigger:{trigger:'#metodo',start:'top bottom',end:'bottom top',scrub:.8}});
+      gsap.fromTo('.method-art',{y:12},{y:-12,ease:'none',scrollTrigger:{trigger:'#metodo',start:'top bottom',end:'bottom top',scrub:.8}});
     });
     document.fonts.ready.then(()=>ScrollTrigger.refresh());
   }
@@ -298,10 +299,9 @@
     counterObserver.disconnect();visibility.disconnect();sections.disconnect();
   });
   window.engrenaPreview=Object.freeze({
-    version:'1.3',externalTransmission:false,
+    version:'1.4',externalTransmission:false,
     get heroVariant(){return heroVariant},
-    get counter(){return{started:counterStarted,elapsed,stopped:contactStarted}},
+    get counter(){return{started:counterStarted,elapsed,seconds:counterSeconds,rate:illustrativeRate,stopped:contactStarted}},
     get scene(){return scene?{...scene.stats,active:sceneActive}:{active:false}}
   });
 })();
-
