@@ -1,0 +1,22 @@
+/* Progressive enhancement for the chronological case charts. */
+.chart-inspector{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:13px;padding-top:11px;border-top:1px solid rgba(137,170,188,.2)}
+.chart-inspector button{border:1px solid rgba(137,170,188,.42);background:transparent;color:#a9c0ce;font:600 11px/1 var(--mono);letter-spacing:.04em;padding:8px 14px;min-height:44px;cursor:pointer;transition:background-color .2s ease,border-color .2s ease,color .2s ease}
+.chart-inspector button:hover,.chart-inspector button:focus-visible,.chart-inspector button.is-selected{background:#1261f4;border-color:#1261f4;color:#fff;outline:none}
+.chart-inspector button:focus-visible{box-shadow:0 0 0 2px #071018,0 0 0 4px #00cfff}
+.chart-inspector-readout{flex:1 0 100%;margin:2px 0 0;color:#d6e7ef;font:600 12px/1.4 var(--mono);letter-spacing:.02em}
+.chart-point,.chart-bar,.chart-value{transition:opacity .2s ease,filter .2s ease}
+.chart-point.is-inspected{fill:#00cfff;stroke:#fff;filter:drop-shadow(0 0 6px rgba(0,207,255,.65))}
+.chart-value.is-inspected{fill:#fff;font-weight:700}
+.chart-bar.is-inspected{fill:#00cfff;filter:drop-shadow(0 0 8px rgba(0,207,255,.3))}
+.chart-bar:not(.is-inspected){fill:#1261f4;filter:none}
+.chart-value[data-point-label="0"]{text-anchor:start}.chart-value[data-point-label="2"]{text-anchor:end}
+.case-study[data-report-state=ready] .chart-reading,.case-study[data-report-state=running] .chart-reading{opacity:.45;transform:translateY(5px)}
+.case-study .chart-reading{transition:opacity .4s ease,transform .4s ease}
+.report-chart{touch-action:pan-y}
+@media (max-width:600px){
+  .chart-grid text{font-size:20px}.chart-month,.chart-value{font-size:24px}
+  .chart-inspector{margin-top:10px;padding-top:9px;gap:5px}
+  .chart-inspector button{font-size:11px;padding:7px 13px}
+  .chart-inspector-readout{font-size:10px}
+}
+@media (prefers-reduced-motion:reduce){.chart-inspector button,.chart-point,.chart-bar,.chart-value,.case-study .chart-reading{transition:none}.case-study .chart-reading{opacity:1;transform:none}}

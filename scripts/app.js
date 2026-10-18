@@ -77,7 +77,12 @@
   function updateFloating(){
     $('#floating-contact').classList.toggle('is-visible',!heroVisible&&!contactVisible&&!footerVisible&&!$('dialog[open]'));
   }
-  function show(dialog){if(!dialog.open)dialog.showModal();$('#floating-contact').classList.remove('is-visible')}
+  function show(dialog){if(!dialog.open){dialog.showModal();entrance(dialog)}$('#floating-contact').classList.remove('is-visible')}
+  function entrance(element){
+    if(reduced.matches||!element?.animate)return;
+    element.getAnimations().forEach(animation=>animation.cancel());
+    element.animate([{opacity:.55,transform:'translateY(12px)'},{opacity:1,transform:'translateY(0)'}],{duration:260,easing:'cubic-bezier(.2,.8,.2,1)'});
+  }
   function close(dialog){if(dialog.open)dialog.close()}
   [contact,menu,privacy].forEach(dialog=>{
     dialog.addEventListener('click',e=>{
@@ -96,7 +101,10 @@
 
   function renderCounter(){
     $('#elapsed-time').textContent=[Math.floor(elapsed/3600),Math.floor(elapsed%3600/60),elapsed%60].map(n=>String(n).padStart(2,'0')).join(':');
-    $('#missed-value').textContent='- '+money.format(counterSeconds*illustrativeRate);
+    const value=$('#missed-value'),formatted='- '+money.format(counterSeconds*illustrativeRate);
+    if(value.textContent!==formatted){value.textContent=formatted;}
+    const bucket=Math.floor(counterSeconds/2);
+    if(!reduced.matches&&bucket!==Number(value.dataset.tick||0)){value.dataset.tick=String(bucket);value.animate([{transform:'translateY(2px)'},{transform:'translateY(0)'}],{duration:180,easing:'ease-out'});}
   }
   function stopCounter(){
     if(counterStarted&&!contactStarted){counterSeconds=(performance.now()-counterStart)/1000;elapsed=Math.floor(counterSeconds);renderCounter()}
@@ -118,7 +126,7 @@
       e.classList.toggle('active',i===step);
       if(i===step)e.setAttribute('aria-current','step');else e.removeAttribute('aria-current');
     });
-    if(focus)$('input,select',steps[step])?.focus({preventScroll:true});
+    if(focus){entrance(steps[step]);$('input,select',steps[step])?.focus({preventScroll:true});}
     if(step===1){
       const title=document.createElement('strong'),place=document.createElement('span');
       title.textContent=$('#workshop').value.trim();
@@ -157,7 +165,7 @@
     if(!validate(1))return;
     // Demonstration only: no external submission or durable contact storage.
     formCompleted=true;form.hidden=true;$('#form-success').hidden=false;
-    $('.form-steps').hidden=true;$('.demo-form-note').hidden=true;$('#form-success').focus({preventScroll:true});
+    $('.form-steps').hidden=true;$('.demo-form-note').hidden=true;entrance($('#form-success'));$('#form-success').focus({preventScroll:true});
   });
   $$('[data-open-contact]').forEach(button=>button.addEventListener('click',e=>{
     e.preventDefault();finishIntro();stopCounter();close(menu);opener=button;
@@ -173,10 +181,12 @@
 
   const tabs=$$('[role="tab"]');
   function activateTab(tab){
+    const changed=tab.getAttribute('aria-selected')!=='true';
     tabs.forEach(item=>{
       const selected=item===tab;item.setAttribute('aria-selected',String(selected));item.tabIndex=selected?0:-1;
       $('#'+item.getAttribute('aria-controls')).hidden=!selected;
     });
+    if(changed){const panel=$('#'+tab.getAttribute('aria-controls'));entrance(panel);panel.dispatchEvent(new CustomEvent('demo:activate',{bubbles:true}));}
   }
   tabs.forEach((tab,i)=>{
     tab.addEventListener('click',()=>activateTab(tab));
@@ -312,7 +322,7 @@
     counterObserver.disconnect();visibility.disconnect();sections.disconnect();
   });
   window.engrenaPreview=Object.freeze({
-    version:'1.6',externalTransmission:false,
+    version:'1.7',externalTransmission:false,
     get heroVariant(){return heroVariant},
     get counter(){return{started:counterStarted,elapsed,seconds:counterSeconds,rate:illustrativeRate,stopped:contactStarted}},
     get scene(){return scene?{...scene.stats,active:sceneActive}:{active:false}}

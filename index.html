@@ -17,18 +17,26 @@
   <link rel="stylesheet" href="sections.css?v=1.5">
   <link rel="stylesheet" href="desktop.css?v=1.5">
   <link rel="stylesheet" href="opening.css?v=1.6">
+  <link rel="stylesheet" href="experience.css?v=1.7">
+  <link rel="stylesheet" href="charts.css?v=1.7">
   <script>document.documentElement.classList.add('js');</script>
   <script defer src="vendor/gsap/gsap.min.js"></script>
   <script defer src="vendor/gsap/ScrollTrigger.min.js"></script>
-  <script defer src="scripts/app.js?v=1.6"></script>
-  <script defer src="scripts/reports.js?v=1.5"></script>
+  <script defer src="scripts/app.js?v=1.7"></script>
+  <script defer src="scripts/reports.js?v=1.7"></script>
+  <script defer src="scripts/experience.js?v=1.7"></script>
 </head>
 <body>
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
   <aside class="section-rail" aria-label="Progresso da página">
     <a href="#inicio" class="rail-brand" aria-label="Engrena, início"><img src="assets/brand/symbol.svg" alt="" width="27" height="27"></a>
-    <div class="rail-track"><div class="rail-progress" id="rail-progress"></div></div>
+    <nav class="rail-chapters" aria-label="Capítulos da página">
+      <a href="#metodo"><span>01</span><span class="rail-tooltip">Método 3V</span></a>
+      <a href="#chatengrena"><span>02</span><span class="rail-tooltip">ChatEngrena</span></a>
+      <a href="#resultados"><span>03</span><span class="rail-tooltip">Resultados</span></a>
+      <a href="#contato"><span>04</span><span class="rail-tooltip">Vamos conversar</span></a>
+    </nav><div class="rail-track"><div class="rail-progress" id="rail-progress"></div></div>
     <span class="rail-label" id="rail-label">Início</span>
     <span class="rail-bottom">BR</span>
   </aside>
@@ -80,27 +88,69 @@
 
         <div class="section-kicker"><span>Engrena para oficinas</span><span>Método 3V</span></div>
         <div class="method-intro"><h2>Mais clientes.<br>Mais controle. Mais retorno.</h2><p>Conectamos marketing, atendimento e gestão para sua oficina crescer com processo.</p></div>
-        <div class="method-stack">
-          <article class="method-card method-one"><span class="method-number">01</span><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="16" cy="8" r="4"/><path d="M8 28v-5a8 8 0 0 1 16 0v5M4 14a4 4 0 0 0 0 8v6M28 14a4 4 0 0 1 0 8v6"/></svg><h3>Vender mais.</h3><p>Atrair clientes com intenção de compra.</p><span class="method-card-foot">Campanhas, sites e criativos para as pessoas certas.</span></article>
-          <article class="method-card method-two"><span class="method-number">02</span><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 5h19v15H12l-6 5v-5H3zM22 11h7v16h-5l-5-4h-3"/></svg><h3>Vender melhor.</h3><p>Atender com agilidade e acompanhar cada oportunidade.</p><span class="method-card-foot">IA, processo comercial e visibilidade da operação.</span></article>
-          <article class="method-card method-three"><span class="method-number">03</span><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 28V17h5v11zM14 28V10h5v18zM24 28V3h5v25z"/></svg><h3>Vender com recorrência.</h3><p>Criar motivos para o cliente voltar.</p><span class="method-card-foot">Relacionamento que continua depois do serviço.</span></article>
+        <div class="method-journey">
+          <div class="method-visual">
+            <div class="method-visual-head"><span class="eyebrow">Um cliente. Uma jornada.</span><span class="method-position" aria-hidden="true">01 / 03</span></div>
+            <img class="method-machine" src="assets/images/section-light.webp" alt="Engrenagem metálica representando a conexão entre as três etapas do método." width="1000" height="1000" loading="lazy">
+            <ol class="method-route" aria-label="O caminho do cliente"><li class="is-current"><span>1V</span> Encontrar sua oficina</li><li><span>2V</span> Aprovar o orçamento</li><li><span>3V</span> Voltar para o próximo serviço</li></ol>
+            <div class="method-example"><span class="mini-label">Exemplo de jornada</span><strong id="method-example-title">Uma busca vira oportunidade.</strong><p id="method-example-copy">O cliente precisa revisar o carro. A campanha e o site ajudam sua oficina a ser encontrada.</p></div>
+          </div>
+          <div class="method-stack">
+            <article class="method-card method-one" data-method-step="0"><span class="method-number">1V</span><div><span class="eyebrow">Aquisição</span><h3>Vender mais.</h3><p>Atrair quem precisa dos serviços da sua oficina.</p><span class="method-card-foot">Campanhas, sites e criativos levam sua oferta até as pessoas certas. O atendimento recebe a oportunidade com contexto.</span><div class="method-example-inline"><span>Na prática</span>Uma pessoa busca revisão preventiva e encontra sua oficina.</div></div></article>
+            <article class="method-card method-two" data-method-step="1"><span class="method-number">2V</span><div><span class="eyebrow">Conversão</span><h3>Vender melhor.</h3><p>Dar uma próxima ação a cada oportunidade.</p><span class="method-card-foot">IA, equipe e processo comercial trabalham juntos. O orçamento tem um responsável e um acompanhamento definido.</span><div class="method-example-inline"><span>Na prática</span>A equipe responde, entende a necessidade e acompanha o orçamento.</div></div></article>
+            <article class="method-card method-three" data-method-step="2"><span class="method-number">3V</span><div><span class="eyebrow">Relacionamento</span><h3>Vender com recorrência.</h3><p>Continuar presente depois do serviço.</p><span class="method-card-foot">Histórico e rotinas de contato ajudam sua oficina a lembrar do cliente quando surge uma nova necessidade.</span><div class="method-example-inline"><span>Na prática</span>O serviço termina. O acompanhamento prepara a próxima revisão.</div></div></article>
+          </div>
         </div>
-        <div class="method-foot"><p>Assessoria ENGRENA e ChatEngrena.<br>Juntos ou conforme sua necessidade.</p><a class="text-cta" href="#contato" data-open-contact data-interest="assessoria">Entender a assessoria<span aria-hidden="true">+</span></a><img class="section-art method-art" src="assets/images/section-light.webp" alt="" width="1000" height="1000" loading="lazy" aria-hidden="true"></div>
+        <div class="method-foot"><p>Assessoria ENGRENA e ChatEngrena.<br>Juntos ou conforme sua necessidade.</p><a class="text-cta" href="#contato" data-open-contact data-interest="assessoria">Entender a assessoria<span aria-hidden="true">+</span></a></div>
       </section>
 
       <section class="product section-pad section-anchor" id="chatengrena" data-section="ChatEngrena">
         <img class="section-art product-art" src="assets/images/section-dark-complete.webp" alt="" width="1000" height="1000" loading="lazy" aria-hidden="true">
         <div class="product-layout">
-          <div class="product-demo"><div class="browser-chrome" aria-hidden="true"><i></i><i></i><i></i><span>ChatEngrena</span></div><div class="demo-topbar"><div class="demo-brand"><img src="assets/brand/symbol.svg" alt="" width="23" height="23"><strong>ChatEngrena</strong></div><span class="demo-label">Visão ilustrativa</span></div>
-            <div class="demo-tabs" role="tablist" aria-label="Explorar recursos do ChatEngrena"><button id="tab-atendimento" role="tab" aria-selected="true" aria-controls="panel-atendimento" data-tab="atendimento" type="button">Atendimento</button><button id="tab-gestao" role="tab" aria-selected="false" aria-controls="panel-gestao" data-tab="gestao" tabindex="-1" type="button">Gestão</button><button id="tab-retorno" role="tab" aria-selected="false" aria-controls="panel-retorno" data-tab="retorno" tabindex="-1" type="button">Recorrência</button></div>
-            <div class="demo-panel" id="panel-atendimento" role="tabpanel" aria-labelledby="tab-atendimento" tabindex="0">
-              <div class="demo-view-heading"><div><span class="mini-label">Sua operação em movimento</span><h3>Do contato ao serviço.</h3></div><span class="live-badge"><i class="status-dot" aria-hidden="true"></i> Fluxo organizado</span></div>
-              <div class="demo-workspace"><div class="demo-conversation"><span class="mini-label">Atendimento com IA</span><div class="conversation-message">Olá! Quero agendar uma revisão.<small>Cliente</small></div><div class="conversation-message reply">Claro. Qual o modelo e o ano do seu carro?<small>ChatEngrena</small></div><div class="conversation-input">Digite uma mensagem<span aria-hidden="true">+</span></div></div><div class="kanban"><div class="kanban-column"><h4><i class="column-dot cyan"></i>Novos contatos <span>02</span></h4><div class="kanban-ticket"><span class="ticket-tag">Google Ads</span><strong>Revisão preventiva</strong><small>Primeiro contato recebido</small><div class="ticket-bottom"><span>Cliente pessoa física</span><i>CL</i></div></div><div class="kanban-ticket"><span class="ticket-tag">WhatsApp</span><strong>Troca de pneus</strong><small>Cliente em qualificação</small><div class="ticket-bottom"><span>Atendimento com IA</span><i>IA</i></div></div></div><div class="kanban-column"><h4><i class="column-dot blue"></i>Em atendimento <span>01</span></h4><div class="kanban-ticket"><span class="ticket-tag">Orçamento</span><strong>Freios e suspensão</strong><small>Conversa atribuída à equipe</small><div class="ticket-bottom"><span>Próxima ação definida</span><i>EQ</i></div></div></div><div class="kanban-column"><h4><i class="column-dot green"></i>Agendados <span>01</span></h4><div class="kanban-ticket"><span class="ticket-tag">Confirmado</span><strong>Revisão completa</strong><small>Cliente com horário combinado</small><div class="ticket-bottom"><span>Oficina em sintonia</span><i>OK</i></div></div></div></div>
-              </div><div class="demo-notification"><span class="notification-icon" aria-hidden="true">+</span><div><strong>Um atendimento não precisa ficar para trás.</strong><p>A equipe enxerga a conversa, o responsável e a próxima etapa.</p></div></div>
+          <div class="product-demo">
+            <div class="browser-chrome" aria-hidden="true"><i></i><i></i><i></i><span>ChatEngrena</span></div>
+            <div class="demo-topbar"><div class="demo-brand"><img src="assets/brand/symbol.svg" alt="" width="23" height="23"><strong>ChatEngrena</strong></div><span class="demo-label">Visão ilustrativa</span></div>
+            <div class="demo-tabs" role="tablist" aria-label="Explorar recursos do ChatEngrena">
+              <button id="tab-atendimento" role="tab" aria-selected="true" aria-controls="panel-atendimento" type="button">Atendimento</button>
+              <button id="tab-processos" role="tab" aria-selected="false" aria-controls="panel-processos" tabindex="-1" type="button">Processos</button>
+              <button id="tab-gestao" role="tab" aria-selected="false" aria-controls="panel-gestao" tabindex="-1" type="button">Gestão</button>
+              <button id="tab-retorno" role="tab" aria-selected="false" aria-controls="panel-retorno" tabindex="-1" type="button">Recorrência</button>
             </div>
-            <div class="demo-panel" id="panel-gestao" role="tabpanel" aria-labelledby="tab-gestao" tabindex="0" hidden><div class="demo-view-heading"><div><span class="mini-label">Menos achismo, mais visão</span><h3>O dono acompanha.</h3></div><span class="demo-label">Exemplo de organização</span></div><div class="report-rows"><div><span>Faturamento</span><strong>Por período e por origem</strong><i class="report-bar" style="--bar:86%"></i></div><div><span>Atendimento</span><strong>Conversas e etapas do funil</strong><i class="report-bar" style="--bar:64%"></i></div><div><span>Desempenho</span><strong>Visão individual da equipe</strong><i class="report-bar" style="--bar:75%"></i></div></div><div class="demo-notification"><span class="notification-icon" aria-hidden="true">+</span><div><strong>O que acontece na oficina chega até você.</strong><p>Avisos pelo WhatsApp e relatórios para acompanhar a operação.</p></div></div></div>
-            <div class="demo-panel" id="panel-retorno" role="tabpanel" aria-labelledby="tab-retorno" tabindex="0" hidden><div class="demo-view-heading"><div><span class="mini-label">O serviço terminou. A relação continua.</span><h3>Pronto para voltar.</h3></div></div><ol class="return-flow"><li><span>1</span><div><strong>Serviço concluído</strong><p>O histórico organiza o ponto de partida.</p></div></li><li><span>2</span><div><strong>Acompanhamento estruturado</strong><p>Rotinas e contatos no momento adequado.</p></div></li><li><span>3</span><div><strong>Nova oportunidade</strong><p>Reativação para a próxima necessidade do cliente.</p></div></li></ol></div>
-            <p class="demo-disclaimer">Exemplo visual de fluxo. A interface final da plataforma pode variar.</p>
+            <div class="demo-panel" id="panel-atendimento" role="tabpanel" aria-labelledby="tab-atendimento" tabindex="0">
+              <div class="demo-view-heading"><div><span class="mini-label">Primeiro contato</span><h3>A conversa já começa com apoio.</h3></div></div>
+              <div class="service-thread">
+                <div class="thread-message" data-flow-item><span>Cliente / WhatsApp</span><p>Olá! Quero fazer a revisão do meu carro. Vocês podem me ajudar?</p></div>
+                <div class="thread-message thread-reply" data-flow-item><span>ChatEngrena / IA</span><p>Claro! Me conte o modelo, o ano e o que você percebeu no carro.</p></div>
+                <div class="thread-handoff" data-flow-item><span class="owner-avatar" aria-hidden="true">EQ</span><div><strong>Conversa atribuída à equipe</strong><p>O atendente recebe o histórico e continua a negociação.</p></div></div>
+              </div>
+              <p class="demo-benefit" data-flow-item><strong>Agilidade com contexto.</strong> A IA apoia o atendimento. Sua equipe conduz o que precisa de atenção humana.</p>
+            </div>
+            <div class="demo-panel" id="panel-processos" role="tabpanel" aria-labelledby="tab-processos" tabindex="0" hidden>
+              <div class="demo-view-heading"><div><span class="mini-label">Organização de processos</span><h3>Nenhuma conversa sem direção.</h3></div></div>
+              <div class="process-case"><span class="ticket-tag">Exemplo / Revisão preventiva</span><strong>Oportunidade acompanhada</strong><span>Etapa, responsável e próxima ação no mesmo lugar.</span></div>
+              <ol class="process-ledger">
+                <li data-flow-item><span class="process-index">01</span><div><strong>Contato recebido</strong><p>Conversa e origem organizadas.</p></div><span class="process-state">Entrada</span></li>
+                <li data-flow-item><span class="process-index">02</span><div><strong>Responsável definido</strong><p>A equipe sabe quem continua o atendimento.</p></div><span class="process-state">Equipe</span></li>
+                <li data-flow-item><span class="process-index">03</span><div><strong>Orçamento em acompanhamento</strong><p>Uma tarefa lembra a próxima ação.</p></div><span class="process-state">Tarefa</span></li>
+                <li data-flow-item><span class="process-index">04</span><div><strong>Agendamento confirmado</strong><p>O atendimento avança para a próxima etapa.</p></div><span class="process-state">Avanço</span></li>
+              </ol>
+              <p class="demo-benefit"><strong>Processo visível.</strong> O kanban organiza a jornada e ajuda a equipe a acompanhar cada oportunidade.</p>
+            </div>
+            <div class="demo-panel" id="panel-gestao" role="tabpanel" aria-labelledby="tab-gestao" tabindex="0" hidden>
+              <div class="demo-view-heading"><div><span class="mini-label">Visão para decidir</span><h3>O dono acompanha a operação.</h3></div></div>
+              <dl class="management-ledger">
+                <div data-flow-item><dt>Faturamento</dt><dd>Valores registrados por período e origem</dd></div>
+                <div data-flow-item><dt>Atendimento</dt><dd>Conversas e oportunidades por etapa</dd></div>
+                <div data-flow-item><dt>Equipe</dt><dd>Responsáveis e desempenho individual</dd></div>
+              </dl>
+              <div class="owner-notification" data-flow-item><span class="mini-label">Exemplo de aviso / WhatsApp</span><strong>Uma nova etapa foi concluída.</strong><p>Receba avisos da operação e consulte os relatórios sem depender de informações espalhadas.</p></div>
+            </div>
+            <div class="demo-panel" id="panel-retorno" role="tabpanel" aria-labelledby="tab-retorno" tabindex="0" hidden>
+              <div class="demo-view-heading"><div><span class="mini-label">Relacionamento que continua</span><h3>O fim do serviço é um novo começo.</h3></div></div>
+              <ol class="return-flow"><li data-flow-item><span>1</span><div><strong>Serviço concluído</strong><p>O histórico organiza o ponto de partida.</p></div></li><li data-flow-item><span>2</span><div><strong>Próximo contato planejado</strong><p>A equipe acompanha as rotinas de relacionamento.</p></div></li><li data-flow-item><span>3</span><div><strong>Nova necessidade, nova conversa</strong><p>Um contato relevante abre espaço para o próximo serviço.</p></div></li></ol>
+              <p class="demo-benefit"><strong>Sua oficina permanece presente.</strong> Recorrência começa com um relacionamento bem cuidado.</p>
+            </div>
+            <div class="demo-footer"><p class="demo-disclaimer">Exemplo de fluxo. A interface final pode variar.</p><button class="demo-replay" type="button" hidden>Rever fluxo<span aria-hidden="true">+</span></button></div>
           </div>
 
           <div class="product-copy"><span class="eyebrow">ChatEngrena</span><h2>Sua operação inteira.<br>Na mesma conversa.</h2><p class="product-intro">Uma plataforma para organizar os processos da oficina. Etapas claras, responsabilidades definidas e acompanhamento do primeiro contato ao próximo retorno.</p><div class="product-features"><div class="feature-row"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 5h19v15H12l-6 5v-5H3zM22 11h7v16h-5l-5-4h-3"/></svg><div><span>IA que agiliza respostas</span><p>Respostas com contexto para apoiar o trabalho de quem atende.</p></div></div><div class="feature-row"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M7 3l6 7-4 4c3 5 5 7 10 10l4-4 7 6c-2 5-5 6-9 4C10 26 4 20 2 10 1 6 3 4 7 3z"/></svg><div><span>Processos e atendimento organizados</span><p>Organize etapas e responsáveis no kanban. Receba e realize ligações no mesmo fluxo.</p></div></div><div class="feature-row"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="3" width="26" height="26" rx="1"/><path d="M3 11h26M13 11v18"/></svg><div><span>Faturamento e equipe à vista</span><p>Relatórios completos e avisos direto no seu WhatsApp.</p></div></div><div class="feature-row"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 28V17h5v11zM14 28V10h5v18zM24 28V3h5v25z"/></svg><div><span>Dados conectados aos anúncios</span><p>Integração via API com Google Ads e Meta Ads.</p></div></div></div><a href="#contato" class="button button-cyan" data-open-contact data-interest="chatengrena">Quero conhecer o ChatEngrena<span aria-hidden="true">+</span></a><p class="product-caption">Mais clareza para o dono. Mais apoio para a equipe.</p></div>
@@ -129,7 +179,7 @@
 
       <section class="inertia section-pad section-anchor" id="oportunidades" data-section="O próximo passo">
         <img class="section-art inertia-art" src="assets/images/section-light.webp" alt="" width="1000" height="1000" loading="lazy" aria-hidden="true">
-        <div class="inertia-intro"><span class="eyebrow">O custo de adiar</span><h2>Enquanto você adia,<br>as oportunidades passam.</h2><p>Um contato sem resposta.<br>Um orçamento esquecido.<br>Um cliente que não volta.</p></div>
+        <div class="inertia-intro"><span class="eyebrow">O custo de adiar</span><h2>Enquanto você adia,<br>as oportunidades passam.</h2><ol class="missed-opportunities"><li><span>01</span> Um contato sem resposta.</li><li><span>02</span> Um orçamento esquecido.</li><li><span>03</span> Um cliente que não volta.</li></ol></div>
         <div class="counter-grid" aria-live="off"><div class="counter-block"><strong id="elapsed-time">00:00:00</strong><span class="eyebrow">Tempo sem dar o próximo passo</span><span class="counter-foot">O relógio segue.</span></div><div class="counter-block counter-money"><strong id="missed-value">- R$ 0,00</strong><span class="eyebrow">Oportunidades deixadas na mesa</span><span class="counter-foot">A decisão pode começar agora.</span></div></div>
         <div class="inertia-bottom"><div><p>Tempo e valor começam juntos. O contador para ao iniciar o contato.</p><small>Ilustração proporcional de R$ 10 por segundo. O valor começa do zero e não representa uma perda medida da sua oficina.</small></div><a class="button button-ink" href="#contato" data-open-contact data-interest="ambos">Vamos mudar essa história<span aria-hidden="true">+</span></a></div>
       </section>
