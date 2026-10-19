@@ -1,14 +1,9 @@
 # ENGRENA
 
-Site de testes: https://cristianlf23.github.io/engrena-site/?v=1.8
+Site de testes: https://cristianlf23.github.io/engrena-site/?v=1.9
 
-Versão 1.8: revisão responsiva da direção Operação em sintonia. A geometria
-responsiva foi consolidada, com margens compartilhadas, arte em slots próprios
-e reflow da plataforma antes da largura de notebook. A abertura mantém
-engrenagens 3D refinadas em looping infinito; a abertura original segue em
-https://cristianlf23.github.io/engrena-site/?abertura=original.
+Versão 1.9: correção dos contadores ao abrir e fechar o formulário; parada somente após conclusão válida. Retorno e faturamento identificados como dados do mesmo cliente. Seção de feedbacks com três exemplos fictícios, explicitamente identificados.
 
-O Método 3V, ChatEngrena, cases de 2025, gráficos animados, contador ilustrativo
-e formulário demonstrativo permanecem no mesmo escopo. Formulário, WhatsApp e
-agenda não transmitem nem persistem contatos. Nenhuma dependência nova foi
-adicionada.
+Direção Operação em sintonia, abertura 3D em looping, comparação com as peças originais, Método 3V, ChatEngrena e gráficos históricos de 2025. O contador negativo vermelho é ilustrativo, a R$ 10 por segundo.
+
+Formulário, WhatsApp e agenda continuam demonstrativos, sem transmissão ou persistência de contatos. Feedbacks fictícios não são depoimentos reais. Nenhuma nova dependência.

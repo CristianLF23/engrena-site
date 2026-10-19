@@ -14,7 +14,7 @@
   let heroVariant=new URL(location.href).searchParams.get('abertura')==='original'?'original':'gears';
   let introDone=false, introTimeline=null, formStep=0, formCompleted=false, opener=null;
   let scene=null, sceneActive=false, sceneProgress=0, selectedPiece=null, sceneStarting=false, sceneAttempt=0;
-  let counterStarted=false, contactStarted=false, counterStart=0, elapsed=0, counterSeconds=0, interval=0;
+  let counterStarted=false, contactCompleted=false, counterStart=0, elapsed=0, counterSeconds=0, interval=0;
   const illustrativeRate=10;
   let heroVisible=true, contactVisible=false, footerVisible=false, scrollFrame=0;
   const money=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
@@ -107,12 +107,12 @@
     if(!reduced.matches&&bucket!==Number(value.dataset.tick||0)){value.dataset.tick=String(bucket);value.animate([{transform:'translateY(2px)'},{transform:'translateY(0)'}],{duration:180,easing:'ease-out'});}
   }
   function stopCounter(){
-    if(counterStarted&&!contactStarted){counterSeconds=(performance.now()-counterStart)/1000;elapsed=Math.floor(counterSeconds);renderCounter()}
-    contactStarted=true;clearInterval(interval);
-    $('.counter-block .counter-foot').textContent='Você deu o próximo passo.';
+    if(counterStarted&&!contactCompleted){counterSeconds=(performance.now()-counterStart)/1000;elapsed=Math.floor(counterSeconds);renderCounter()}
+    contactCompleted=true;clearInterval(interval);
+    $('.counter-block .counter-foot').textContent='Formulário concluído. Contadores pausados.';
   }
   const counterObserver=new IntersectionObserver(entries=>{
-    if(!entries.some(e=>e.isIntersecting)||counterStarted||contactStarted)return;
+    if(!entries.some(e=>e.isIntersecting)||counterStarted||contactCompleted)return;
     counterStarted=true;counterStart=performance.now();elapsed=0;counterSeconds=0;renderCounter();
     interval=setInterval(()=>{counterSeconds=(performance.now()-counterStart)/1000;elapsed=Math.floor(counterSeconds);renderCounter()},50);
     counterObserver.disconnect();
@@ -164,11 +164,11 @@
     if(formStep!==1){if(validate(0))setStep(1);return}
     if(!validate(1))return;
     // Demonstration only: no external submission or durable contact storage.
-    formCompleted=true;form.hidden=true;$('#form-success').hidden=false;
+    stopCounter();formCompleted=true;form.hidden=true;$('#form-success').hidden=false;
     $('.form-steps').hidden=true;$('.demo-form-note').hidden=true;entrance($('#form-success'));$('#form-success').focus({preventScroll:true});
   });
   $$('[data-open-contact]').forEach(button=>button.addEventListener('click',e=>{
-    e.preventDefault();finishIntro();stopCounter();close(menu);opener=button;
+    e.preventDefault();finishIntro();close(menu);opener=button;
     if(formCompleted){form.reset();formCompleted=false}
     form.hidden=false;$('#form-success').hidden=true;$('.form-steps').hidden=false;$('.demo-form-note').hidden=false;
     $('#interest').value=button.dataset.interest||'ambos';
@@ -322,9 +322,9 @@
     counterObserver.disconnect();visibility.disconnect();sections.disconnect();
   });
   window.engrenaPreview=Object.freeze({
-    version:'1.8',externalTransmission:false,
+    version:'1.9',externalTransmission:false,
     get heroVariant(){return heroVariant},
-    get counter(){return{started:counterStarted,elapsed,seconds:counterSeconds,rate:illustrativeRate,stopped:contactStarted}},
+    get counter(){return{started:counterStarted,elapsed,seconds:counterSeconds,rate:illustrativeRate,stopped:contactCompleted}},
     get scene(){return scene?{...scene.stats,active:sceneActive}:{active:false}}
   });
 })();
