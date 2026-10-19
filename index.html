@@ -13,18 +13,19 @@
   <link rel="preload" href="assets/fonts/BarlowCondensed-SemiBold.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="preload" href="assets/fonts/Barlow-Regular.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="preload" href="assets/images/gears-coupled.webp" as="image" type="image/webp" imagesrcset="assets/images/gears-coupled-small.webp 960w, assets/images/gears-coupled.webp 1920w" imagesizes="(max-width: 600px) calc(100vw - 28px), calc(100vw - 120px)" fetchpriority="high">
-  <link rel="stylesheet" href="styles.css?v=1.5">
-  <link rel="stylesheet" href="sections.css?v=1.5">
-  <link rel="stylesheet" href="desktop.css?v=1.5">
-  <link rel="stylesheet" href="opening.css?v=1.6">
-  <link rel="stylesheet" href="experience.css?v=1.7">
-  <link rel="stylesheet" href="charts.css?v=1.7">
+  <link rel="stylesheet" href="styles.css?v=1.8">
+  <link rel="stylesheet" href="sections.css?v=1.8">
+  <link rel="stylesheet" href="desktop.css?v=1.8">
+  <link rel="stylesheet" href="opening.css?v=1.8">
+  <link rel="stylesheet" href="experience.css?v=1.8">
+  <link rel="stylesheet" href="charts.css?v=1.8">
   <script>document.documentElement.classList.add('js');</script>
   <script defer src="vendor/gsap/gsap.min.js"></script>
   <script defer src="vendor/gsap/ScrollTrigger.min.js"></script>
-  <script defer src="scripts/app.js?v=1.7"></script>
-  <script defer src="scripts/reports.js?v=1.7"></script>
-  <script defer src="scripts/experience.js?v=1.7"></script>
+  <script defer src="scripts/app.js?v=1.8"></script>
+  <script defer src="scripts/reports.js?v=1.8"></script>
+  <script defer src="scripts/experience.js?v=1.8"></script>
+  <link rel="stylesheet" href="layout.css?v=1.8">
 </head>
 <body>
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
@@ -106,6 +107,7 @@
 
       <section class="product section-pad section-anchor" id="chatengrena" data-section="ChatEngrena">
         <img class="section-art product-art" src="assets/images/section-dark-complete.webp" alt="" width="1000" height="1000" loading="lazy" aria-hidden="true">
+        <div class="product-heading"><div><span class="eyebrow">ChatEngrena</span><h2>Sua operação inteira.<br>Na mesma conversa.</h2></div><p class="product-intro">Uma plataforma para organizar os processos da oficina. Etapas claras, responsabilidades definidas e acompanhamento do primeiro contato ao próximo retorno.</p></div>
         <div class="product-layout">
           <div class="product-demo">
             <div class="browser-chrome" aria-hidden="true"><i></i><i></i><i></i><span>ChatEngrena</span></div>
@@ -153,7 +155,7 @@
             <div class="demo-footer"><p class="demo-disclaimer">Exemplo de fluxo. A interface final pode variar.</p><button class="demo-replay" type="button" hidden>Rever fluxo<span aria-hidden="true">+</span></button></div>
           </div>
 
-          <div class="product-copy"><span class="eyebrow">ChatEngrena</span><h2>Sua operação inteira.<br>Na mesma conversa.</h2><p class="product-intro">Uma plataforma para organizar os processos da oficina. Etapas claras, responsabilidades definidas e acompanhamento do primeiro contato ao próximo retorno.</p><div class="product-features"><div class="feature-row"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 5h19v15H12l-6 5v-5H3zM22 11h7v16h-5l-5-4h-3"/></svg><div><span>IA que agiliza respostas</span><p>Respostas com contexto para apoiar o trabalho de quem atende.</p></div></div><div class="feature-row"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M7 3l6 7-4 4c3 5 5 7 10 10l4-4 7 6c-2 5-5 6-9 4C10 26 4 20 2 10 1 6 3 4 7 3z"/></svg><div><span>Processos e atendimento organizados</span><p>Organize etapas e responsáveis no kanban. Receba e realize ligações no mesmo fluxo.</p></div></div><div class="feature-row"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="3" width="26" height="26" rx="1"/><path d="M3 11h26M13 11v18"/></svg><div><span>Faturamento e equipe à vista</span><p>Relatórios completos e avisos direto no seu WhatsApp.</p></div></div><div class="feature-row"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 28V17h5v11zM14 28V10h5v18zM24 28V3h5v25z"/></svg><div><span>Dados conectados aos anúncios</span><p>Integração via API com Google Ads e Meta Ads.</p></div></div></div><a href="#contato" class="button button-cyan" data-open-contact data-interest="chatengrena">Quero conhecer o ChatEngrena<span aria-hidden="true">+</span></a><p class="product-caption">Mais clareza para o dono. Mais apoio para a equipe.</p></div>
+          <div class="product-copy"><div class="product-features"><div class="feature-row"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 5h19v15H12l-6 5v-5H3zM22 11h7v16h-5l-5-4h-3"/></svg><div><span>IA que agiliza respostas</span><p>Respostas com contexto para apoiar o trabalho de quem atende.</p></div></div><div class="feature-row"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M7 3l6 7-4 4c3 5 5 7 10 10l4-4 7 6c-2 5-5 6-9 4C10 26 4 20 2 10 1 6 3 4 7 3z"/></svg><div><span>Processos e atendimento organizados</span><p>Organize etapas e responsáveis no kanban. Receba e realize ligações no mesmo fluxo.</p></div></div><div class="feature-row"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="3" width="26" height="26" rx="1"/><path d="M3 11h26M13 11v18"/></svg><div><span>Faturamento e equipe à vista</span><p>Relatórios completos e avisos direto no seu WhatsApp.</p></div></div><div class="feature-row"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 28V17h5v11zM14 28V10h5v18zM24 28V3h5v25z"/></svg><div><span>Dados conectados aos anúncios</span><p>Integração via API com Google Ads e Meta Ads.</p></div></div></div><a href="#contato" class="button button-cyan" data-open-contact data-interest="chatengrena">Quero conhecer o ChatEngrena<span aria-hidden="true">+</span></a><p class="product-caption">Mais clareza para o dono. Mais apoio para a equipe.</p></div>
         </div>
       </section>
 
@@ -209,7 +211,7 @@
     <footer class="site-footer section-pad"><div class="footer-top"><div class="footer-intro"><span class="eyebrow">Soluções para oficinas</span><p>Da primeira conversa<br>ao próximo retorno.</p><small>Assessoria ENGRENA e ChatEngrena.<br>Atuação nacional.</small></div><nav aria-label="Navegação do rodapé"><strong>Explore</strong><a href="#metodo">Método 3V</a><a href="#engrena">Assessoria</a><a href="#chatengrena">ChatEngrena</a><a href="#resultados">Resultados</a><a href="#duvidas">Perguntas frequentes</a></nav><div class="footer-contact"><strong>Vamos conversar</strong><a href="#contato" data-open-contact data-interest="ambos">Iniciar contato</a><a href="#contato" data-open-contact data-interest="chatengrena">Conhecer a plataforma</a><p>Contatos demonstrativos<br>nesta versão de testes.</p></div><img class="section-art footer-art" src="assets/images/section-dark-complete.webp" alt="" width="1280" height="1280" loading="lazy" aria-hidden="true"></div><a href="#inicio" class="footer-wordmark" aria-label="Engrena, voltar ao início"><img src="assets/brand/wordmark-white.svg" alt="Engrena" width="390" height="100" loading="lazy"></a><div class="footer-bottom"><span>© 2026 Engrena</span><button id="privacy-trigger" type="button">Privacidade nesta prévia</button><a href="#inicio">Voltar ao início</a></div></footer>
   </div>
 
-  <a href="#contato" class="floating-contact" id="floating-contact" data-open-contact data-interest="ambos"><span>Vamos conversar</span><span aria-hidden="true">+</span></a>
+  <a href="#contato" class="floating-contact" id="floating-contact" aria-label="Conversar sobre minha oficina" data-open-contact data-interest="ambos"><span>Vamos conversar</span><span aria-hidden="true">+</span></a>
 
   <dialog id="menu-dialog" class="menu-dialog" aria-labelledby="menu-title"><div class="menu-dialog-top"><h2 id="menu-title">Explore a Engrena</h2><button class="close-button" type="button" data-close-menu>Fechar<span aria-hidden="true">+</span></button></div><nav aria-label="Menu principal"><a href="#engrena">A Engrena</a><a href="#metodo">Método 3V</a><a href="#chatengrena">ChatEngrena</a><a href="#resultados">Resultados</a><a href="#duvidas">Dúvidas</a></nav><a href="#contato" class="button button-blue" data-open-contact data-interest="ambos">Conversar sobre minha oficina<span aria-hidden="true">+</span></a><p>Especialistas em oficinas automotivas. Atendimento nacional.</p></dialog>
 

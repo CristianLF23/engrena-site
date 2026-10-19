@@ -89,7 +89,7 @@
     motion=gsap.matchMedia();
     motion.add('(prefers-reduced-motion: no-preference)',()=>{
       $$('.section-kicker').forEach(element=>gsap.to(element,{'--line-progress':1,duration:.9,ease:'power2.inOut',scrollTrigger:{trigger:element,start:'top 90%',once:true}}));
-      $$('.journey-block,.product-copy>.eyebrow,.product-copy>h2,.feature-row,.missed-opportunities li,.contact h2>span,.contact-bottom,.testimonial-slot').forEach(element=>{
+      $$('.journey-block,.product-heading,.feature-row,.missed-opportunities li,.contact h2>span,.contact-bottom,.testimonial-slot').forEach(element=>{
         gsap.fromTo(element,{y:18,opacity:.55},{y:0,opacity:1,duration:.65,ease:'power2.out',clearProps:'transform,opacity',scrollTrigger:{trigger:element,start:'top 94%',once:true}});
       });
     });
