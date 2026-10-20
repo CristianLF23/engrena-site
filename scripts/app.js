@@ -215,7 +215,7 @@
     const icon=document.createElement('span');icon.className='loop-control-icon';icon.classList.toggle('is-playing',playing);icon.setAttribute('aria-hidden','true');
     explore.append(icon);explore.setAttribute('aria-pressed',String(playing));
   }
-  function canAnimate(){return heroVariant==='gears'&&!reduced.matches&&!saveData&&location.protocol!=='file:'}
+  function canAnimate(){return heroVariant==='gears'&&!reduced.matches&&!document.documentElement.classList.contains('motion-paused')&&!saveData&&location.protocol!=='file:'}
   function selectHeroVariant(variant,updateURL=true){
     heroVariant=variant==='original'?'original':'gears';sceneAttempt++;
     scene?.dispose();scene=null;sceneActive=false;
@@ -243,7 +243,7 @@
     const attempt=++sceneAttempt;sceneStarting=true;
     explore.hidden=false;explore.disabled=true;explore.textContent='Preparando animação';
     try{
-      const {initMechanism}=await import(new URL('hero-scene.js?v=1.10',appURL));
+      const {initMechanism}=await import(new URL('hero-scene.js?v=1.11',appURL));
       if(attempt!==sceneAttempt||!canAnimate())return;
       const nextScene=await initMechanism(stage,{holdAssembly:!introDone});
       if(attempt!==sceneAttempt||!canAnimate()){nextScene.dispose();return}
@@ -288,6 +288,11 @@
       scene?.dispose();scene=null;sceneActive=false;stage.classList.remove('scene-ready');explore.hidden=true;finishIntro();
     }else{explore.hidden=!canAnimate();exploreLabel(false);if(introDone)startScene()}
   });
+  addEventListener('engrena:motion',event=>{
+    selectHeroVariant(heroVariant,false);
+    replayIntro.hidden=reduced.matches||saveData||event.detail.paused;
+    if(event.detail.paused)finishIntro(true);
+  });
 
   const visibility=new IntersectionObserver(entries=>{
     entries.forEach(e=>{
@@ -331,7 +336,7 @@
     counterObserver.disconnect();visibility.disconnect();sections.disconnect();
   });
   window.engrenaPreview=Object.freeze({
-    version:'1.10',externalTransmission:false,
+    version:'1.11',externalTransmission:false,
     get heroVariant(){return heroVariant},
     get counter(){return{started:counterStarted,elapsed,seconds:counterSeconds,rate:illustrativeRate,stopped:contactCompleted}},
     get scene(){return scene?{...scene.stats,active:sceneActive}:{active:false}}

@@ -1,9 +1,11 @@
 # ENGRENA
 
-Site de testes: https://cristianlf23.github.io/engrena-site/?v=1.10
+Site de testes: https://cristianlf23.github.io/engrena-site/?v=1.11
 
-Versão 1.10: primeira dobra escura, luz principal traseira e sombras reais projetadas no chão à frente das engrenagens. Os mesmos corpos dentados giratórios projetam suas sombras. Um mapa de sombras, 1024 desktop e 512 mobile; geometria abaixo de 35 mil vértices.
+Versão 1.11. Mobile com abertura limpa, segunda dobra simplificada e jornadas em azul. Segmentos em faixa contínua e feedbacks fictícios identificados em cards horizontais. Gráficos e números sincronizados e iniciados antes.
 
-Abertura visível a cada carregamento, com botão Rever abertura e opção de pular. Sem bloqueio do CTA. Pausa, loop infinito de 12 segundos, imagem estática transparente em movimento reduzido, economia de dados e falta de WebGL. Comparação original preservada.
+Engrenagem original com 24 dentes evolventes, flange cromada, miolo mecânico, parafusos, sulcos e detalhes azuis. Percurso vinculado ao scroll e encaixe no contador, seguido de giro lento infinito. 35.404 vértices, 47 chamadas de desenho, teto de 30 renders por segundo e imagem alternativa da mesma cena. Movimento reduzido, economia de dados, falha de WebGL e perda de contexto usam alternativa estática.
 
-Método 3V, ChatEngrena, cases históricos, contadores e formulário preservados. Contatos continuam demonstrativos. Os feedbacks são fictícios e identificados. Nenhuma dependência nova.
+Grafismos autorais de engrenagem no CTA e interrogação no FAQ; logo no rodapé. Controles de comparação e replay apenas no desktop. Pausa dos efeitos contínuos dentro do Menu. Nenhuma dependência nova.
+
+Conteúdo histórico, marca, Método 3V, plataforma de organização de processos ChatEngrena e formulário preservados. Formulário e contatos são demonstrativos, sem transmissão de dados.
