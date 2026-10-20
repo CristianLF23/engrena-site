@@ -124,7 +124,7 @@ function makePiece(material,faceMaterial,geometry,index,details) {
   const pose = new THREE.Group();pose.name=`mechanism-piece-${index}`;
   const rotor = new THREE.Group();rotor.name=`mechanism-rotor-${index}`;
   pose.add(rotor);
-  rotor.add(new THREE.Mesh(geometry,material));
+  const body=new THREE.Mesh(geometry,material);body.castShadow=true;rotor.add(body);
   rotor.add(new THREE.Mesh(details.face,faceMaterial));
   const back = new THREE.Mesh(details.back,faceMaterial);back.position.z=-.428;back.rotation.y=Math.PI;rotor.add(back);
   const rim = new THREE.Mesh(details.bore,material);rim.position.z=.449;rotor.add(rim);
@@ -137,7 +137,7 @@ export async function initMechanism(stage,{holdAssembly=false}={}) {
   if (!stage) throw new Error('mechanism-stage não encontrado');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const saveData = Boolean(navigator.connection?.saveData);
-  const stats = {renderer:'three-webgl',vertices:0,pieces:3,dpr:1,running:false,paused:false,fallback:false,frames:0,elapsedSeconds:0,loopDuration:LOOP_SECONDS,rotationAngles:[0,0,0],poseY:[0,0,0],assembly:0,gearCenters:[],meshDistance:PITCH_DISTANCE,introState:holdAssembly?'ready':'assembling'};
+  const stats = {renderer:'three-webgl',vertices:0,pieces:3,dpr:1,running:false,paused:false,fallback:false,frames:0,elapsedSeconds:0,loopDuration:LOOP_SECONDS,rotationAngles:[0,0,0],poseY:[0,0,0],assembly:0,gearCenters:[],meshDistance:PITCH_DISTANCE,introState:holdAssembly?'ready':'assembling',shadows:{type:'geometry',casters:3,receivers:1,mapSize:0}};
   if (reduced || saveData) {
     stats.fallback=true;
     return {stats,setProgress(){},setFocus(){},setPaused(){},reveal(){},dispose(){}};
@@ -172,12 +172,18 @@ export async function initMechanism(stage,{holdAssembly=false}={}) {
     stats.dpr=Math.min(devicePixelRatio||1,innerWidth<720?1:1.5);
     renderer.setPixelRatio(stats.dpr);renderer.setClearColor(0,0);
     renderer.outputColorSpace=THREE.SRGBColorSpace;
+    renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;
     renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.12;
     scene=new THREE.Scene();scene.add(gearRig);
     camera=new THREE.OrthographicCamera(-6,6,1.8,-1.8,.1,100);
-    camera.position.set(.6,1.9,14);camera.lookAt(0,-.02,0);
+    camera.position.set(.6,2.2,14);camera.lookAt(0,-.12,0);
     scene.add(new THREE.HemisphereLight(0xf3f6fa,0x373c40,.85));
-    const key=new THREE.DirectionalLight(0xffffff,2.8);key.position.set(-3,6,7);scene.add(key);
+    // Rear key light: its rays travel down and toward the visitor (+Z).
+    const key=new THREE.DirectionalLight(0xe6f3ff,3.4);key.position.set(-1,10,-4.5);scene.add(key);
+    key.castShadow=true;key.shadow.mapSize.setScalar(innerWidth<720?512:1024);
+    Object.assign(key.shadow.camera,{left:-7,right:7,top:6,bottom:-6,near:1,far:28});
+    key.shadow.camera.updateProjectionMatrix();key.shadow.bias=-.0001;key.shadow.normalBias=.012;key.shadow.radius=3;
+    cleanups.push(()=>key.shadow.dispose());
     const fill=new THREE.DirectionalLight(0xdceaff,1.05);fill.position.set(6,1,4);scene.add(fill);
     const edge=new THREE.DirectionalLight(0xffffff,2.1);edge.position.set(-5,2,-4);scene.add(edge);
     const environment=track(makeEnvironment(renderer));scene.environment=environment.texture;
@@ -196,6 +202,10 @@ export async function initMechanism(stage,{holdAssembly=false}={}) {
       const faceMaterial=track(new THREE.MeshPhysicalMaterial({color,metalness:index===1?.72:.96,roughness:.4,roughnessMap:machining,bumpMap:machining,bumpScale:.0008,anisotropy:.35,anisotropyMap:anisotropy,clearcoat:index===1?.22:0,clearcoatRoughness:.28,envMapIntensity:1.2}));
       const piece=makePiece(material,faceMaterial,geometry,index,details);pieces.push(piece);gearRig.add(piece);
     });
+    // The same rotating tooth geometry casts the shadow. No separate shadow
+    // animation can drift from the rotor or keep moving while it is paused.
+    const receiver=new THREE.Mesh(track(new THREE.PlaneGeometry(16,14)),track(new THREE.ShadowMaterial({color:0x000000,opacity:.62,depthWrite:false})));
+    receiver.name='mechanism-ground-shadow';receiver.rotation.x=-Math.PI/2;receiver.position.y=-1.535;receiver.receiveShadow=true;scene.add(receiver);
     const shadowTexture=track(makeShadowTexture());
     const shadowMaterial=track(new THREE.MeshBasicMaterial({map:shadowTexture,transparent:true,depthWrite:false,opacity:.8,toneMapped:false}));
     const shadowGeometry=track(new THREE.PlaneGeometry(3.5,1.6));
@@ -225,7 +235,7 @@ export async function initMechanism(stage,{holdAssembly=false}={}) {
       stats.rotationAngles=pieces.map(piece=>piece.userData.rotor.rotation.z);
       stats.poseY=pieces.map(()=>gearRig.rotation.y);
       stats.gearCenters=pieces.map(piece=>({x:piece.position.x,y:piece.position.y,z:piece.position.z}));
-      key.position.x=-3+pointer.x*.8;scene.environmentRotation.y=pointer.x*.045;
+      key.position.x=-1+pointer.x*.4;scene.environmentRotation.y=pointer.x*.045;
       if(t===1&&!hasCoupled){hasCoupled=true;stats.introState='complete';stage.classList.add('is-coupled');}
     }
     function render(time) {
@@ -254,6 +264,9 @@ export async function initMechanism(stage,{holdAssembly=false}={}) {
       camera.left=-viewHeight*aspect/2;camera.right=viewHeight*aspect/2;camera.top=viewHeight/2;camera.bottom=-viewHeight/2;
       camera.updateProjectionMatrix();renderer.setSize(width,height,false);
       stats.dpr=Math.min(devicePixelRatio||1,innerWidth<720?1:1.5);renderer.setPixelRatio(stats.dpr);
+      const shadowSize=innerWidth<720?512:1024;
+      if(key.shadow.mapSize.x!==shadowSize){key.shadow.map?.dispose();key.shadow.map=null;key.shadow.mapSize.setScalar(shadowSize);}
+      stats.shadows.mapSize=shadowSize;
       camera.updateMatrixWorld();gearRig.updateMatrixWorld(true);
       const wrap=stage.closest('.mechanism-wrap');
       pieces.forEach((piece,index)=>{
@@ -284,6 +297,7 @@ export async function initMechanism(stage,{holdAssembly=false}={}) {
     stage.classList.add('scene-ready');stage.closest('.mechanism-wrap')?.classList.add('has-live-mechanism');schedule();
     return {
       stats,
+      prepareIntro(){introReleased=false;assemblyTime=0;hasCoupled=false;stats.elapsedSeconds=0;stats.introState='ready';playing=true;stats.paused=false;stage.classList.remove('is-coupled');posePieces();schedule();},
       reveal(){introReleased=true;stats.introState=hasCoupled?'complete':'assembling';schedule();},
       setProgress(progress){targetProgress=clamp01(progress);schedule();},
       setFocus(index){focusIndex=Number.isInteger(index)&&index>=0&&index<3?index:null;schedule();},

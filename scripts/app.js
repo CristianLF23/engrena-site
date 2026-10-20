@@ -12,16 +12,12 @@
   const gearImage={src:mechanismImage.getAttribute('src'),srcset:mechanismImage.getAttribute('srcset'),alt:mechanismImage.alt};
   const originalImage={src:'assets/images/mechanism-original.webp',srcset:'assets/images/mechanism-original-small.webp 1086w, assets/images/mechanism-original.webp 2172w',alt:'Três peças industriais originais em aço escuro, azul e prata, em perspectiva oblíqua.'};
   let heroVariant=new URL(location.href).searchParams.get('abertura')==='original'?'original':'gears';
-  let introDone=false, introTimeline=null, formStep=0, formCompleted=false, opener=null;
+  let introDone=false, introTimeline=null, introRun=0, formStep=0, formCompleted=false, opener=null;
   let scene=null, sceneActive=false, sceneProgress=0, selectedPiece=null, sceneStarting=false, sceneAttempt=0;
   let counterStarted=false, contactCompleted=false, counterStart=0, elapsed=0, counterSeconds=0, interval=0;
   const illustrativeRate=10;
   let heroVisible=true, contactVisible=false, footerVisible=false, scrollFrame=0;
   const money=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
-  const storage={
-    get(){try{return sessionStorage.getItem('engrena-intro-v1.6')}catch{return null}},
-    set(){try{sessionStorage.setItem('engrena-intro-v1.6','seen')}catch{}}
-  };
   async function loadSymbols(){
     const mounts=$$('[data-brand-symbol]');
     try{
@@ -57,17 +53,18 @@
   }
   function finishIntro(immediate=false){
     if(introDone){if(immediate){introTimeline?.kill();loader.hidden=true;}return;}introDone=true;
+    const completedRun=introRun;
     loader.classList.add('leaving');loader.setAttribute('aria-hidden','true');
-    $('#skip-intro').disabled=true;$('#skip-intro').tabIndex=-1;storage.set();
+    $('#skip-intro').disabled=true;$('#skip-intro').tabIndex=-1;
     scene?.reveal();
     if(immediate||reduced.matches){loader.hidden=true;return;}
     if(window.gsap){
-      introTimeline=gsap.timeline({defaults:{ease:'power2.inOut'},onComplete:()=>{loader.hidden=true;}})
+      introTimeline=gsap.timeline({defaults:{ease:'power2.inOut'},onComplete:()=>{if(completedRun===introRun)loader.hidden=true;}})
         .to('.loader-top,.loader-bottom,.loader-caption',{opacity:0,duration:.18},0)
         .to('.loader-symbol',{rotationY:-32,scale:.6,opacity:0,duration:.55},0)
         .to(loader,{backgroundColor:'rgba(242,246,248,0)',duration:.4},.08);
     }
-    setTimeout(()=>{loader.hidden=true;},650);
+    setTimeout(()=>{if(completedRun===introRun)loader.hidden=true;},650);
   }
   const symbolsReady=loadSymbols();
   $('#skip-intro').addEventListener('click',()=>finishIntro(true));
@@ -75,6 +72,7 @@
   loader.addEventListener('focusout',()=>{if(!loader.contains(document.activeElement))finishIntro(true);});
 
   function updateFloating(){
+    document.body.classList.toggle('hero-is-visible',heroVisible);
     $('#floating-contact').classList.toggle('is-visible',!heroVisible&&!contactVisible&&!footerVisible&&!$('dialog[open]'));
   }
   function show(dialog){if(!dialog.open){dialog.showModal();entrance(dialog)}$('#floating-contact').classList.remove('is-visible')}
@@ -245,7 +243,7 @@
     const attempt=++sceneAttempt;sceneStarting=true;
     explore.hidden=false;explore.disabled=true;explore.textContent='Preparando animação';
     try{
-      const {initMechanism}=await import(new URL('hero-scene.js?v=1.6',appURL));
+      const {initMechanism}=await import(new URL('hero-scene.js?v=1.10',appURL));
       if(attempt!==sceneAttempt||!canAnimate())return;
       const nextScene=await initMechanism(stage,{holdAssembly:!introDone});
       if(attempt!==sceneAttempt||!canAnimate()){nextScene.dispose();return}
@@ -260,20 +258,31 @@
     }
   }
   const sceneReady=startScene();
-  if(reduced.matches||saveData||storage.get()==='seen'||heroVariant==='original')finishIntro(true);
-  else{
-    loader.setAttribute('aria-hidden','false');$('#skip-intro').tabIndex=0;
-    Promise.race([
-      Promise.allSettled([document.fonts.ready,mechanismImage.decode?.(),symbolsReady,sceneReady]),
-      new Promise(resolve=>setTimeout(resolve,1600))
-    ]).then(()=>finishIntro());
+  const replayIntro=$('#replay-intro');
+  function beginIntro(replay=false){
+    const run=++introRun;
+    if(reduced.matches||saveData||heroVariant==='original'){finishIntro(true);return;}
+    introTimeline?.kill();introDone=false;
+    loader.querySelectorAll('.loader-top,.loader-bottom,.loader-caption,.loader-symbol').forEach(el=>el.removeAttribute('style'));
+    loader.removeAttribute('style');loader.classList.remove('leaving');loader.hidden=false;
+    loader.setAttribute('aria-hidden','false');$('#skip-intro').disabled=false;$('#skip-intro').tabIndex=0;
+    if(replay){scene?.prepareIntro();exploreLabel(true);}
+    // Cached assets must not make the brand entry imperceptibly short.
+    Promise.all([
+      Promise.race([Promise.allSettled([document.fonts.ready,mechanismImage.decode?.(),symbolsReady,sceneReady]),new Promise(resolve=>setTimeout(resolve,1800))]),
+      new Promise(resolve=>setTimeout(resolve,1400))
+    ]).then(()=>{if(run===introRun)finishIntro();});
+    setTimeout(()=>{if(run===introRun)finishIntro(true);},3400);
   }
-  setTimeout(()=>finishIntro(true),2300);
+  replayIntro.hidden=reduced.matches||saveData;
+  replayIntro.addEventListener('click',()=>{if(heroVariant==='original')selectHeroVariant('gears');beginIntro(true);});
+  beginIntro();
   explore.addEventListener('click',()=>{
     if(!sceneActive){startScene();return}
     const pause=!scene.stats.paused;scene.setPaused(pause);exploreLabel(!pause);
   });
   reduced.addEventListener('change',()=>{
+    replayIntro.hidden=reduced.matches||saveData;
     if(reduced.matches){
       sceneAttempt++;
       scene?.dispose();scene=null;sceneActive=false;stage.classList.remove('scene-ready');explore.hidden=true;finishIntro();
@@ -322,7 +331,7 @@
     counterObserver.disconnect();visibility.disconnect();sections.disconnect();
   });
   window.engrenaPreview=Object.freeze({
-    version:'1.9',externalTransmission:false,
+    version:'1.10',externalTransmission:false,
     get heroVariant(){return heroVariant},
     get counter(){return{started:counterStarted,elapsed,seconds:counterSeconds,rate:illustrativeRate,stopped:contactCompleted}},
     get scene(){return scene?{...scene.stats,active:sceneActive}:{active:false}}

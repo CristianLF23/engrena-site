@@ -12,22 +12,22 @@
   <link rel="icon" type="image/svg+xml" href="assets/brand/favicon.svg">
   <link rel="preload" href="assets/fonts/BarlowCondensed-SemiBold.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="preload" href="assets/fonts/Barlow-Regular.ttf" as="font" type="font/ttf" crossorigin>
-  <link rel="preload" href="assets/images/gears-coupled.webp" as="image" type="image/webp" imagesrcset="assets/images/gears-coupled-small.webp 960w, assets/images/gears-coupled.webp 1920w" imagesizes="(max-width: 600px) calc(100vw - 28px), calc(100vw - 120px)" fetchpriority="high">
-  <link rel="stylesheet" href="styles.css?v=1.9">
-  <link rel="stylesheet" href="sections.css?v=1.9">
-  <link rel="stylesheet" href="desktop.css?v=1.9">
-  <link rel="stylesheet" href="opening.css?v=1.9">
-  <link rel="stylesheet" href="experience.css?v=1.9">
-  <link rel="stylesheet" href="charts.css?v=1.9">
+  <link rel="preload" href="assets/images/gears-dark.webp" as="image" type="image/webp" imagesrcset="assets/images/gears-dark-small.webp 960w, assets/images/gears-dark.webp 1920w" imagesizes="(max-width: 600px) calc(100vw - 28px), calc(100vw - 120px)" fetchpriority="high">
+  <link rel="stylesheet" href="styles.css?v=1.10">
+  <link rel="stylesheet" href="sections.css?v=1.10">
+  <link rel="stylesheet" href="desktop.css?v=1.10">
+  <link rel="stylesheet" href="opening.css?v=1.10">
+  <link rel="stylesheet" href="experience.css?v=1.10">
+  <link rel="stylesheet" href="charts.css?v=1.10">
   <script>document.documentElement.classList.add('js');</script>
   <script defer src="vendor/gsap/gsap.min.js"></script>
   <script defer src="vendor/gsap/ScrollTrigger.min.js"></script>
-  <script defer src="scripts/app.js?v=1.9"></script>
-  <script defer src="scripts/reports.js?v=1.9"></script>
-  <script defer src="scripts/experience.js?v=1.9"></script>
-  <link rel="stylesheet" href="layout.css?v=1.9">
+  <script defer src="scripts/app.js?v=1.10"></script>
+  <script defer src="scripts/reports.js?v=1.10"></script>
+  <script defer src="scripts/experience.js?v=1.10"></script>
+  <link rel="stylesheet" href="layout.css?v=1.10">
 </head>
-<body>
+<body class="hero-is-visible">
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
   <aside class="section-rail" aria-label="Progresso da página">
@@ -44,7 +44,7 @@
 
   <div class="site-shell">
     <header class="site-header" id="site-header">
-      <a class="brand-link" href="#inicio" aria-label="Engrena, início"><img src="assets/brand/logo-color.svg" alt="Engrena" width="173" height="42"></a>
+      <a class="brand-link" href="#inicio" aria-label="Engrena, início"><img src="assets/brand/logo-white.svg" alt="Engrena" width="173" height="42"></a>
       <span class="header-context">Especialistas em oficinas automotivas</span>
       <div class="hero-comparison" id="hero-comparison"><span class="comparison-label">Teste de abertura</span><div class="hero-variants" role="group" aria-label="Comparar as duas aberturas"><button id="hero-gears" type="button" data-hero-variant="gears" aria-pressed="true" aria-controls="inicio">Engrenagens 3D</button><button id="hero-original" type="button" data-hero-variant="original" aria-pressed="false" aria-controls="inicio">Peças originais</button></div></div>
       <div class="header-actions"><a class="header-contact" href="#contato" data-open-contact data-interest="ambos">Vamos conversar<span class="small-plus" aria-hidden="true">+</span></a><button class="menu-trigger" id="menu-trigger" type="button" aria-haspopup="dialog" aria-controls="menu-dialog">Menu<span class="menu-lines" aria-hidden="true"></span></button></div>
@@ -64,14 +64,14 @@
             <button class="mechanism-label" data-piece="2" type="button" aria-pressed="false"><span>3V</span><strong>Fazer voltar</strong><small>Para a próxima revisão</small></button>
           </div>
           <div class="mechanism-stage" id="mechanism-stage">
-            <img class="mechanism-image" src="assets/images/gears-coupled.webp" srcset="assets/images/gears-coupled-small.webp 960w, assets/images/gears-coupled.webp 1920w" sizes="(max-width: 600px) calc(100vw - 28px), calc(100vw - 120px)" alt="Três engrenagens robustas em aço escuro, azul e prata, em perspectiva oblíqua e encaixadas para trabalhar juntas." width="1920" height="768" fetchpriority="high" decoding="async">
+            <img class="mechanism-image" src="assets/images/gears-dark.webp" srcset="assets/images/gears-dark-small.webp 960w, assets/images/gears-dark.webp 1920w" sizes="(max-width: 600px) calc(100vw - 28px), calc(100vw - 120px)" alt="Três engrenagens robustas em aço escuro, azul e prata, em perspectiva oblíqua e encaixadas para trabalhar juntas." width="1920" height="768" fetchpriority="high" decoding="async">
             <div class="intro-loader" id="intro-loader" aria-hidden="true">
               <div class="loader-top"><span>Engrena / Método 3V</span><button type="button" id="skip-intro" tabindex="-1">Pular abertura</button></div>
               <div class="loader-center"><div class="loader-symbol" data-brand-symbol><img src="assets/brand/symbol.svg" alt="" width="128" height="128"></div><span class="loader-caption">Atrair. Atender. Fazer voltar.</span></div>
               <div class="loader-bottom"><span class="loader-progress" aria-hidden="true"><i></i></span><span>Estratégia / Tecnologia / Operação</span><span id="loader-state">Em sintonia</span></div>
             </div>
           </div>
-          <div class="mechanism-toolbar"><p id="mechanism-description" aria-live="polite">O crescimento acontece quando as três peças se conectam.</p><button id="explore-mechanism" type="button" aria-pressed="false" aria-controls="mechanism-stage" hidden>Ativar animação<span class="loop-control-icon" aria-hidden="true"></span></button></div>
+          <div class="mechanism-toolbar"><p id="mechanism-description" aria-live="polite">O crescimento acontece quando as três peças se conectam.</p><div class="mechanism-controls"><button id="replay-intro" type="button" aria-controls="intro-loader">Rever abertura</button><button id="explore-mechanism" type="button" aria-pressed="false" aria-controls="mechanism-stage" hidden>Ativar animação<span class="loop-control-icon" aria-hidden="true"></span></button></div></div>
         </div>
 
         <div class="hero-dock"><p>Coloque sua operação<br class="mobile-only"> em sintonia.</p><a href="#contato" class="dock-cta" data-open-contact data-interest="ambos"><span>Conversar sobre minha oficina</span><span class="cta-square" aria-hidden="true">+</span></a></div>

@@ -42,3 +42,47 @@
  .js .mechanism-stage .intro-loader{display:none!important}
  .mechanism-stage .loader-symbol [data-gear-piece]{animation:none}
 }
+
+/* Rear-lit steel on a dark stage. These colors are scoped to the opening. */
+:root{--hero-surface:#0b1720;--hero-copy:#bdd0df;--hero-rule:#355266}
+.site-header,.hero{background:var(--hero-surface);color:#f2f6f8}
+.site-header{border-bottom-color:#1b3547}
+.site-header .header-contact .small-plus{color:var(--cyan)}
+.site-header .menu-trigger{background:#19303f;border:1px solid #355366;color:#f2f6f8}
+.site-header .hero-comparison,.site-header .hero-variants{border-color:var(--hero-rule)}
+.site-header .comparison-label{color:#a8c1d2}
+.site-header .hero-variants button{color:#c4d6e3}
+.site-header .hero-variants button[aria-pressed=true]{background:var(--cyan);color:#071018}
+.site-header .hero-variants button:hover:not([aria-pressed=true]){background:#1b3749}
+.site-header :is(a,button):focus-visible,.hero :is(a,button):focus-visible{outline-color:var(--cyan)}
+.hero h1{color:#f2f6f8}.hero h1 span{color:#c0d5e4}
+.hero .hero-intro p,.hero .mechanism-label small,.hero .hero-footnote{color:var(--hero-copy)}
+.hero .hero-intro .eyebrow,.hero .mechanism-label span{color:var(--cyan)}
+.hero .hero-intro .status-dot{background:var(--cyan)}
+.hero .mechanism-label{color:#edf6fc}.hero .mechanism-label::after{background:#7ca0b7;opacity:.65}
+.hero .mechanism-label:is(:hover,[aria-pressed=true]){color:var(--cyan)}
+.hero .mechanism-stage::before{inset:10% 0 -4%;background:radial-gradient(ellipse at 50% 72%,rgb(61 91 111 / .38),transparent 68%)}
+.hero .mechanism-toolbar p,.hero .mechanism-wrap:has(.is-coupled) .mechanism-toolbar p{color:#b8cddd}
+.hero .mechanism-toolbar button{color:#c9deeb;border-color:#486b82}
+.hero .mechanism-toolbar button:hover{color:var(--cyan)}
+.hero .dock-cta{background:#030b11}
+.hero[data-hero-variant=original] .mechanism-stage{background:var(--paper)}
+body.hero-is-visible .section-rail{background:var(--hero-surface);color:#d4e3ed;border-color:#2a4659}
+body.hero-is-visible .rail-chapters a,body.hero-is-visible .rail-label{color:#b7cddd}
+body.hero-is-visible .rail-chapters a[aria-current]{color:var(--cyan);border-color:#5d91ab;background:#133348}
+body.hero-is-visible .rail-chapters a:hover{background:#193a50;color:var(--cyan)}
+body.hero-is-visible .rail-track{background:#2e495b}
+body.hero-is-visible .rail-progress{background:var(--cyan)}
+body.hero-is-visible .rail-bottom{color:var(--cyan)}
+.hero .mechanism-stage .intro-loader{background:var(--hero-surface);color:white;animation:loader-safety 0s 4s forwards}
+.hero .mechanism-stage .loader-top,.hero .mechanism-stage .loader-bottom,.hero .mechanism-stage .loader-caption{color:#bfd3e1}
+.hero .mechanism-stage .loader-top>span{color:var(--cyan)}
+.hero .mechanism-stage .loader-top button{color:#d8e7f0;border-color:#587d94}
+.hero .mechanism-stage .loader-progress{background:#355368}
+.hero .mechanism-stage .loader-progress i{background:var(--cyan)}
+.hero .mechanism-stage .loader-symbol{animation:hero-brand-reveal 1.15s var(--ease) both}
+.hero .mechanism-stage .intro-loader.leaving{background:transparent}
+.hero .mechanism-stage .intro-loader.leaving .loader-symbol{animation:none}
+.hero .mechanism-stage .loader-symbol [data-gear-piece]{animation-duration:1.05s}
+@keyframes hero-brand-reveal{from{opacity:.2;transform:perspective(700px) rotateY(-65deg) rotateZ(-24deg) scale(.86)}to{opacity:1;transform:perspective(700px) rotateY(0) rotateZ(0) scale(1)}}
+html:not(.js) #replay-intro{display:none}

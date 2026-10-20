@@ -1,9 +1,9 @@
 # ENGRENA
 
-Site de testes: https://cristianlf23.github.io/engrena-site/?v=1.9
+Site de testes: https://cristianlf23.github.io/engrena-site/?v=1.10
 
-Versão 1.9: correção dos contadores ao abrir e fechar o formulário; parada somente após conclusão válida. Retorno e faturamento identificados como dados do mesmo cliente. Seção de feedbacks com três exemplos fictícios, explicitamente identificados.
+Versão 1.10: primeira dobra escura, luz principal traseira e sombras reais projetadas no chão à frente das engrenagens. Os mesmos corpos dentados giratórios projetam suas sombras. Um mapa de sombras, 1024 desktop e 512 mobile; geometria abaixo de 35 mil vértices.
 
-Direção Operação em sintonia, abertura 3D em looping, comparação com as peças originais, Método 3V, ChatEngrena e gráficos históricos de 2025. O contador negativo vermelho é ilustrativo, a R$ 10 por segundo.
+Abertura visível a cada carregamento, com botão Rever abertura e opção de pular. Sem bloqueio do CTA. Pausa, loop infinito de 12 segundos, imagem estática transparente em movimento reduzido, economia de dados e falta de WebGL. Comparação original preservada.
 
-Formulário, WhatsApp e agenda continuam demonstrativos, sem transmissão ou persistência de contatos. Feedbacks fictícios não são depoimentos reais. Nenhuma nova dependência.
+Método 3V, ChatEngrena, cases históricos, contadores e formulário preservados. Contatos continuam demonstrativos. Os feedbacks são fictícios e identificados. Nenhuma dependência nova.
