@@ -12,7 +12,7 @@
   const gearImage={src:mechanismImage.getAttribute('src'),srcset:mechanismImage.getAttribute('srcset'),alt:mechanismImage.alt};
   const originalImage={src:'assets/images/mechanism-original.webp',srcset:'assets/images/mechanism-original-small.webp 1086w, assets/images/mechanism-original.webp 2172w',alt:'Três peças industriais originais em aço escuro, azul e prata, em perspectiva oblíqua.'};
   let heroVariant=new URL(location.href).searchParams.get('abertura')==='original'?'original':'gears';
-  let introDone=false, introTimeline=null, introRun=0, formStep=0, formCompleted=false, opener=null;
+  let introDone=false, introTimeline=null, introRun=0, introReturnFocus=null, introTimer=0, formStep=0, formCompleted=false, opener=null;
   let scene=null, sceneActive=false, sceneProgress=0, selectedPiece=null, sceneStarting=false, sceneAttempt=0;
   let counterStarted=false, contactCompleted=false, counterStart=0, elapsed=0, counterSeconds=0, interval=0;
   const illustrativeRate=10;
@@ -51,25 +51,41 @@
       });
     }
   }
-  function finishIntro(immediate=false){
-    if(introDone){if(immediate){introTimeline?.kill();loader.hidden=true;}return;}introDone=true;
-    const completedRun=introRun;
-    loader.classList.add('leaving');loader.setAttribute('aria-hidden','true');
-    $('#skip-intro').disabled=true;$('#skip-intro').tabIndex=-1;
-    scene?.reveal();
-    if(immediate||reduced.matches){loader.hidden=true;return;}
-    if(window.gsap){
-      introTimeline=gsap.timeline({defaults:{ease:'power2.inOut'},onComplete:()=>{if(completedRun===introRun)loader.hidden=true;}})
-        .to('.loader-top,.loader-bottom,.loader-caption',{opacity:0,duration:.18},0)
-        .to('.loader-symbol',{rotationY:-32,scale:.6,opacity:0,duration:.55},0)
-        .to(loader,{backgroundColor:'rgba(242,246,248,0)',duration:.4},.08);
+  function releaseIntro(run) {
+    if(run!==introRun)return;
+    const hadIntroFocus=loader.contains(document.activeElement);
+    clearTimeout(introTimer);
+    clearTimeout(window.engrenaIntroBoot?.timer);
+    loader.hidden=true;loader.setAttribute('aria-hidden','true');
+    document.documentElement.classList.remove('intro-active');
+    $('#site-content').inert=false;
+    const skip=$('#skip-intro');skip.disabled=true;skip.tabIndex=-1;
+    if(hadIntroFocus){
+      const target=introReturnFocus?.isConnected&&!loader.contains(introReturnFocus)?introReturnFocus:$('.brand-link');
+      target?.focus({preventScroll:true});
     }
-    setTimeout(()=>{if(completedRun===introRun)loader.hidden=true;},650);
+    window.ScrollTrigger?.refresh();
+  }
+  function finishIntro(immediate=false){
+    const completedRun=introRun;
+    if(introDone){if(immediate){introTimeline?.kill();releaseIntro(completedRun);}return;}
+    introDone=true;clearTimeout(introTimer);
+    scene?.reveal();
+    if(immediate||reduced.matches){introTimeline?.kill();releaseIntro(completedRun);return;}
+    loader.classList.add('leaving');
+    if(window.gsap){
+      introTimeline=gsap.timeline({defaults:{ease:'power3.inOut'},onComplete:()=>releaseIntro(completedRun)})
+        .to(loader.querySelectorAll('.loader-top,.loader-bottom'),{opacity:0,duration:.25},0)
+        .to(loader.querySelector('.loader-identity'),{scale:.92,opacity:0,duration:.45},0)
+        .to(loader,{clipPath:'inset(0% 0% 100% 0%)',duration:.78},.08);
+    }else if(loader.animate){
+      const exit=loader.animate([{clipPath:'inset(0% 0% 0% 0%)'},{clipPath:'inset(0% 0% 100% 0%)'}],{duration:650,easing:'cubic-bezier(.76,0,.24,1)',fill:'forwards'});
+      exit.finished.then(()=>releaseIntro(completedRun)).catch(()=>{});
+    }
+    setTimeout(()=>releaseIntro(completedRun),1000);
   }
   const symbolsReady=loadSymbols();
-  $('#skip-intro').addEventListener('click',()=>finishIntro(true));
-  // Keyboard access and contact never wait for the decorative opening.
-  loader.addEventListener('focusout',()=>{if(!loader.contains(document.activeElement))finishIntro(true);});
+  window.engrenaSkipIntro=()=>finishIntro(true);
 
   function updateFloating(){
     document.body.classList.toggle('hero-is-visible',heroVisible);
@@ -243,7 +259,7 @@
     const attempt=++sceneAttempt;sceneStarting=true;
     explore.hidden=false;explore.disabled=true;explore.textContent='Preparando animação';
     try{
-      const {initMechanism}=await import(new URL('hero-scene.js?v=1.11',appURL));
+      const {initMechanism}=await import(new URL('hero-scene.js?v=1.12',appURL));
       if(attempt!==sceneAttempt||!canAnimate())return;
       const nextScene=await initMechanism(stage,{holdAssembly:!introDone});
       if(attempt!==sceneAttempt||!canAnimate()){nextScene.dispose();return}
@@ -261,19 +277,29 @@
   const replayIntro=$('#replay-intro');
   function beginIntro(replay=false){
     const run=++introRun;
-    if(reduced.matches||saveData||heroVariant==='original'){finishIntro(true);return;}
-    introTimeline?.kill();introDone=false;
-    loader.querySelectorAll('.loader-top,.loader-bottom,.loader-caption,.loader-symbol').forEach(el=>el.removeAttribute('style'));
+    introTimeline?.kill();clearTimeout(introTimer);
+    if(reduced.matches||saveData||document.documentElement.classList.contains('motion-paused')||(!replay&&window.engrenaIntroBoot?.expired)){
+      introDone=false;finishIntro(true);return;
+    }
+    introReturnFocus=document.activeElement instanceof HTMLElement&&document.activeElement!==document.body?document.activeElement:null;
+    introDone=false;
+    loader.getAnimations().forEach(animation=>animation.cancel());
+    loader.querySelectorAll('.loader-top,.loader-bottom,.loader-caption,.loader-symbol,.loader-identity').forEach(el=>el.removeAttribute('style'));
     loader.removeAttribute('style');loader.classList.remove('leaving');loader.hidden=false;
+    document.documentElement.classList.add('intro-active');
+    $('#site-content').inert=true;
     loader.setAttribute('aria-hidden','false');$('#skip-intro').disabled=false;$('#skip-intro').tabIndex=0;
+    loader.focus({preventScroll:true});
+    // Restart CSS brand choreography, including cached/replayed introductions.
+    loader.querySelectorAll('.loader-symbol,.loader-symbol svg,.loader-symbol [data-gear-piece],.loader-progress i').forEach(el=>el.getAnimations().forEach(animation=>{animation.cancel();animation.play();}));
     if(replay){scene?.prepareIntro();exploreLabel(true);}
-    // Cached assets must not make the brand entry imperceptibly short.
     Promise.all([
-      Promise.race([Promise.allSettled([document.fonts.ready,mechanismImage.decode?.(),symbolsReady,sceneReady]),new Promise(resolve=>setTimeout(resolve,1800))]),
-      new Promise(resolve=>setTimeout(resolve,1400))
+      Promise.race([Promise.allSettled([document.fonts.ready,mechanismImage.decode?.(),symbolsReady,sceneReady]),new Promise(resolve=>setTimeout(resolve,3000))]),
+      new Promise(resolve=>setTimeout(resolve,1900))
     ]).then(()=>{if(run===introRun)finishIntro();});
-    setTimeout(()=>{if(run===introRun)finishIntro(true);},3400);
+    introTimer=setTimeout(()=>{if(run===introRun)finishIntro(true);},4100);
   }
+
   replayIntro.hidden=reduced.matches||saveData;
   replayIntro.addEventListener('click',()=>{if(heroVariant==='original')selectHeroVariant('gears');beginIntro(true);});
   beginIntro();
@@ -336,7 +362,7 @@
     counterObserver.disconnect();visibility.disconnect();sections.disconnect();
   });
   window.engrenaPreview=Object.freeze({
-    version:'1.11',externalTransmission:false,
+    version:'1.12',externalTransmission:false,
     get heroVariant(){return heroVariant},
     get counter(){return{started:counterStarted,elapsed,seconds:counterSeconds,rate:illustrativeRate,stopped:contactCompleted}},
     get scene(){return scene?{...scene.stats,active:sceneActive}:{active:false}}

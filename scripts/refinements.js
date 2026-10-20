@@ -76,7 +76,7 @@
     loading = true;
     const attempt = ++generation;
     try {
-      const { initPremiumGear } = await import(new URL('premium-gear.js?v=1.11', scriptURL));
+      const { initPremiumGear } = await import(new URL('premium-gear.js?v=1.12', scriptURL));
       if (attempt !== generation || motionOff()) return;
       const candidate = await initPremiumGear(host);
       if (attempt !== generation || motionOff()) { candidate.dispose(); return; }

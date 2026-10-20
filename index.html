@@ -13,23 +13,57 @@
   <link rel="preload" href="assets/fonts/BarlowCondensed-SemiBold.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="preload" href="assets/fonts/Barlow-Regular.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="preload" href="assets/images/gears-dark.webp" as="image" type="image/webp" imagesrcset="assets/images/gears-dark-small.webp 960w, assets/images/gears-dark.webp 1920w" imagesizes="(max-width: 600px) calc(100vw - 28px), calc(100vw - 120px)" fetchpriority="high">
-  <link rel="stylesheet" href="styles.css?v=1.11">
-  <link rel="stylesheet" href="sections.css?v=1.11">
-  <link rel="stylesheet" href="desktop.css?v=1.11">
-  <link rel="stylesheet" href="opening.css?v=1.11">
-  <link rel="stylesheet" href="experience.css?v=1.11">
-  <link rel="stylesheet" href="charts.css?v=1.11">
-  <script>document.documentElement.classList.add('js');</script>
+  <link rel="stylesheet" href="styles.css?v=1.12">
+  <link rel="stylesheet" href="sections.css?v=1.12">
+  <link rel="stylesheet" href="desktop.css?v=1.12">
+  <link rel="stylesheet" href="opening.css?v=1.12">
+  <link rel="stylesheet" href="experience.css?v=1.12">
+  <link rel="stylesheet" href="charts.css?v=1.12">
+  <script>
+    (() => {
+      const root = document.documentElement;
+      root.classList.add('js');
+      const boot = window.engrenaIntroBoot = { expired: false, timer: 0 };
+      window.engrenaForceReveal = () => {
+        boot.expired = true;
+        clearTimeout(boot.timer);
+        root.classList.remove('intro-active');
+        const overlay = document.getElementById('intro-loader');
+        if (overlay) { overlay.hidden = true; overlay.setAttribute('aria-hidden', 'true'); }
+        const content = document.getElementById('site-content');
+        if (content) content.inert = false;
+      };
+      window.engrenaSkipIntro = window.engrenaForceReveal;
+      const limited = matchMedia('(prefers-reduced-motion: reduce)').matches || navigator.connection?.saveData;
+      if (!limited) {
+        root.classList.add('intro-active');
+        boot.timer = setTimeout(() => window.engrenaSkipIntro(), 6000);
+      }
+      document.addEventListener('keydown', event => {
+        if (!root.classList.contains('intro-active')) return;
+        if (event.key === 'Escape') { event.preventDefault(); window.engrenaSkipIntro(); }
+        if (event.key === 'Tab') { event.preventDefault(); document.getElementById('skip-intro')?.focus({ preventScroll: true }); }
+      }, true);
+    })();
+  </script>
   <script defer src="vendor/gsap/gsap.min.js"></script>
   <script defer src="vendor/gsap/ScrollTrigger.min.js"></script>
-  <script defer src="scripts/app.js?v=1.11"></script>
-  <script defer src="scripts/reports.js?v=1.11"></script>
-  <script defer src="scripts/experience.js?v=1.11"></script>
-  <link rel="stylesheet" href="layout.css?v=1.11">
-  <link rel="stylesheet" href="refinements.css?v=1.11">
-  <script defer src="scripts/refinements.js?v=1.11"></script>
+  <script defer src="scripts/app.js?v=1.12"></script>
+  <script defer src="scripts/reports.js?v=1.12"></script>
+  <script defer src="scripts/experience.js?v=1.12"></script>
+  <link rel="stylesheet" href="layout.css?v=1.12">
+  <link rel="stylesheet" href="refinements.css?v=1.12">
+  <link rel="stylesheet" href="fullscreen-intro.css?v=1.12">
+  <script defer src="scripts/refinements.js?v=1.12"></script>
 </head>
 <body class="hero-is-visible">
+  <div class="intro-loader" id="intro-loader" role="dialog" aria-modal="true" aria-label="Introdução da ENGRENA" aria-hidden="true" tabindex="-1">
+    <div class="loader-top"><span>Engrena / Método 3V</span><button type="button" id="skip-intro" tabindex="-1" onclick="window.engrenaSkipIntro()">Pular introdução<span aria-hidden="true">+</span></button></div>
+    <div class="loader-center"><div class="loader-identity"><div class="loader-symbol" data-brand-symbol><img src="assets/brand/symbol.svg" alt="" width="160" height="160"></div><img class="loader-wordmark" src="assets/brand/wordmark-white.svg" alt="Engrena" width="260" height="67"><p class="loader-caption">Atrair. Atender. Fazer voltar.</p></div></div>
+    <div class="loader-bottom"><span class="loader-progress" aria-hidden="true"><i></i></span><span>Estratégia / Tecnologia / Operação</span><span id="loader-state" role="status">Preparando a experiência</span></div>
+  </div>
+  <div id="site-content">
+
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
   <aside class="section-rail" aria-label="Progresso da página">
@@ -67,11 +101,7 @@
           </div>
           <div class="mechanism-stage" id="mechanism-stage">
             <img class="mechanism-image" src="assets/images/gears-dark.webp" srcset="assets/images/gears-dark-small.webp 960w, assets/images/gears-dark.webp 1920w" sizes="(max-width: 600px) calc(100vw - 28px), calc(100vw - 120px)" alt="Três engrenagens robustas em aço escuro, azul e prata, em perspectiva oblíqua e encaixadas para trabalhar juntas." width="1920" height="768" fetchpriority="high" decoding="async">
-            <div class="intro-loader" id="intro-loader" aria-hidden="true">
-              <div class="loader-top"><span>Engrena / Método 3V</span><button type="button" id="skip-intro" tabindex="-1">Pular abertura</button></div>
-              <div class="loader-center"><div class="loader-symbol" data-brand-symbol><img src="assets/brand/symbol.svg" alt="" width="128" height="128"></div><span class="loader-caption">Atrair. Atender. Fazer voltar.</span></div>
-              <div class="loader-bottom"><span class="loader-progress" aria-hidden="true"><i></i></span><span>Estratégia / Tecnologia / Operação</span><span id="loader-state">Em sintonia</span></div>
-            </div>
+
           </div>
           <div class="mechanism-toolbar"><p id="mechanism-description" aria-live="polite">O crescimento acontece quando as três peças se conectam.</p><div class="mechanism-controls"><button id="replay-intro" type="button" aria-controls="intro-loader">Rever abertura</button><button id="explore-mechanism" type="button" aria-pressed="false" aria-controls="mechanism-stage" hidden>Ativar animação<span class="loop-control-icon" aria-hidden="true"></span></button></div></div>
         </div>
@@ -80,7 +110,7 @@
         <div class="hero-footnote"><span>Assessoria especializada + software próprio</span><span>Atuação nacional</span></div>
       </section>
 
-      <div class="segments-band" role="img" aria-label="Atendemos mecânicas, autocenters, lojas de pneus, especialistas e redes em todo o Brasil"><div class="segments-track" aria-hidden="true"><div class="segments-group"><span>Mecânicas<i aria-hidden="true">✳</i></span><span>Autocenters<i aria-hidden="true">✳</i></span><span>Lojas de pneus<i aria-hidden="true">✳</i></span><span>Especialistas<i aria-hidden="true">✳</i></span><span>Redes<i aria-hidden="true">✳</i></span></div><div class="segments-group"><span>Mecânicas<i aria-hidden="true">✳</i></span><span>Autocenters<i aria-hidden="true">✳</i></span><span>Lojas de pneus<i aria-hidden="true">✳</i></span><span>Especialistas<i aria-hidden="true">✳</i></span><span>Redes<i aria-hidden="true">✳</i></span></div></div></div>
+      <div class="segments-band" role="img" aria-label="Atendemos mecânicas, autocenters, lojas de pneus, especialistas e redes em todo o Brasil"><div class="segments-track" aria-hidden="true"><div class="segments-group"><span>Mecânicas<i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 19"/></svg></i></span><span>Autocenters<i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 19"/></svg></i></span><span>Lojas de pneus<i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 19"/></svg></i></span><span>Especialistas<i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 19"/></svg></i></span><span>Redes<i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 19"/></svg></i></span></div><div class="segments-group"><span>Mecânicas<i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 19"/></svg></i></span><span>Autocenters<i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 19"/></svg></i></span><span>Lojas de pneus<i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 19"/></svg></i></span><span>Especialistas<i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 19"/></svg></i></span><span>Redes<i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 19"/></svg></i></span></div></div></div>
 
       <section class="about section-pad section-anchor" id="engrena" data-section="A Engrena">
         <div class="section-kicker"><span>Somos a Engrena</span><span>Feita para o seu setor</span></div>
@@ -231,9 +261,11 @@
     <form id="qualification-form" novalidate>
       <fieldset class="form-step" data-form-step="0"><legend>Vamos conhecer sua operação.</legend><div class="field"><label for="workshop">Nome da oficina</label><input id="workshop" name="workshop" autocomplete="organization" maxlength="100" required placeholder="Como sua oficina se chama?"></div><div class="field-row"><div class="field"><label for="city">Cidade</label><input id="city" name="city" autocomplete="address-level2" maxlength="100" required placeholder="Sua cidade"></div><div class="field"><label for="state">Estado</label><select id="state" name="state" autocomplete="address-level1" required><option value="">Selecione</option><option value="AC">Acre</option><option value="AL">Alagoas</option><option value="AP">Amapá</option><option value="AM">Amazonas</option><option value="BA">Bahia</option><option value="CE">Ceará</option><option value="DF">Distrito Federal</option><option value="ES">Espírito Santo</option><option value="GO">Goiás</option><option value="MA">Maranhão</option><option value="MT">Mato Grosso</option><option value="MS">Mato Grosso do Sul</option><option value="MG">Minas Gerais</option><option value="PA">Pará</option><option value="PB">Paraíba</option><option value="PR">Paraná</option><option value="PE">Pernambuco</option><option value="PI">Piauí</option><option value="RJ">Rio de Janeiro</option><option value="RN">Rio Grande do Norte</option><option value="RS">Rio Grande do Sul</option><option value="RO">Rondônia</option><option value="RR">Roraima</option><option value="SC">Santa Catarina</option><option value="SP">São Paulo</option><option value="SE">Sergipe</option><option value="TO">Tocantins</option></select></div></div><div class="field"><label for="revenue">Faturamento mensal aproximado</label><select id="revenue" name="revenue" required><option value="">Selecione uma faixa</option><option value="under100">Abaixo de R$ 100 mil</option><option value="100to200">De R$ 100 mil a R$ 200 mil</option><option value="200to500">De R$ 200 mil a R$ 500 mil</option><option value="over500">Acima de R$ 500 mil</option><option value="talk">Prefiro falar na conversa</option></select></div><div class="field"><label for="interest">O que você quer melhorar?</label><select id="interest" name="interest" required><option value="ambos">Crescimento e organização da operação</option><option value="assessoria">Atrair clientes e vender melhor com a assessoria</option><option value="chatengrena">Organizar o atendimento com o ChatEngrena</option></select></div><p class="form-error" id="step-error" role="alert"></p><button class="button button-blue form-next" id="form-next" type="button">Continuar<span aria-hidden="true">+</span></button></fieldset>
       <fieldset class="form-step" data-form-step="1" hidden><legend>Com quem vamos conversar?</legend><div class="field"><label for="contact-name">Seu nome</label><input id="contact-name" name="name" autocomplete="name" maxlength="100" required placeholder="Como podemos chamar você?"></div><div class="field"><label for="whatsapp">Seu WhatsApp com DDD</label><input id="whatsapp" name="whatsapp" type="tel" inputmode="tel" autocomplete="tel-national" maxlength="20" required aria-describedby="phone-help" placeholder="(11) 99999 9999"><small id="phone-help">Usaremos esse contato para combinar a reunião.</small></div><div class="form-recap" id="form-recap"></div><p class="form-error" id="contact-error" role="alert"></p><button class="button button-blue" type="submit">Concluir demonstração<span aria-hidden="true">+</span></button><button class="form-back" id="form-back" type="button">Voltar para os dados da oficina</button></fieldset>
-    </form><div class="form-success" id="form-success" hidden tabindex="-1"><span class="success-mark" aria-hidden="true">✓</span><span class="eyebrow">Prévia concluída</span><h3>O próximo passo<br> é conversar.</h3><p>Nesta demonstração, nenhum dado foi enviado. No site conectado, a equipe recebe essas informações e combina a reunião com você pelo WhatsApp.</p><button class="button button-blue" type="button" data-close-contact>Continuar explorando<span aria-hidden="true">+</span></button></div>
+    </form><div class="form-success" id="form-success" hidden tabindex="-1"><span class="success-mark" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="m7 16 6 6L26 9"/></svg></span><span class="eyebrow">Prévia concluída</span><h3>O próximo passo<br> é conversar.</h3><p>Nesta demonstração, nenhum dado foi enviado. No site conectado, a equipe recebe essas informações e combina a reunião com você pelo WhatsApp.</p><button class="button button-blue" type="button" data-close-contact>Continuar explorando<span aria-hidden="true">+</span></button></div>
   </div></dialog>
 
   <dialog id="privacy-dialog" class="privacy-dialog" aria-labelledby="privacy-title"><button type="button" class="close-button" data-close-privacy>Fechar<span aria-hidden="true">+</span></button><span class="eyebrow">Prévia local</span><h2 id="privacy-title">Seus dados<br> nesta demonstração.</h2><p>O formulário desta prévia não transmite informações, não abre uma conversa externa e não salva seus dados em um servidor. Os campos ficam apenas nesta página enquanto ela está aberta.</p><p>Não há ferramentas de publicidade ou análise de visitantes conectadas. A abertura é exibida a cada carregamento. Preferências visuais desta prévia ficam apenas na página.</p><p>Antes da publicação, os canais de contato, o tratamento das informações e a política definitiva serão conectados e revisados.</p></dialog>
+  </div>
+  <script>if(document.documentElement.classList.contains('intro-active'))document.getElementById('site-content').inert=true;</script>
 </body>
 </html>
