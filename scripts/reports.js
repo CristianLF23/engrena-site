@@ -1,148 +1,133 @@
 (() => {
   'use strict';
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  const MONTHS = ['Abril', 'Maio', 'Junho'];
-  // Keep the reveal long enough to read, while allowing the first values to
-  // appear as soon as the chart enters the viewport.
-  const DURATION = 3000;
-  const records = [...document.querySelectorAll('[data-report]')].map(element => ({
-    element, trigger:element.querySelector('.report-chart')||element, frame: 0, progress: 0, state: 'ready',
-    counters: [...element.querySelectorAll('[data-count]')],
-    charts: [...element.querySelectorAll('.report-chart')].map(svg => ({
-      svg, values: (svg.dataset.values || '').split(',').map(Number), maximum: Number(svg.dataset.max),
-      line: svg.querySelector('.chart-line'), area: svg.querySelector('.chart-area'),
-      points: [...svg.querySelectorAll('.chart-point')], labels: [...svg.querySelectorAll('[data-point-label]')], bars: [...svg.querySelectorAll('.chart-bar')],
-      dataRows: [...svg.closest('.case-chart,.supporting-cases, [data-report]')?.querySelectorAll('.chart-data dd') || []],
-      phase: 0, selectedMonth: 2, inspector: null, readout: null,
-    })),
-  }));
-  const formats = new Map();
-  function number(value, decimals) {
-    if (!formats.has(decimals)) formats.set(decimals, new Intl.NumberFormat('pt-BR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals }));
-    return formats.get(decimals).format(value);
+  const shortViewport = matchMedia('(max-height: 620px)');
+  const stage = document.querySelector('[data-results-stage]');
+  const track = document.querySelector('[data-results-track]');
+  const panels = [...document.querySelectorAll('[data-report]')];
+  if (!stage || !track || !panels.length) return;
+  const formatters = new Map();
+  const number = (value, decimals) => {
+    if (!formatters.has(decimals)) formatters.set(decimals, new Intl.NumberFormat('pt-BR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals }));
+    return formatters.get(decimals).format(value);
+  };
+  const charts = panels.flatMap((panel, panelIndex) => [...panel.querySelectorAll('.report-chart')].map(svg => ({
+    panel, panelIndex, svg, values: (svg.dataset.values || '').split(',').map(Number), maximum: Number(svg.dataset.max || 1),
+    base: Number(svg.dataset.base || 280), height: Number(svg.dataset.height || 216), xs: (svg.dataset.xs || '100,340,580').split(',').map(Number),
+    line: svg.querySelector('.chart-line'), area: svg.querySelector('.chart-area'), points: [...svg.querySelectorAll('.chart-point')], labels: [...svg.querySelectorAll('[data-point-label]')], bars: [...svg.querySelectorAll('.chart-bar')],
+    rows: [...panel.querySelectorAll('.chart-data dd')], phase: 0,
+  })));
+  const chartValue = (chart, index, progress) => {
+    const decimals = Number(chart.svg.dataset.labelDecimals || 0); const scale = Number(chart.svg.dataset.labelScale || 1); const prefix = chart.svg.dataset.labelPrefix || '';
+    const suffix = chart.svg.dataset.unit === 'x' ? 'x' : scale === 1000 ? '' : chart.svg.dataset.unit || '';
+    return `${prefix}${number(chart.values[index] * scale * progress, decimals)}${suffix}`;
+  };
+  function paintChart(chart, progress) {
+    const eased = 1 - Math.pow(1 - Math.max(0, Math.min(1, progress)), 3); chart.phase = eased;
+    const points = chart.values.map((value, index) => ({ x: chart.xs[index] ?? chart.xs[0], y: chart.base - value / chart.maximum * chart.height * eased }));
+    const d = points.length ? `M ${points.map(point => `${point.x.toFixed(3)},${point.y.toFixed(3)}`).join(' L ')}` : '';
+    if (chart.line) chart.line.setAttribute('d', d); if (chart.area) chart.area.setAttribute('d', points.length ? `${d} L${points.at(-1).x},${chart.base} L${points[0].x},${chart.base} Z` : ''); if (chart.area) chart.area.style.opacity = String(eased);
+    chart.points.forEach((point, index) => { const value = points[index]; if (!value) return; point.setAttribute('cx', value.x); point.setAttribute('cy', value.y); point.setAttribute('r', String(5 * eased)); point.style.opacity = String(eased); });
+    chart.labels.forEach((label, index) => { const value = points[index]; if (!value) return; label.setAttribute('x', value.x); label.setAttribute('y', value.y - 18); label.textContent = chartValue(chart, index, eased); label.style.opacity = String(Math.min(1, eased * 3)); });
+    chart.bars.forEach((bar, index) => { const value = chart.values[index]; if (value === undefined) return; const height = value / chart.maximum * chart.height * eased; bar.setAttribute('y', chart.base - height); bar.setAttribute('height', height); bar.style.opacity = String(eased); });
+    chart.rows.forEach((row, index) => { if (chart.values[index] !== undefined) row.textContent = chartValue(chart, index, eased); });
   }
-  function chartValue(chart, index, progress = 1) {
-    const decimals = Number(chart.svg.dataset.labelDecimals || (chart.svg.dataset.unit === 'x' ? 2 : 0));
-    return (chart.svg.dataset.labelPrefix || '') + number(chart.values[index] * Number(chart.svg.dataset.labelScale || 1) * progress, decimals) + (chart.svg.dataset.unit === 'x' ? 'x' : '');
+  function paintPanel(panelIndex, progress) {
+    const panel = panels[panelIndex]; if (!panel) return; panel.dataset.reportState = progress >= .999 ? 'complete' : progress > 0 ? 'running' : 'ready';
+    panel.querySelectorAll('.report-chart').forEach(svg => { const chart = charts.find(item => item.svg === svg); if (chart) paintChart(chart, progress); });
+    panel.querySelectorAll('[data-count]').forEach(node => { const decimals = Number(node.dataset.decimals || 0); node.textContent = number(Number(node.dataset.count) * (1 - Math.pow(1 - progress, 3)), decimals); });
   }
-  function setInspect(chart, index) {
-    index = Math.max(0, Math.min(chart.values.length - 1, index));
-    if(chart.selectedMonth===index && chart.readout?.textContent)return;
-    chart.selectedMonth = index;
-    chart.points.forEach((point, i) => point.classList.toggle('is-inspected', i === chart.selectedMonth));
-    chart.labels.forEach((label, i) => label.classList.toggle('is-inspected', i === chart.selectedMonth));
-    chart.bars.forEach((bar, i) => bar.classList.toggle('is-inspected', i === chart.selectedMonth));
-    if (chart.inspector) chart.inspector.querySelectorAll('button').forEach((button, i) => {
-      const active = i === chart.selectedMonth;
-      button.setAttribute('aria-pressed', String(active));
-      button.classList.toggle('is-selected', active);
-    });
-    if (chart.readout) {
-      const year = chart.svg.closest('.report-figure')?.querySelector('figcaption span:last-child')?.textContent?.match(/\d{4}/)?.[0] || '2025';
-      chart.readout.textContent = `${MONTHS[chart.selectedMonth]} ${year} · ${chartValue(chart, chart.selectedMonth, chart.phase)}`;
+  let raf = 0, activeIndex = 0, entryRaf = 0, trackRaf = 0, currentX = 0, targetX = 0, lastTrackTime = 0, stageVisible = false;
+  const entries = panels.map(() => ({ started: 0, progress: 0, complete: false }));
+  const motionOff = () => reduced.matches || shortViewport.matches || document.documentElement.classList.contains('motion-paused');
+  let snapTrigger=null;
+  function configureSnap(){
+    snapTrigger?.kill();snapTrigger=null;
+    if(!motionOff()&&window.ScrollTrigger){
+      snapTrigger=ScrollTrigger.create({trigger:stage,start:'top top',end:'bottom bottom',snap:{snapTo:1/(panels.length-1),duration:{min:.18,max:.45},delay:.18,inertia:false}});
     }
+    schedule();
   }
-  function addInspector(chart) {
-    const figure = chart.svg.closest('.report-figure');
-    if (!figure || figure.querySelector('.chart-inspector')) return;
-    const wrap = document.createElement('div');
-    wrap.className = 'chart-inspector';
-    wrap.setAttribute('role', 'group');
-    wrap.setAttribute('aria-label', 'Inspecionar mês do gráfico');
-    MONTHS.forEach((month, index) => {
-      const button = document.createElement('button');
-      button.type = 'button'; button.textContent = month; button.setAttribute('aria-pressed', 'false');
-      button.addEventListener('click', () => setInspect(chart, index));
-      button.addEventListener('keydown', event => {
-        if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-        event.preventDefault();
-        const current = index;
-        const next = event.key === 'Home' ? 0 : event.key === 'End' ? 2 : event.key === 'ArrowRight' ? Math.min(2, current + 1) : Math.max(0, current - 1);
-        setInspect(chart, next); wrap.querySelectorAll('button')[next]?.focus();
+  function startEntry(index) {
+    const entry = entries[index];
+    if (!entry || entry.started || motionOff()) return;
+    entry.started = performance.now();
+    if (!entryRaf) entryRaf = requestAnimationFrame(tickEntries);
+  }
+  function tickEntries(time) {
+    entryRaf = 0;
+    if(motionOff()){entries.forEach((entry,index)=>{entry.progress=1;entry.complete=true;paintPanel(index,1);});return;}
+    let running = false;
+    entries.forEach((entry, index) => {
+      if (!entry.started || entry.complete) return;
+      entry.progress = Math.min(1, (time - entry.started) / 1600);
+      paintPanel(index, entry.progress);
+      if (entry.progress < 1) running = true; else entry.complete = true;
+    });
+    if (running) entryRaf = requestAnimationFrame(tickEntries);
+  }
+  function startVisibleEntry() {
+    if (!stageVisible || motionOff()) return;
+    const width = Math.max(1, track.clientWidth);
+    panels.forEach((panel, index) => {
+      const left = index * width + currentX;
+      const right = left + width;
+      if (left < width * .3 && right > width * .7) startEntry(index);
+    });
+  }
+  function animateTrack(time) {
+    trackRaf = 0;
+    if (motionOff()) { currentX = targetX = 0; track.style.transform = 'none'; return; }
+    const delta = lastTrackTime ? Math.min(.06, (time - lastTrackTime) / 1000) : 1 / 60; lastTrackTime = time;
+    currentX += (targetX - currentX) * (1 - Math.exp(-18 * delta));
+    track.style.transform = `translate3d(${currentX.toFixed(3)}px,0,0)`;
+    startVisibleEntry();
+    if (Math.abs(targetX - currentX) > .25) trackRaf = requestAnimationFrame(animateTrack);
+  }
+  function update() {
+    raf = 0;
+    if (motionOff()) {
+      currentX = targetX = 0;
+      track.style.transform = 'none';
+      activeIndex = Math.max(0, Math.min(panels.length - 1, Math.round(track.scrollLeft / Math.max(1, track.clientWidth))));
+      panels.forEach((panel, index) => paintPanel(index, 1));
+    } else {
+      const rect = stage.getBoundingClientRect(); stageVisible = rect.top < innerHeight * .8 && rect.bottom > 0;
+      const travel = Math.max(1, stage.offsetHeight - innerHeight); const progress = Math.max(0, Math.min(1, -rect.top / travel));
+      const maxX = Math.max(0, track.scrollWidth - track.clientWidth);
+      targetX = -maxX * progress;
+      startVisibleEntry();
+      if (!trackRaf && Math.abs(targetX - currentX) > .25) trackRaf = requestAnimationFrame(animateTrack);
+      const position = progress * (panels.length - 1); activeIndex = Math.max(0, Math.min(panels.length - 1, Math.round(position)));
+      panels.forEach((panel, index) => {
+        const entry = entries[index];
+        paintPanel(index, entry.started ? (entry.complete ? 1 : entry.progress) : 0);
       });
-      wrap.append(button);
-    });
-    const readout = document.createElement('p');
-    readout.className = 'chart-inspector-readout'; readout.setAttribute('aria-live', 'polite'); readout.setAttribute('aria-atomic', 'true');
-    wrap.append(readout); figure.append(wrap); chart.inspector = wrap; chart.readout = readout; setInspect(chart, 2);
-    const inspectPointer=event=>{
-      const point=chart.svg.createSVGPoint();point.x=event.clientX;point.y=event.clientY;
-      const matrix=chart.svg.getScreenCTM();if(!matrix)return;
-      const x=point.matrixTransform(matrix.inverse()).x;
-      const xs=(chart.svg.dataset.xs||'100,340,580').split(',').map(Number);
-      const index=xs.reduce((best,value,i)=>Math.abs(value-x)<Math.abs(xs[best]-x)?i:best,0);
-      setInspect(chart,index);
-    };
-    chart.svg.addEventListener('pointermove',event=>{if(event.pointerType==='mouse')inspectPointer(event)});
-    chart.svg.addEventListener('click',inspectPointer);
-  }
-  function paint(record, progress) {
-    record.progress = progress;
-    // The headline metric and the chart share the same playhead. Previously
-    // the metric waited for the last third of the chart, which made the
-    // number feel disconnected and looked especially late on mobile.
-    const finalPhase = Math.max(0, Math.min(1, progress));
-    const eased = 1 - Math.pow(1 - finalPhase, 3);
-    record.counters.forEach(node => {
-      const decimals = Number(node.dataset.decimals || 0), value = Number(node.dataset.count) * eased;
-      node.textContent = (node.dataset.prefix || '') + number(value, decimals) + (node.dataset.suffix || '');
-    });
-    record.charts.forEach(chart => {
-      const xs = (chart.svg.dataset.xs || '86,328,570').split(',').map(Number);
-      const baseline = Number(chart.svg.dataset.base || 246), height = Number(chart.svg.dataset.height || 206);
-      chart.phase = eased;
-      const points = chart.values.map((value, index) => {
-        // Every month rises on the same playhead so the headline, labels,
-        // bars and line describe one coherent reveal rather than staggered
-        // values that finish at different moments.
-        return { y: baseline - value / chart.maximum * height * eased, finalY:baseline-value/chart.maximum*height, phase: eased };
-      });
-      // Trace the same current point positions used by the circles and bars.
-      // This keeps the line grounded at zero until the shared playhead moves.
-      const pathPoints=points.length?points.map((point,index)=>[xs[index],point.y]):[];
-      const d=pathPoints.length?'M '+pathPoints.map(point=>point.map(n=>n.toFixed(3)).join(',')).join(' L '):'';
-      if(chart.line){chart.line.setAttribute('d',d);chart.line.style.strokeDasharray='none';chart.line.style.strokeDashoffset='0';}
-      if(chart.area){chart.area.setAttribute('d',pathPoints.length?`${d} L${pathPoints.at(-1)[0]},${baseline} L${xs[0]},${baseline} Z`:'');chart.area.style.opacity=String(eased);}
-      chart.points.forEach((point,index)=>{point.setAttribute('cy',points[index].y.toFixed(3));point.setAttribute('r',String(5*points[index].phase));point.style.opacity=String(points[index].phase);});
-      chart.labels.forEach((label,index)=>{label.setAttribute('y',(points[index].y-18).toFixed(3));label.textContent=chartValue(chart,index,points[index].phase);label.style.opacity=String(Math.min(1,points[index].phase*3));});
-      chart.bars.forEach((bar, index) => { const fullHeight = chart.values[index] / chart.maximum * height, visibleHeight = fullHeight * points[index].phase; bar.setAttribute('y', (baseline - visibleHeight).toFixed(3)); bar.setAttribute('height', visibleHeight.toFixed(3)); bar.style.transform = 'none'; bar.style.opacity = String(points[index].phase > 0 ? 1 : 0); });
-      chart.dataRows.forEach((row, index) => { if (chart.values[index] !== undefined) row.textContent = chartValue(chart, index, eased); });
-      if (chart.readout) {
-        const year = chart.svg.closest('.report-figure')?.querySelector('figcaption span:last-child')?.textContent?.match(/\d{4}/)?.[0] || '2025';
-        chart.readout.textContent = `${MONTHS[chart.selectedMonth]} ${year} · ${chartValue(chart, chart.selectedMonth, eased)}`;
-      }
-    });
-  }
-  function setState(record, state) {
-    record.state = state; record.element.dataset.reportState = state;
-    record.charts.forEach(chart => chart.readout?.setAttribute('aria-live', state === 'complete' ? 'polite' : 'off'));
-  }
-  function finish(record) { cancelAnimationFrame(record.frame); record.frame = 0; paint(record, 1); setState(record, 'complete'); }
-  function prepare(record) { cancelAnimationFrame(record.frame); record.frame = 0; paint(record, 0); setState(record, 'ready'); }
-  function start(record) {
-    if (record.state === 'running' || record.state === 'complete') return;
-    if (reduced.matches) { finish(record); return; }
-    setState(record, 'running');
-    const started = performance.now() - record.progress * DURATION;
-    function tick(time) {
-      const progress = Math.max(0, Math.min(1, (time - started) / DURATION)); paint(record, progress);
-      if (progress < 1) record.frame = requestAnimationFrame(tick); else { record.frame = 0; setState(record, 'complete'); }
     }
-    record.frame = requestAnimationFrame(tick);
+    const label = document.querySelector('[data-results-progress]'); if (label) label.textContent = `${String(activeIndex + 1).padStart(2, '0')} / ${String(panels.length).padStart(2, '0')}`;
+    const prev = document.querySelector('[data-results-prev]'); const next = document.querySelector('[data-results-next]'); if (prev) prev.disabled = activeIndex === 0; if (next) next.disabled = activeIndex === panels.length - 1;
   }
-  records.forEach(record => record.charts.forEach(addInspector));
-  const observer = new IntersectionObserver(entries => entries.forEach(entry => {
-    const record = records.find(item => item.trigger === entry.target); if (!record) return;
-    if (entry.isIntersecting) start(record); else if (record.state === 'running') finish(record);
-  }), { threshold: .08, rootMargin: '0px 0px 48px 0px' });
-  records.forEach(record => { if (reduced.matches) finish(record); else prepare(record); observer.observe(record.trigger); });
-  const replay = document.querySelector('#replay-results');
-  if (replay) { replay.hidden = false; replay.addEventListener('click', () => records.forEach(record => { if(reduced.matches){finish(record);return;} prepare(record); const rect = record.trigger.getBoundingClientRect(); if (rect.top < innerHeight && rect.bottom > 0) start(record); observer.unobserve(record.trigger); observer.observe(record.trigger); })); }
-  reduced.addEventListener('change', () => { if (reduced.matches) records.forEach(finish); });
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) records.filter(record => record.state === 'running').forEach(record => { cancelAnimationFrame(record.frame); record.frame = 0; setState(record, 'paused'); });
-    else records.filter(record => record.state === 'paused').forEach(start);
-  });
-  addEventListener('pagehide', event => { if (event.persisted) return; records.forEach(record => cancelAnimationFrame(record.frame)); observer.disconnect(); });
-  window.engrenaReports = Object.freeze({ get charts() { return records.map(record => ({ state: record.state, progress: record.progress, kinds: record.charts.map(chart => chart.svg.closest('[data-chart-kind]')?.dataset.chartKind) })); } });
+  function schedule() { if (!raf) raf = requestAnimationFrame(update); }
+  function goTo(index) {
+    const nextIndex = Math.max(0, Math.min(panels.length - 1, index));
+    if (motionOff()) { track.scrollTo({ left: nextIndex * track.clientWidth, behavior: 'auto' }); schedule(); return; }
+    const rect = stage.getBoundingClientRect(); const travel = Math.max(1, stage.offsetHeight - innerHeight);
+    scrollTo({ top: scrollY + rect.top + travel * (nextIndex / (panels.length - 1)), behavior: reduced.matches ? 'instant' : 'smooth' });
+  }
+  document.querySelector('[data-results-prev]')?.addEventListener('click', () => goTo(activeIndex - 1)); document.querySelector('[data-results-next]')?.addEventListener('click', () => goTo(activeIndex + 1));
+  track.addEventListener('keydown', event => { if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return; event.preventDefault(); goTo(event.key === 'Home' ? 0 : event.key === 'End' ? panels.length - 1 : activeIndex + (event.key === 'ArrowRight' ? 1 : -1)); });
+  let touchStart=null;
+  track.addEventListener('pointerdown',event=>{if(event.pointerType==='touch'&&!motionOff())touchStart={x:event.clientX,y:event.clientY};},{passive:true});
+  track.addEventListener('pointerup',event=>{
+    if(!touchStart||motionOff())return;
+    const dx=event.clientX-touchStart.x,dy=event.clientY-touchStart.y;touchStart=null;
+    if(Math.abs(dx)>44&&Math.abs(dx)>Math.abs(dy)*1.3)goTo(activeIndex+(dx<0?1:-1));
+  },{passive:true});
+  track.addEventListener('pointercancel',()=>{touchStart=null;},{passive:true});
+  addEventListener('scroll', schedule, { passive: true }); track.addEventListener('scroll', schedule, { passive: true }); addEventListener('resize', schedule, { passive: true }); reduced.addEventListener('change', schedule); addEventListener('engrena:motion', schedule);
+  reduced.addEventListener('change',configureSnap);shortViewport.addEventListener('change',configureSnap);addEventListener('engrena:motion',configureSnap);
+  addEventListener('pagehide',event=>{if(event.persisted)return;snapTrigger?.kill();cancelAnimationFrame(raf);cancelAnimationFrame(entryRaf);cancelAnimationFrame(trackRaf);});
+  configureSnap();
+  if (motionOff()) { track.style.transform = 'none'; panels.forEach((_, index) => paintPanel(index, 1)); } else schedule();
+  window.engrenaReports = Object.freeze({ get charts() { return panels.map((panel, index) => ({ state: panel.dataset.reportState || 'ready', progress: charts.find(chart => chart.panelIndex === index)?.phase || 0, kinds: [...panel.querySelectorAll('[data-chart-kind]')].map(item => item.dataset.chartKind) })); } });
 })();

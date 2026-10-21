@@ -1,9 +1,10 @@
 /* v1.11: the approved industrial identity, with less mobile UI and a clearer rhythm. */
 .segments-band{overflow:hidden;position:relative;padding:20px 0;background:#e5edfa;border-top:1px solid #bbcef0;border-bottom:1px solid #bbcef0;color:#255182}
 .segments-track{display:flex;width:max-content;animation:segments-loop 36s linear infinite}
-.segments-group{display:flex;align-items:center;flex-shrink:0;min-width:calc(100vw - var(--rail));justify-content:space-around}
+.segments-group{display:flex;align-items:center;flex-shrink:0;justify-content:flex-start}
 .segments-group>span{display:flex;align-items:center;gap:36px;padding-right:36px;white-space:nowrap;font:600 clamp(19px,1.7vw,28px)/1.1 var(--display);text-transform:uppercase;letter-spacing:.035em}
-.segments-group i{font-style:normal;color:var(--blue);font-size:25px}
+.segments-group i{display:grid;place-items:center;flex:0 0 28px;width:28px;height:28px;font-style:normal;color:var(--blue)}
+.segments-group i>svg.segment-gear{display:block;width:26px;height:26px;fill:currentColor;stroke:none}
 @keyframes segments-loop{to{transform:translateX(-50%)}}
 .about{position:relative;background:linear-gradient(155deg,#f2f6f8 30%,#e5edfc 75%,#dceafa 100%)}
 .about-copy .lead{font-size:clamp(22px,2vw,28px);line-height:1.3;margin-bottom:16px}
@@ -51,7 +52,7 @@
 .contact.is-in-view>.contact-gear{animation-play-state:running}
 @keyframes contact-gear-spin{to{transform:rotate(360deg)}}
 .faq{position:relative;isolation:isolate}
-.faq-question{position:absolute;pointer-events:none;z-index:-1;top:12px;left:10%;width:260px;height:320px;stroke:var(--blue);stroke-width:1;opacity:.12}
+.faq-question{position:absolute;pointer-events:none;z-index:-1;top:12px;left:10%;width:290px;height:360px;stroke:var(--blue);stroke-width:2.5;opacity:.12}
 .footer-logo{object-fit:contain;object-position:center;width:230px;max-width:100%;height:auto;aspect-ratio:230/56}
 .case-story h3,.results-heading h2,.case-reading,.metric-definition,.chart-reading{word-break:normal;overflow-wrap:normal;hyphens:none}
 .menu-motion{display:block;min-height:48px;width:100%;margin-top:18px;border:1px solid #718596;background:transparent;color:inherit;font-size:14px;padding:10px 16px;text-align:left}
@@ -74,6 +75,8 @@ html.motion-paused .segments-track,html.motion-paused .contact-gear{animation-pl
  .mechanism-toolbar p{max-width:none;flex:1}
  .segments-band{padding-block:16px}
  .segments-group>span{gap:26px;padding-right:26px;font-size:20px}
+ .segments-group i{flex-basis:24px;width:24px;height:24px}
+ .segments-group i>svg.segment-gear{width:22px;height:22px}
  .journey-grid{grid-template-columns:1fr;gap:26px;margin-top:28px;padding-top:26px}
  .journey-block+.journey-block{border-top:1px solid #b5c9e5;padding-top:26px}
  .journey-block .journey-cta{max-width:none;width:100%;min-height:60px;font-size:16px}
@@ -87,7 +90,7 @@ html.motion-paused .segments-track,html.motion-paused .contact-gear{animation-pl
  .feedback-heading{gap:18px}
  .feedback-heading>p{font-size:16px;line-height:1.5}
  .contact>.contact-gear{width:270px;height:270px;right:-95px;top:-80px;stroke-width:.8;opacity:.6}
- .faq-question{width:175px;height:220px;left:auto;right:24px;top:14px;opacity:.13}
+ .faq-question{width:195px;height:244px;left:auto;right:24px;top:14px;opacity:.13}
 }
 @media(max-width:599px){
  .about-grid{gap:24px}

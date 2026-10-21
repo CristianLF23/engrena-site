@@ -4,6 +4,16 @@
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const cards = $$('[data-method-step]');
+  const journeyDiagram=$('.method-journey-diagram');
+  const journeyObserver=new IntersectionObserver(entries=>{
+    $('#metodo').classList.toggle('is-in-view',entries[0].isIntersecting&&!document.hidden);
+  });
+  if(journeyDiagram)journeyObserver.observe(journeyDiagram);
+  document.addEventListener('visibilitychange',()=>{
+    const box=journeyDiagram?.getBoundingClientRect();
+    $('#metodo').classList.toggle('is-in-view',!document.hidden&&Boolean(box&&box.top<innerHeight&&box.bottom>0));
+  });
+  addEventListener('pagehide',event=>{if(!event.persisted)journeyObserver.disconnect();});
   const route = $$('.method-route li');
   const examples = [
     ['Uma busca vira oportunidade.', 'O cliente precisa revisar o carro. A campanha e o site ajudam sua oficina a ser encontrada.'],

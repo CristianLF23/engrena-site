@@ -1,4 +1,5 @@
 import * as THREE from '../vendor/three/three.module.min.js';
+import { createGearAssembly, disposeGearAssembly } from './gear-assembly.js';
 
 const TAU = Math.PI * 2;
 const LOOP_SECONDS = 12;
@@ -119,17 +120,16 @@ function makeShadowTexture() {
   return new THREE.CanvasTexture(canvas);
 }
 
-function makePiece(material,faceMaterial,geometry,index,details) {
+function makePiece(assembly,index) {
   // The outer group owns the oblique pose; only its child spins on the shaft.
   const pose = new THREE.Group();pose.name=`mechanism-piece-${index}`;
-  const rotor = new THREE.Group();rotor.name=`mechanism-rotor-${index}`;
+  const rotor = assembly;rotor.name=`mechanism-rotor-${index}`;
+  // The shared premium assembly is authored at full route scale. Compact the
+  // hero copy so its pitch radius is 1.39 and the three 2.78-pitch gears mesh.
+  rotor.scale.setScalar(1.39 / 2.535);
   pose.add(rotor);
-  const body=new THREE.Mesh(geometry,material);body.castShadow=true;rotor.add(body);
-  rotor.add(new THREE.Mesh(details.face,faceMaterial));
-  const back = new THREE.Mesh(details.back,faceMaterial);back.position.z=-.428;back.rotation.y=Math.PI;rotor.add(back);
-  const rim = new THREE.Mesh(details.bore,material);rim.position.z=.449;rotor.add(rim);
-  const line = new THREE.Mesh(details.line,material);line.position.z=.431;rotor.add(line);
-  pose.userData={rotor,material,faceMaterial,index,restX:(index-1)*3.55,joinedX:(index-1)*PITCH_DISTANCE};
+  rotor.traverse(object=>{if(object.isMesh||object.isInstancedMesh)object.castShadow=true;});
+  pose.userData={rotor,index,restX:(index-1)*3.55,joinedX:(index-1)*PITCH_DISTANCE};
   return pose;
 }
 
@@ -137,7 +137,7 @@ export async function initMechanism(stage,{holdAssembly=false}={}) {
   if (!stage) throw new Error('mechanism-stage não encontrado');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const saveData = Boolean(navigator.connection?.saveData);
-  const stats = {renderer:'three-webgl',vertices:0,pieces:3,dpr:1,running:false,paused:false,fallback:false,frames:0,elapsedSeconds:0,loopDuration:LOOP_SECONDS,rotationAngles:[0,0,0],poseY:[0,0,0],assembly:0,gearCenters:[],meshDistance:PITCH_DISTANCE,introState:holdAssembly?'ready':'assembling',shadows:{type:'geometry',casters:3,receivers:1,mapSize:0}};
+  const stats = {renderer:'three-webgl',vertices:0,drawcalls:0,pieces:3,dpr:1,running:false,paused:false,fallback:false,frames:0,elapsedSeconds:0,loopDuration:LOOP_SECONDS,rotationAngles:[0,0,0],poseY:[0,0,0],assembly:0,gearCenters:[],meshDistance:PITCH_DISTANCE,introState:holdAssembly?'ready':'assembling',shadows:{type:'geometry',casters:3,receivers:1,mapSize:0}};
   if (reduced || saveData) {
     stats.fallback=true;
     return {stats,setProgress(){},setFocus(){},setPaused(){},reveal(){},dispose(){}};
@@ -156,6 +156,7 @@ export async function initMechanism(stage,{holdAssembly=false}={}) {
     if (disposed) return;
     disposed=true;stop();observer?.disconnect();resizeObserver?.disconnect();
     cleanups.forEach(cleanup=>cleanup());
+    pieces.forEach(piece=>disposeGearAssembly(piece.userData?.rotor));
     resources.forEach(resource=>resource.dispose());
     renderer?.dispose();renderer?.forceContextLoss?.();canvas?.remove();
     stage.classList.remove('scene-ready','is-coupled');
@@ -186,22 +187,12 @@ export async function initMechanism(stage,{holdAssembly=false}={}) {
     cleanups.push(()=>key.shadow.dispose());
     const fill=new THREE.DirectionalLight(0xdceaff,1.05);fill.position.set(6,1,4);scene.add(fill);
     const edge=new THREE.DirectionalLight(0xffffff,2.1);edge.position.set(-5,2,-4);scene.add(edge);
+    const frontFill=new THREE.DirectionalLight(0xe8f4ff,.62);frontFill.position.set(0,4,8);scene.add(frontFill);
     const environment=track(makeEnvironment(renderer));scene.environment=environment.texture;
-    const machining=track(makeMachiningTexture());
-    const anisotropy=track(makeAnisotropyTexture());
-    const geometry=track(makeGearGeometry());
-    const details={
-      face:track(makeTurnedFace()),
-      back:track(new THREE.RingGeometry(.293,1.175,64,1)),
-      bore:track(new THREE.TorusGeometry(.302,.012,6,48)),
-      line:track(new THREE.TorusGeometry(1.108,.004,5,64)),
-    };
-    const colors=[0x626b73,0x1261f4,0xcdd6dd];
-    colors.forEach((color,index)=>{
-      const material=track(new THREE.MeshStandardMaterial({color,metalness:index===1?.72:.96,roughness:index===0?.32:.26,envMapIntensity:1.15,vertexColors:true}));
-      const faceMaterial=track(new THREE.MeshPhysicalMaterial({color,metalness:index===1?.72:.96,roughness:.4,roughnessMap:machining,bumpMap:machining,bumpScale:.0008,anisotropy:.35,anisotropyMap:anisotropy,clearcoat:index===1?.22:0,clearcoatRoughness:.28,envMapIntensity:1.2}));
-      const piece=makePiece(material,faceMaterial,geometry,index,details);pieces.push(piece);gearRig.add(piece);
-    });
+    for (let index = 0; index < 3; index += 1) {
+      const piece = makePiece(createGearAssembly({ detail: 'hero', index }), index);
+      pieces.push(piece); gearRig.add(piece);
+    }
     // The same rotating tooth geometry casts the shadow. No separate shadow
     // animation can drift from the rotor or keep moving while it is paused.
     const receiver=new THREE.Mesh(track(new THREE.PlaneGeometry(16,14)),track(new THREE.ShadowMaterial({color:0x000000,opacity:.62,depthWrite:false})));
@@ -227,10 +218,10 @@ export async function initMechanism(stage,{holdAssembly=false}={}) {
         piece.position.x=THREE.MathUtils.lerp(piece.userData.restX,piece.userData.joinedX,assembled);
         const active=focusIndex===null||focusIndex===index;
         // Highlight through light, never resize meshing geometry.
-        piece.userData.faceMaterial.envMapIntensity=active?1.2:.78;
+        piece.traverse(object => { if (object.material?.envMapIntensity !== undefined) object.material.envMapIntensity = active ? 1.2 : .78; });
         worldPoint.copy(piece.position).applyMatrix4(gearRig.matrixWorld);
         shadows[index].position.x=worldPoint.x+.05;shadows[index].position.z=worldPoint.z;
-        piece.userData.rotor.rotation.z=(index===1?-1:1)*(stats.elapsedSeconds%LOOP_SECONDS)/LOOP_SECONDS*TAU+(index===1?Math.PI/18:0);
+        piece.userData.rotor.rotation.z=(index===1?-1:1)*(stats.elapsedSeconds%LOOP_SECONDS)/LOOP_SECONDS*TAU+(index===1?Math.PI/24:0);
       });
       stats.rotationAngles=pieces.map(piece=>piece.userData.rotor.rotation.z);
       stats.poseY=pieces.map(()=>gearRig.rotation.y);
@@ -249,7 +240,7 @@ export async function initMechanism(stage,{holdAssembly=false}={}) {
       pointer.x+=(targetPointer.x-pointer.x)*.075;pointer.y+=(targetPointer.y-pointer.y)*.075;
       currentProgress+=(targetProgress-currentProgress)*.085;
       if (Math.abs(targetProgress-currentProgress)<.0005) currentProgress=targetProgress;
-      posePieces();renderer.render(scene,camera);stats.frames++;
+      posePieces();renderer.render(scene,camera);stats.drawcalls=renderer.info.render.calls;stats.frames++;
       if ((playing&&introReleased)||Math.abs(targetProgress-currentProgress)>.0005) schedule();
       else stats.running=false;
     }
@@ -275,7 +266,7 @@ export async function initMechanism(stage,{holdAssembly=false}={}) {
       });
       schedule();
     }
-    posePieces();resize();renderer.render(scene,camera);stats.frames++;
+    posePieces();resize();renderer.render(scene,camera);stats.drawcalls=renderer.info.render.calls;stats.frames++;
     resizeObserver=new ResizeObserver(resize);resizeObserver.observe(stage);
     observer=new IntersectionObserver(entries=>{
       visible=entries[0]?.isIntersecting??true;

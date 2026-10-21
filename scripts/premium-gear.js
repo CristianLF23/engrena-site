@@ -1,4 +1,5 @@
 import * as THREE from '../vendor/three/three.module.min.js';
+import { createGearAssembly } from './gear-assembly.js';
 
 /*
  * ENGRENA premium background gear.
@@ -10,6 +11,25 @@ const BLUE = 0x0b78e8;
 const CHROME = 0xbac5cc;
 const EDGE = 0x56636d;
 let brushingTexture;
+
+function addRadialWindows(shape, windows = 8, windowInner = 0.84, windowOuter = 2.08, halfWidth = 0.34) {
+  for (let i = 0; i < windows; i += 1) {
+    const center = i * TAU / windows + Math.PI / windows;
+    const path = new THREE.Path();
+    const points = [
+      [windowInner, center + halfWidth], [windowOuter, center + halfWidth * 0.72],
+      [windowOuter, center - halfWidth * 0.72], [windowInner, center - halfWidth],
+    ];
+    points.forEach(([radius, offset], index) => {
+      const x = Math.cos(offset) * radius;
+      const y = Math.sin(offset) * radius;
+      if (index === 0) path.moveTo(x, y); else path.lineTo(x, y);
+    });
+    path.closePath();
+    shape.holes.push(path);
+  }
+  return shape;
+}
 
 function gearShape(teeth = 24, root = 2.32, tip = 2.77, bore = 0.68) {
   const shape = new THREE.Shape();
@@ -36,20 +56,20 @@ function gearShape(teeth = 24, root = 2.32, tip = 2.77, bore = 0.68) {
   const hole = new THREE.Path();
   hole.absarc(0, 0, bore, 0, TAU, true);
   shape.holes.push(hole);
-  return shape;
+  return addRadialWindows(shape);
 }
 
 function makeGearBody() {
   const geometry = new THREE.ExtrudeGeometry(gearShape(), {
-    depth: 0.68,
+    depth: 0.36,
     bevelEnabled: true,
-    bevelSegments: 3,
-    bevelSize: 0.035,
-    bevelThickness: 0.035,
-    curveSegments: 48,
+    bevelSegments: 5,
+    bevelSize: 0.045,
+    bevelThickness: 0.045,
+    curveSegments: 56,
     steps: 1,
   });
-  geometry.translate(0, 0, -0.34);
+  geometry.translate(0, 0, -0.18);
   return geometry;
 }
 
@@ -97,6 +117,42 @@ function ring(outer, inner, depth, material, segments = 96) {
   ];
   const geometry = new THREE.LatheGeometry(profile.map(([r,z]) => new THREE.Vector2(r,z)), segments);
   geometry.rotateX(Math.PI / 2);
+  return new THREE.Mesh(geometry, material);
+}
+
+// A machined face with real radial windows. The holes are part of the
+// extrusion, so the recessed layer behind them remains visible as the gear
+// rotates instead of relying on dark placeholder meshes.
+function openworkPlate(outer, inner, depth, material, windows = 8, windowInner = 1.22, windowOuter = 1.68) {
+  const shape = new THREE.Shape();
+  shape.absarc(0, 0, outer, 0, TAU, false);
+  const bore = new THREE.Path();
+  bore.absarc(0, 0, inner, 0, TAU, true);
+  shape.holes.push(bore);
+  addRadialWindows(shape, windows, windowInner, windowOuter);
+  const geometry = new THREE.ExtrudeGeometry(shape, {
+    depth,
+    bevelEnabled: true,
+    bevelSegments: 3,
+    bevelSize: 0.022,
+    bevelThickness: 0.016,
+    curveSegments: 40,
+    steps: 1,
+  });
+  geometry.translate(0, 0, -depth / 2);
+  // Circumferential U coordinates keep the brushed grain tangent to the
+  // machined face instead of producing a flat, untextured cap.
+  const positions = geometry.attributes.position;
+  const uv = new Float32Array(positions.count * 2);
+  for (let i = 0; i < positions.count; i += 1) {
+    const x = positions.getX(i);
+    const y = positions.getY(i);
+    let u = Math.atan2(y, x) / TAU;
+    if (u < 0) u += 1;
+    uv[i * 2] = u;
+    uv[i * 2 + 1] = Math.min(1, Math.hypot(x, y) / outer);
+  }
+  geometry.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
   return new THREE.Mesh(geometry, material);
 }
 
@@ -176,66 +232,20 @@ export async function initPremiumGear(container) {
   const blueFill = new THREE.PointLight(BLUE, 12, 12, 2);
   blueFill.position.set(2.5, -1.3, 4); scene.add(blueFill);
 
-  const rotor = new THREE.Group();
+  const rotor = createGearAssembly({ detail: 'full', index: 0 });
   world.add(rotor);
-  const body = new THREE.Mesh(makeGearBody(), metal(CHROME, 0.18, 0.98, true));
-  body.castShadow = false; rotor.add(body);
-
-  // Rear toothed cap and a stepped front flange produce a machined bearing profile.
-  const rearRing = ring(2.12, 1.77, 0.18, metal(EDGE, 0.24, 0.93, true));
-  rearRing.position.z = -0.47; rotor.add(rearRing);
-  const frontPlate = ring(2.19, 1.12, 0.18, metal(CHROME, 0.24, 0.98, true));
-  frontPlate.position.z = 0.62; rotor.add(frontPlate);
-  // A narrow exposed blue band sits in the depth gap between the toothed body and front flange.
-  const sideBlueBand = ring(2.37, 1.86, 0.17, metal(0x1261f4, 0.23, 0.68));
-  sideBlueBand.position.z = 0.46; rotor.add(sideBlueBand);
-  rotor.add(torus(2.13, 0.055, metal(0xe9f1f5, 0.15, 1), 0.61, 80));
-  rotor.add(torus(1.77, 0.042, metal(0x53616c, 0.3, 0.92), 0.61, 80));
-  rotor.add(torus(1.18, 0.055, metal(0xeff6f9, 0.16, 1), 0.61, 80));
-
-  const blueOuter = ring(1.61, 1.38, 0.13, metal(BLUE, 0.19, 0.92));
-  blueOuter.position.z = 0.48; rotor.add(blueOuter);
-  const blueInner = ring(1.30, 0.76, 0.21, metal(0x063a73, 0.25, 0.95));
-  blueInner.position.z = 0.45; rotor.add(blueInner);
-  const bore = ring(0.88, 0.66, 0.29, metal(0x0a1822, 0.22, 0.96));
-  bore.position.z = 0.72; rotor.add(bore);
-  const hub = ring(1.08, 0.88, 0.22, metal(CHROME, 0.15, 0.98, true));
-  hub.position.z = 0.84; rotor.add(hub);
-  rotor.add(torus(0.84, 0.06, metal(0x22a6ff, 0.18, 0.96), 0.86, 72));
-  rotor.add(torus(0.71, 0.035, metal(0x8aa6b9, 0.27, 0.93), 0.87, 72));
-
-  // Fine concentric engraving lines, intentionally restrained to avoid visual noise.
-  [1.48, 1.55, 1.67, 1.72, 1.91, 2.01].forEach((radius, index) => {
-    rotor.add(torus(radius, index % 2 ? 0.012 : 0.018, metal(index % 2 ? 0x53616c : 0xf3f8fb, 0.27, 0.96, true), 0.805 + (index % 2) * 0.012, 72));
-  });
-
-  const boltMaterial = metal(0x8996a0, 0.22, 0.98);
-  const boltRing = new THREE.Group(); boltRing.position.z = 0.84; rotor.add(boltRing);
-  for (let i = 0; i < 10; i += 1) {
-    const angle = i * TAU / 10 + Math.PI / 10;
-    const bolt = screw(boltMaterial, 0);
-    bolt.position.set(Math.cos(angle) * 1.84, Math.sin(angle) * 1.84, 0);
-    bolt.rotation.z = angle;
-    boltRing.add(bolt);
-  }
-
-  const apertureMaterial = metal(0x101a21, 0.32, 0.9);
-  const apertureRing = new THREE.Group(); apertureRing.position.z = 0.80; rotor.add(apertureRing);
-  for (let i = 0; i < 8; i += 1) {
-    const angle = i * TAU / 8 + Math.PI / 8;
-    const aperture = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.075, 0.032), apertureMaterial);
-    aperture.position.set(Math.cos(angle) * 1.47, Math.sin(angle) * 1.47, 0);
-    aperture.rotation.z = angle;
-    apertureRing.add(aperture);
-  }
 
   let angle = 0;
+  let tiltX = 0;
+  let tiltY = 0;
+  let renderFrames = 0;
   let disposed = false;
   let contextLost = false;
   let observer;
   const render = () => {
     if (disposed) return;
     renderer.render(scene, camera);
+    renderFrames += 1;
   };
   const resize = () => {
     if (disposed) return;
@@ -256,14 +266,28 @@ export async function initPremiumGear(container) {
 
   const vertexCount = () => {
     let count = 0;
-    scene.traverse(object => { if (object.isMesh && object.geometry?.attributes?.position) count += object.geometry.attributes.position.count; });
+    scene.traverse(object => {
+      if ((object.isMesh || object.isInstancedMesh) && object.geometry?.attributes?.position) {
+        count += object.geometry.attributes.position.count * (object.isInstancedMesh ? object.count : 1);
+      }
+    });
     return count;
+  };
+  const applyPose = (nextAngle, nextTiltX = tiltX, nextTiltY = tiltY) => {
+    angle = Number.isFinite(nextAngle) ? nextAngle : angle;
+    tiltX = Number.isFinite(nextTiltX) ? nextTiltX : tiltX;
+    tiltY = Number.isFinite(nextTiltY) ? nextTiltY : tiltY;
+    rotor.rotation.z = angle;
+    world.rotation.x = 0.13 + tiltX;
+    world.rotation.y = -0.59 + tiltY;
+    render();
   };
   const api = {
     setRotation(value) {
-      angle = Number.isFinite(value) ? value : angle;
-      rotor.rotation.z = angle;
-      render();
+      applyPose(value);
+    },
+    setPose(pose = {}) {
+      applyPose(pose.angle, pose.tiltX, pose.tiltY);
     },
     setVisible(value) { renderer.domElement.style.visibility = value ? 'visible' : 'hidden'; },
     render,
@@ -283,10 +307,14 @@ export async function initPremiumGear(container) {
       return {
         ready: !disposed && !contextLost,
         angle,
+        frames: renderFrames,
         vertices: vertexCount(),
         drawcalls: renderer.info?.render?.calls || 0,
         geometries: renderer.info?.memory?.geometries || 0,
         pixelRatio: renderer.getPixelRatio(),
+        cutouts: 8,
+        blueLayerGap: 0.02,
+        minLayerGap: 0.02,
       };
     },
   };
