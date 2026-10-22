@@ -160,7 +160,8 @@ html.intro-active .floating-contact,body:has(dialog[open]) .floating-contact{vis
  .hero-intro p{font-size:18px;max-width:35ch}
  .hero-capabilities{font-size:21px;gap:7px 17px}
  .quick-contact-heading h2{max-width:19ch;font-size:32px;line-height:1.08}
- .hero-dock .dock-cta{font-size:29px}
+ .hero-dock .dock-cta{font-size:29px;padding-right:80px}
+ .hero-dock .dock-cta>svg{display:none}
  .support-process{margin-top:34px;padding-top:28px}
  .support-process strong{font-size:18px}
  .chart-reading{padding-right:62px;min-height:58px}
