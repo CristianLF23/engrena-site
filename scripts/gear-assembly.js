@@ -5,6 +5,65 @@ const BLUE = 0x0b78e8;
 const CHROME = 0xbac5cc;
 const EDGE = 0x56636d;
 
+// Small, deterministic maps for the hero only. The scene owns their lifetime.
+export function createHeroFinishTextures() {
+  const size = 512, grain = new Uint8Array(size * size * 4), direction = new Uint8Array(size * size * 4);
+  let seed = 7141;
+  for (let y = 0; y < size; y += 1) for (let x = 0; x < size; x += 1) {
+    const dx = x - (size - 1) / 2, dy = y - (size - 1) / 2;
+    const radius = Math.hypot(dx, dy), angle = Math.atan2(dy, dx) + Math.PI / 2;
+    seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+    const value = Math.round(220 + Math.sin(radius * 1.7) * 9 + (seed / 4294967296 - .5) * 8);
+    const offset = (y * size + x) * 4;
+    grain[offset] = grain[offset + 1] = grain[offset + 2] = value; grain[offset + 3] = 255;
+    direction[offset] = Math.round(Math.cos(angle) * 127 + 128);
+    direction[offset + 1] = Math.round(Math.sin(angle) * 127 + 128);
+    direction[offset + 2] = 255; direction[offset + 3] = 255;
+  }
+  const roughness = new THREE.DataTexture(grain, size, size);
+  const anisotropy = new THREE.DataTexture(direction, size, size);
+  for (const texture of [roughness, anisotropy]) {
+    texture.colorSpace = THREE.NoColorSpace; texture.generateMipmaps = true;
+    texture.minFilter = THREE.LinearMipmapLinearFilter; texture.magFilter = THREE.LinearFilter;
+    texture.needsUpdate = true;
+  }
+  return { roughness, anisotropy };
+}
+
+function finishSurface(geometry, diameter) {
+  const position = geometry.attributes.position, normal = geometry.attributes.normal;
+  const uv = geometry.attributes.uv, neighbours = new Map(), source = normal.array.slice();
+  for (let i = 0; i < position.count; i += 1) {
+    const key = `${Math.round(position.getX(i) * 10000)},${Math.round(position.getY(i) * 10000)},${Math.round(position.getZ(i) * 10000)}`;
+    if (!neighbours.has(key)) neighbours.set(key, []);
+    neighbours.get(key).push(i);
+    uv.setXY(i, position.getX(i) / diameter + .5, position.getY(i) / diameter + .5);
+  }
+  // Average only neighbouring bevel normals. Tooth flanks keep their hard edges.
+  const threshold = Math.cos(THREE.MathUtils.degToRad(30));
+  for (const indices of neighbours.values()) for (const i of indices) {
+    const x = source[i * 3], y = source[i * 3 + 1], z = source[i * 3 + 2];
+    let nx = 0, ny = 0, nz = 0;
+    for (const j of indices) {
+      if (x * source[j * 3] + y * source[j * 3 + 1] + z * source[j * 3 + 2] < threshold) continue;
+      nx += source[j * 3]; ny += source[j * 3 + 1]; nz += source[j * 3 + 2];
+    }
+    const length = Math.hypot(nx, ny, nz) || 1; normal.setXYZ(i, nx / length, ny / length, nz / length);
+  }
+  normal.needsUpdate = true; uv.needsUpdate = true;
+  return geometry;
+}
+
+function machinedFace(maps, color = 0xd4dce3) {
+  const material = metal(color, .28, .98);
+  material.clearcoat = .08; material.clearcoatRoughness = .24;
+  if (maps) {
+    material.roughnessMap = maps.roughness;
+    material.anisotropy = .4; material.anisotropyMap = maps.anisotropy;
+  }
+  return material;
+}
+
 function windows(shape, count = 8, inner = 0.84, outer = 2.08, half = 0.34) {
   for (let i = 0; i < count; i += 1) {
     const center = i * TAU / count + Math.PI / count;
@@ -53,21 +112,28 @@ function ring(outer, inner, depth, material, segments = 72) {
   const profile = [[inner, back + bevel], [inner, front - bevel], [inner + bevel, front], [inner + width * .3, front + .014], [inner + width * .7, front + .014], [outer - bevel, front], [outer, front - bevel], [outer, back + bevel], [outer - bevel, back], [inner + bevel, back], [inner, back + bevel]];
   const mesh = new THREE.Mesh(new THREE.LatheGeometry(profile.map(([r, z]) => new THREE.Vector2(r, z)), segments), material); mesh.rotation.x = Math.PI / 2; return mesh;
 }
-function torus(radius, tube, material, z) { const mesh = new THREE.Mesh(new THREE.TorusGeometry(radius, tube, 10, 72), material); mesh.position.z = z; return mesh; }
+function torus(radius, tube, material, z, segments = 72) { const mesh = new THREE.Mesh(new THREE.TorusGeometry(radius, tube, 10, segments), material); mesh.position.z = z; return mesh; }
 
-export function createGearAssembly({ detail = 'hero', index = 0 } = {}) {
+export function createGearAssembly({ detail = 'hero', index = 0, finishMaps = null } = {}) {
   const group = new THREE.Group(); group.name = `machined-gear-${index}`;
   const compact = detail !== 'full';
-  const bodyColor = index === 1 && detail === 'hero' ? 0x315b7c : CHROME;
-  const body = new THREE.Mesh(bodyGeometry(detail), metal(bodyColor, compact ? .14 : .2, .98)); group.add(body);
+  const polished = detail === 'hero';
+  const bodyColor = polished ? [0x687985, 0x1261f4, 0xbfcbd3][index % 3] : CHROME;
+  const bodyMaterial = metal(bodyColor, polished ? .23 : .2, index === 1 && polished ? .72 : .98);
+  if (polished && index === 1) { bodyMaterial.clearcoat = .5; bodyMaterial.clearcoatRoughness = .14; }
+  const bodyGeo = bodyGeometry(detail);
+  if (polished) finishSurface(bodyGeo, 5.54);
+  const body = new THREE.Mesh(bodyGeo, bodyMaterial); group.add(body);
   const rear = ring(2.12, 1.77, .12, metal(EDGE, compact ? .2 : .26, .93)); rear.position.z = -.29; group.add(rear);
-  const plate = new THREE.Mesh(plateGeometry(detail), metal(CHROME, compact ? .17 : .28, .98)); plate.position.z = .44; group.add(plate);
+  const plateGeo = plateGeometry(detail);
+  if (polished) finishSurface(plateGeo, 4.38);
+  const plate = new THREE.Mesh(plateGeo, polished ? [machinedFace(finishMaps), metal(0x8d9da8, .2, .98)] : metal(CHROME, .28, .98)); plate.position.z = .44; group.add(plate);
   const blueBand = ring(2.25, 2.01, .08, metal(0x1261f4, compact ? .18 : .24, .72)); blueBand.position.z = .28; group.add(blueBand);
-  group.add(torus(2.13, .05, metal(0xe9f1f5, compact ? .12 : .18, 1), .53));
-  group.add(torus(1.18, .05, metal(0xeff6f9, compact ? .13 : .18, 1), .53));
+  group.add(torus(2.13, .05, metal(0xe9f1f5, compact ? .12 : .18, 1), .53, polished ? 96 : 72));
+  group.add(torus(1.18, .05, metal(0xeff6f9, compact ? .13 : .18, 1), .53, polished ? 96 : 72));
   const blueInner = ring(1.00, .76, .07, metal(0x063a73, compact ? .18 : .26, .95)); blueInner.position.z = .28; group.add(blueInner);
-  const bore = ring(.88, .66, .18, metal(0x0a1822, compact ? .2 : .24, .96)); bore.position.z = .47; group.add(bore);
-  const hub = ring(1.08, .88, .12, metal(CHROME, compact ? .13 : .17, .98)); hub.position.z = .55; group.add(hub);
+  const bore = ring(.88, .66, .18, metal(0x0a1822, compact ? .2 : .24, .96), polished ? 96 : 72); bore.position.z = .47; group.add(bore);
+  const hub = ring(1.08, .88, .12, metal(CHROME, compact ? .13 : .17, .98), polished ? 96 : 72); hub.position.z = .55; group.add(hub);
   group.add(torus(.84, .06, metal(0x22a6ff, compact ? .14 : .2, .96), .57));
   group.add(torus(.71, .035, metal(0x8aa6b9, compact ? .2 : .28, .93), .58));
   if (detail === 'full') {

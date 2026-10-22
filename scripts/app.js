@@ -272,7 +272,7 @@
     const attempt=++sceneAttempt;sceneStarting=true;
     if(explore){explore.hidden=false;explore.disabled=true;explore.textContent='Preparando animação';}
     try{
-      const {initMechanism}=await import(new URL('hero-scene.js?v=1.14',appURL));
+      const {initMechanism}=await import(new URL('hero-scene.js?v=1.17',appURL));
       if(attempt!==sceneAttempt||!canAnimate())return;
       const nextScene=await initMechanism(stage,{holdAssembly:!introDone});
       if(attempt!==sceneAttempt||!canAnimate()){nextScene.dispose();return}
@@ -401,7 +401,7 @@
     counterObserver.disconnect();visibility.disconnect();sections.disconnect();
   });
   window.engrenaPreview=Object.freeze({
-    version:'1.16',externalTransmission:false,
+    version:'1.17',externalTransmission:false,
     get heroVariant(){return heroVariant},
     get counter(){return{started:counterStarted,elapsed,seconds:counterSeconds,rate:illustrativeRate,stopped:contactCompleted}},
     get scene(){return scene?{...scene.stats,active:sceneActive}:{active:false}}
