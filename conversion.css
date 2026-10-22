@@ -241,3 +241,9 @@ body.diagnosis-inline-visible .floating-contact{visibility:hidden;opacity:0;poin
  .diagnosis-close{top:14px;right:20px}
  .diagnosis-success h3{font-size:32px}
 }
+
+/* The desktop opening has one contact action: submit the exposed form. */
+@media(min-width:900px){
+ .hero .hero-dock,.site-header .header-contact{display:none}
+ body.hero-is-visible .floating-contact{visibility:hidden;opacity:0;pointer-events:none}
+}
