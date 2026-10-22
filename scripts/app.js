@@ -6,13 +6,13 @@
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const saveData = Boolean(navigator.connection?.saveData);
   const loader=$('#intro-loader'), contact=$('#contact-dialog'), menu=$('#menu-dialog'), privacy=$('#privacy-dialog');
-  const form=$('#qualification-form'), steps=$$('[data-form-step]'), stage=$('#mechanism-stage'), explore=$('#explore-mechanism');
+  const stage=$('#mechanism-stage'), explore=$('#explore-mechanism');
   const originalDescription=$('#mechanism-description').textContent;
   const hero=$('#inicio'),mechanismImage=$('.mechanism-image');
   const gearImage={src:mechanismImage.getAttribute('src'),srcset:mechanismImage.getAttribute('srcset'),alt:mechanismImage.alt};
   const originalImage={src:'assets/images/mechanism-original.webp',srcset:'assets/images/mechanism-original-small.webp 1086w, assets/images/mechanism-original.webp 2172w',alt:'Três peças industriais originais em aço escuro, azul e prata, em perspectiva oblíqua.'};
   let heroVariant=new URL(location.href).searchParams.get('abertura')==='original'?'original':'gears';
-  let introDone=false, introTimeline=null, introRun=0, introReturnFocus=null, introTimer=0, formStep=0, formCompleted=false, opener=null;
+  let introDone=false, introTimeline=null, introRun=0, introReturnFocus=null, introTimer=0;
   let introScene=null, introPoseTimeline=null, introLostHandler=null;
   let scene=null, sceneActive=false, sceneProgress=0, selectedPiece=null, sceneStarting=false, sceneAttempt=0;
   let counterStarted=false, contactCompleted=false, counterStart=0, elapsed=0, counterSeconds=0, interval=0;
@@ -139,71 +139,12 @@
   },{threshold:.25});
   counterObserver.observe($('.counter-grid'));
 
-  function setStep(step,focus=true){
-    formStep=step;
-    steps.forEach((fieldset,i)=>{fieldset.hidden=i!==step;fieldset.disabled=i!==step});
-    $$('[data-step-indicator]').forEach((e,i)=>{
-      e.classList.toggle('active',i===step);
-      if(i===step)e.setAttribute('aria-current','step');else e.removeAttribute('aria-current');
-    });
-    if(focus){entrance(steps[step]);$('input,select',steps[step])?.focus({preventScroll:true});}
-    if(step===1){
-      const title=document.createElement('strong'),place=document.createElement('span');
-      title.textContent=$('#workshop').value.trim();
-      place.textContent=$('#city').value.trim()+', '+$('#state').value;
-      $('#form-recap').replaceChildren(title,place);
-    }
-  }
-  setStep(0,false);
-  const labels={workshop:'o nome da oficina',city:'a cidade',state:'o estado',revenue:'a faixa de faturamento',interest:'seu interesse','contact-name':'seu nome',whatsapp:'um WhatsApp válido com DDD'};
-  function nationalPhone(value){
-    let digits=value.replace(/\D/g,'');
-    if(digits.startsWith('55')&&(digits.length===12||digits.length===13))digits=digits.slice(2);
-    return digits;
-  }
-  function validate(step){
-    const invalid=[];
-    $$('input,select',steps[step]).forEach(control=>{
-      let valid=Boolean(control.value.trim())&&control.checkValidity();
-      if(control.id==='whatsapp')valid=/^[1-9]\d{9,10}$/.test(nationalPhone(control.value));
-      if(valid)control.removeAttribute('aria-invalid');else{control.setAttribute('aria-invalid','true');invalid.push(control)}
-    });
-    const error=step===0?$('#step-error'):$('#contact-error');
-    error.textContent=invalid.length?'Informe '+labels[invalid[0].id]+' para continuar.':'';
-    if(invalid.length)invalid[0].focus();
-    return !invalid.length;
-  }
-  $$('input,select',form).forEach(c=>c.addEventListener('input',()=>c.removeAttribute('aria-invalid')));
-  $('#form-next').addEventListener('click',()=>{if(validate(0))setStep(1)});
-  $('#form-back').addEventListener('click',()=>setStep(0));
-  form.addEventListener('keydown',e=>{
-    if(e.key==='Enter'&&formStep===0&&e.target.tagName==='INPUT'){e.preventDefault();if(validate(0))setStep(1)}
-  });
-  form.addEventListener('submit',e=>{
-    e.preventDefault();
-    if(formStep!==1){if(validate(0))setStep(1);return}
-    if(!validate(1))return;
-    // Demonstration only: no external submission or durable contact storage.
-    stopCounter();formCompleted=true;form.hidden=true;$('#form-success').hidden=false;
-    $('.form-steps').hidden=true;$('.demo-form-note').hidden=true;entrance($('#form-success'));$('#form-success').focus({preventScroll:true});
-  });
-  document.addEventListener('engrena:contact-demo-complete',()=>stopCounter(),{ once:false });
+  document.addEventListener('engrena:contact-demo-complete',()=>stopCounter());
   $$('[data-open-contact]').forEach(button=>button.addEventListener('click',e=>{
-    e.preventDefault();finishIntro();close(menu);opener=button;
-    if(button.dataset.interest==='ambos'&&$('#contato-rapido')){
-      $('#contato-rapido').scrollIntoView({behavior:reduced.matches?'instant':'smooth',block:'start'});
-      $('#quick-name').focus({preventScroll:true});
-      return;
-    }
-    if(formCompleted){form.reset();formCompleted=false}
-    form.hidden=false;$('#form-success').hidden=true;$('.form-steps').hidden=false;$('.demo-form-note').hidden=false;
-    $('#interest').value=button.dataset.interest||'ambos';
-    $('#step-error').textContent='';$('#contact-error').textContent='';
-    $$('[aria-invalid]',form).forEach(c=>c.removeAttribute('aria-invalid'));
-    setStep(0,false);show(contact);
-    requestAnimationFrame(()=>$('#workshop').focus({preventScroll:true}));
+    if(!window.engrenaContact)return;
+    e.preventDefault();finishIntro();close(menu);
+    window.engrenaContact.open(button);
   }));
-  contact.addEventListener('close',()=>{if(opener?.isConnected)opener.focus({preventScroll:true})});
 
   const tabs=$$('[role="tab"]');
   function activateTab(tab){
@@ -401,7 +342,7 @@
     counterObserver.disconnect();visibility.disconnect();sections.disconnect();
   });
   window.engrenaPreview=Object.freeze({
-    version:'1.19',externalTransmission:false,
+    version:'1.20',externalTransmission:false,
     get heroVariant(){return heroVariant},
     get counter(){return{started:counterStarted,elapsed,seconds:counterSeconds,rate:illustrativeRate,stopped:contactCompleted}},
     get scene(){return scene?{...scene.stats,active:sceneActive}:{active:false}}
