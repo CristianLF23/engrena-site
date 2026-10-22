@@ -169,3 +169,10 @@ html.intro-active .floating-contact,body:has(dialog[open]) .floating-contact{vis
  .chart-reading{padding-right:62px;min-height:58px}
  .form-side h2{font-size:37px}
 }
+
+/* Keep the FAQ title and its artwork together while the desktop questions scroll. */
+.faq-intro{display:contents}
+@media(min-width:900px) and (min-height:540px){
+ .faq-intro{display:block;position:sticky;top:48px;align-self:start;min-width:0;min-height:380px}
+ .faq-intro .faq-question{left:0;top:0;max-width:100%}
+}
