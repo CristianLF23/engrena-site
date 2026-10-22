@@ -16,7 +16,7 @@
   addEventListener('pagehide',event=>{if(!event.persisted)journeyObserver.disconnect();});
   const route = $$('.method-route li');
   const examples = [
-    ['Sua oficina aparece na busca.', 'Quem procura revisão encontra sua oficina na campanha ou no site.'],
+    ['Sua oficina aparece na busca.', 'Quem procura uma revisão vê seu anúncio ou encontra sua página no Google.'],
     ['O orçamento recebe acompanhamento.', 'A equipe entende a necessidade e define quem faz o próximo contato.'],
     ['A equipe planeja o próximo contato.', 'Depois do serviço, o histórico ajuda a retomar a conversa na próxima necessidade.']
   ];

@@ -229,8 +229,8 @@
 
   const descriptions=[
     'Vender mais: atrair pessoas que precisam dos serviços da sua oficina.',
-    'Vender melhor: atendimento com inteligência e uma próxima ação definida.',
-    'Vender com recorrência: continuar presente até o próximo serviço.'
+    'Vender melhor: treinar a equipe, responder e acompanhar cada orçamento.',
+    'Vender com recorrência: manter o contato para o cliente voltar no próximo serviço.'
   ];
   $$('.mechanism-label').forEach((button,i)=>button.addEventListener('click',()=>{
     selectedPiece=selectedPiece===i?null:i;
@@ -401,7 +401,7 @@
     counterObserver.disconnect();visibility.disconnect();sections.disconnect();
   });
   window.engrenaPreview=Object.freeze({
-    version:'1.18',externalTransmission:false,
+    version:'1.19',externalTransmission:false,
     get heroVariant(){return heroVariant},
     get counter(){return{started:counterStarted,elapsed,seconds:counterSeconds,rate:illustrativeRate,stopped:contactCompleted}},
     get scene(){return scene?{...scene.stats,active:sceneActive}:{active:false}}

@@ -40,7 +40,7 @@
     setError('');
     if (success) {
       success.hidden = false;
-      success.textContent = 'Demonstração concluída. Nenhum dado foi enviado.';
+      success.textContent = 'Demonstração concluída. Nenhum dado foi enviado. Quando o contato real for conectado, combinaremos seu diagnóstico gratuito pelo WhatsApp, sem compromisso financeiro.';
     }
     form.querySelector('button[type="submit"]')?.setAttribute('disabled', 'true');
     form.dispatchEvent(new CustomEvent('engrena:contact-demo-complete', { bubbles: true }));
