@@ -192,7 +192,6 @@
     const image=heroVariant==='original'?originalImage:gearImage;
     mechanismImage.srcset=image.srcset;mechanismImage.src=image.src;mechanismImage.alt=image.alt;
     hero.dataset.heroVariant=heroVariant;
-    $$('button[data-hero-variant]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.heroVariant===heroVariant)));
     if(explore)explore.hidden=!canAnimate();exploreLabel(false);
     if(updateURL){
       const url=new URL(location.href);
@@ -201,8 +200,7 @@
     }
     if(introDone&&canAnimate())startScene();
   }
-  $('#hero-comparison').hidden=false;$('.header-context').hidden=true;
-  $$('button[data-hero-variant]').forEach(button=>button.addEventListener('click',()=>selectHeroVariant(button.dataset.heroVariant)));
+  $('.header-context').hidden=true;
   selectHeroVariant(heroVariant,false);
   stage.addEventListener('mechanism:fallback',()=>{
     scene=null;sceneActive=false;exploreLabel(false);
