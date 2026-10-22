@@ -94,3 +94,37 @@ html.intro-active .floating-contact,body:has(dialog[open]) .floating-contact{vis
 .offer-fit{color:#385366;font:400 16px/1.5 var(--body);max-width:880px;border-top:1px solid #b5c9e5;margin-top:30px;padding-top:22px}
 .journey-block .journey-cta{flex-shrink:0}
 @media(max-width:599px){.offer-explainer{gap:16px}.offer-explainer dd{font-size:17px}.offer-fit{font-size:16px;margin-top:26px;padding-top:22px}}
+
+
+/* v1.18: calmer orientation, one footer identity and an explicit desktop form. */
+@media(min-width:1100px){
+ .section-rail{transition:background-color .65s ease-in-out,border-color .65s ease-in-out,color .35s ease-in-out}
+ .rail-chapters a{font-size:14px;transition:color .35s ease-in-out,background-color .65s ease-in-out,border-color .65s ease-in-out}
+ .rail-label{font-size:13px;max-height:180px;transition:color .35s ease-in-out}
+ .rail-tooltip{font-size:14px}
+ .section-rail .rail-track,.section-rail .rail-progress{transition:background-color .65s ease-in-out}
+ .footer-top{grid-template-columns:minmax(0,1.35fr) minmax(160px,.65fr) minmax(210px,.9fr);gap:clamp(28px,5vw,80px)}
+}
+@media(max-width:1099px){.footer-intro{padding-right:0}}
+@media(min-width:900px){
+ .hero .mechanism-stage::before{inset:0;background:radial-gradient(ellipse at 50% 50%,rgb(61 91 111 / .24),transparent 65%)}
+ .hero .hero-dock{grid-template-columns:minmax(200px,.65fr) minmax(0,1.35fr);align-items:center;gap:clamp(28px,4vw,64px);margin:12px 0 0;background:transparent;min-height:76px}
+ .hero .hero-dock>p{background:none;padding:0;font-size:17px;line-height:1.45;max-width:29ch}
+ .hero .hero-dock .dock-cta{width:fit-content;min-width:min(100%,420px);max-width:100%;min-height:66px;padding:16px 24px;font-size:30px;line-height:1.1;gap:32px}
+ .quick-contact{display:grid;grid-template-columns:minmax(200px,.65fr) minmax(0,1.35fr);gap:clamp(28px,4vw,64px);align-items:start;background:transparent;border:0;margin-block:32px 24px;padding:0}
+ .quick-contact-heading{display:block;margin:0;padding-top:3px}
+ .quick-contact-heading h2{font-size:clamp(32px,3vw,44px);line-height:1.05;max-width:12ch}
+ .quick-contact-heading p{font-size:17px;line-height:1.5;margin-top:18px;max-width:29ch;color:#c6dbe7}
+ #quick-contact-form{min-width:0}
+ .quick-contact-fields{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 20px}
+ .quick-field{gap:10px}
+ .quick-field label{font-size:15px;font-weight:600;color:#eef7fc}
+ .quick-field input{min-height:56px;background:#f1f6fa;color:#102330;border-color:#a4bfce;padding:14px 16px;caret-color:#0754cf}
+ .quick-field input::placeholder{color:#536a79}
+ .quick-field input:focus-visible{outline:3px solid #65dbff;outline-offset:3px}
+ .quick-field input[aria-invalid=true]{border:2px solid #b72238;padding:13px 15px}
+ .quick-submit{min-height:56px;padding:14px 20px;font-size:19px;align-self:end}
+ .quick-demo-note{font-size:13px;line-height:1.5;margin-top:18px;color:#b7cedb}
+ .quick-contact>noscript{grid-column:1/-1}
+}
+@media(prefers-reduced-motion:reduce){.section-rail,.rail-chapters a,.rail-label,.section-rail .rail-track,.section-rail .rail-progress{transition:none!important}}
