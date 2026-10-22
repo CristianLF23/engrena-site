@@ -134,6 +134,8 @@ html.intro-active .floating-contact,body:has(dialog[open]) .floating-contact{vis
 .hero h1 span{white-space:normal}
 .hero-intro p{line-height:1.45}
 .hero-capabilities{flex-wrap:wrap}
+.product{isolation:auto}
+.product-layout{position:relative;z-index:7}
 .product-demo{position:relative;z-index:7}
 .vertical-report-panel,.report-panel-copy{min-width:0}
 .case-number small{white-space:normal;line-height:1.5}
