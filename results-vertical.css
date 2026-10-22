@@ -18,5 +18,5 @@ html:not(.js) .chart-area{opacity:.22}
 }
 
 @media(max-width:600px){
- .report-tone-roi .report-chart .chart-value,.report-tone-revenue .report-chart .chart-value{font-size:30px}
+ .report-tone-roi .report-chart .chart-value,.report-tone-revenue .report-chart .chart-value,.report-tone-ticket .report-chart .chart-value{font-size:30px}
 }

@@ -1,8 +1,8 @@
 # ENGRENA
 
-Site de testes: https://cristianlf23.github.io/engrena-site/?v=1.21.4
+Site de testes: https://cristianlf23.github.io/engrena-site/?v=1.21.5
 
-Revisão 1.21.4: valores dos dois primeiros gráficos exibidos uma única vez no desenho, junto aos pontos e barras. Linha inferior de valores duplicados removida. Meses no eixo, números completos, descrições acessíveis e animação preservados. Demais gráficos sem alteração.
+Revisão 1.21.5: terceiro gráfico com o mesmo padrão dos dois primeiros. Valores somente junto aos pontos, sem repetição na base. Meses, valores completos, contexto, acessibilidade e animações preservados.
 
 Revisão 1.21: textos mais concisos para visitantes de anúncios de pesquisa. Oferta explícita, ações concretas, benefícios e diagnóstico gratuito. Menos repetições nas soluções, no método, nos gráficos e no FAQ. Valores, clientes, períodos e limites dos cases preservados.
 
