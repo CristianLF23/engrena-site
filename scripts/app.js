@@ -401,7 +401,7 @@
     counterObserver.disconnect();visibility.disconnect();sections.disconnect();
   });
   window.engrenaPreview=Object.freeze({
-    version:'1.14',externalTransmission:false,
+    version:'1.15',externalTransmission:false,
     get heroVariant(){return heroVariant},
     get counter(){return{started:counterStarted,elapsed,seconds:counterSeconds,rate:illustrativeRate,stopped:contactCompleted}},
     get scene(){return scene?{...scene.stats,active:sceneActive}:{active:false}}

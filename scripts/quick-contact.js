@@ -10,8 +10,8 @@
   const fields = [name, whatsapp, location].filter(Boolean);
   const phoneDigits = value => String(value || '').replace(/\D/g, '').replace(/^55(?=\d{10,11}$)/, '');
   const labels = new Map([
-    [name, 'seu nome'],
-    [whatsapp, 'seu WhatsApp com DDD'],
+    [name, 'seu nome com pelo menos duas letras'],
+    [whatsapp, 'um WhatsApp válido com DDD'],
     [location, 'sua cidade e estado'],
   ]);
   const setError = message => { if (error) error.textContent = message; };

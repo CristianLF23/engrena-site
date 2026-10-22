@@ -16,9 +16,9 @@
   addEventListener('pagehide',event=>{if(!event.persisted)journeyObserver.disconnect();});
   const route = $$('.method-route li');
   const examples = [
-    ['Uma busca vira oportunidade.', 'O cliente precisa revisar o carro. A campanha e o site ajudam sua oficina a ser encontrada.'],
-    ['A oportunidade ganha direção.', 'A equipe recebe a conversa, entende a necessidade e acompanha o orçamento até uma decisão.'],
-    ['O atendimento prepara o retorno.', 'Depois do serviço, o histórico e as rotinas de contato ajudam a manter o relacionamento.']
+    ['Sua oficina aparece na busca.', 'Quem procura revisão encontra sua oficina na campanha ou no site.'],
+    ['O orçamento recebe acompanhamento.', 'A equipe entende a necessidade e define quem faz o próximo contato.'],
+    ['A equipe planeja o próximo contato.', 'Depois do serviço, o histórico ajuda a retomar a conversa na próxima necessidade.']
   ];
   let activeStep = -1, scrollFrame = 0;
   function selectStep(index) {

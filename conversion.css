@@ -72,3 +72,17 @@ html.intro-active .floating-contact,body:has(dialog[open]) .floating-contact{vis
  .site-footer{padding-bottom:98px}
 }
 @media(prefers-reduced-motion:reduce){.floating-contact{transition:none}}
+
+/* A compact, factual case follows the two offers before the method. */
+.early-proof{position:relative;z-index:7;display:grid;grid-template-columns:1fr 1.05fr .9fr;gap:32px;align-items:center;background:#102634;color:#eef6fa;margin-top:40px;padding:32px}
+.early-proof h3{font:600 clamp(28px,2.4vw,38px)/1.08 var(--display);letter-spacing:-.015em;margin:0 0 14px}
+.early-proof-story>p{font-size:15px;line-height:1.5;color:#b9d1df;margin:0}
+.early-proof-result strong{display:block;white-space:nowrap;color:#6ae2ff;font:600 clamp(42px,4.2vw,68px)/1 var(--display);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.early-proof-result>span{display:block;font-size:14px;line-height:1.5;color:#c4d9e4;margin-top:10px}
+.early-proof-action>a{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:48px;padding-block:10px;color:#6ae2ff;border-bottom:1px solid #6b9caf;font:600 18px/1.3 var(--body)}
+.early-proof-action svg{width:24px;height:24px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.6}
+.early-proof-action>a:hover{color:#fff;border-color:#fff}
+.early-proof-action>p{color:#b3cbd8;font-size:12px;line-height:1.5;margin:12px 0 0}
+.method-example{margin-top:20px}
+@media(max-width:1099px){.early-proof{grid-template-columns:1fr 1fr;gap:28px}.early-proof-action{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:28px}.early-proof-action>p{margin:0}}
+@media(max-width:599px){.early-proof{grid-template-columns:1fr;margin-top:30px;padding:24px;gap:22px}.early-proof h3{font-size:32px;margin-bottom:10px}.early-proof-result strong{font-size:clamp(44px,12.6vw,62px)}.early-proof-action{display:block;grid-column:auto}.early-proof-action>p{margin-top:12px}}
