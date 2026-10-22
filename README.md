@@ -1,8 +1,8 @@
 # ENGRENA
 
-Site de testes: https://cristianlf23.github.io/engrena-site/?v=1.21.3
+Site de testes: https://cristianlf23.github.io/engrena-site/?v=1.21.4
 
-Revisão 1.21.3: removido o seletor de teste de imagens da abertura. Versão principal com engrenagens 3D, layout, intro, dados e contato preservados.
+Revisão 1.21.4: valores dos dois primeiros gráficos exibidos uma única vez no desenho, junto aos pontos e barras. Linha inferior de valores duplicados removida. Meses no eixo, números completos, descrições acessíveis e animação preservados. Demais gráficos sem alteração.
 
 Revisão 1.21: textos mais concisos para visitantes de anúncios de pesquisa. Oferta explícita, ações concretas, benefícios e diagnóstico gratuito. Menos repetições nas soluções, no método, nos gráficos e no FAQ. Valores, clientes, períodos e limites dos cases preservados.
 

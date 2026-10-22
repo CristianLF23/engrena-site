@@ -8,15 +8,15 @@ html.motion-paused .vertical-report-panel,html:not(.js) .vertical-report-panel{o
 html:not(.js) .chart-value,html:not(.js) .chart-point,html:not(.js) .chart-bar{opacity:1}
 html:not(.js) .chart-area{opacity:.22}
 
-/* Full monthly figures stay legible below the plot at narrow widths. */
+/* Monthly figures stay beside each point, with months on the horizontal axis. */
 .report-case-label{flex-wrap:wrap;row-gap:6px;line-height:1.5}
 .report-panel-copy h3{line-height:1.06}
 @media(max-width:600px){
- .report-tone-revenue .report-chart .chart-value{display:none}
- .report-tone-revenue .chart-data{gap:6px}
- .report-tone-revenue .chart-data dd{font-size:clamp(12px,3.65vw,16px);white-space:nowrap;font-variant-numeric:tabular-nums}
- .report-tone-revenue .chart-data dt{font-size:10px;line-height:1.5}
  .report-panel-chart .report-chart .chart-value{font-size:24px}
  .report-panel-chart .report-chart .chart-value[data-point-label="0"]{text-anchor:middle}
  .report-panel-chart .report-chart .chart-value[data-point-label="2"]{text-anchor:middle}
+}
+
+@media(max-width:600px){
+ .report-tone-roi .report-chart .chart-value,.report-tone-revenue .report-chart .chart-value{font-size:30px}
 }
