@@ -1,8 +1,8 @@
 # ENGRENA
 
-Site de testes: https://cristianlf23.github.io/engrena-site/?v=1.21.1
+Site de testes: https://cristianlf23.github.io/engrena-site/?v=1.21.2
 
-Revisão 1.21.1: removido o trio Divulgação, Atendimento e Organização da primeira dobra, no mobile e desktop. Conteúdo e fluxo da revisão 1.21 preservados.
+Revisão 1.21.2: quatro trechos removidos conforme indicação e título do segundo gráfico explícito: mais de R$ 200 mil por mês só em vendas geradas pela ENGRENA. Valores, períodos, animações e fluxo de contato preservados.
 
 Revisão 1.21: textos mais concisos para visitantes de anúncios de pesquisa. Oferta explícita, ações concretas, benefícios e diagnóstico gratuito. Menos repetições nas soluções, no método, nos gráficos e no FAQ. Valores, clientes, períodos e limites dos cases preservados.
 
