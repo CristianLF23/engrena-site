@@ -1,11 +1,9 @@
 # ENGRENA
 
-Site de testes: https://cristianlf23.github.io/engrena-site/?v=1.21.5
+Site de testes: https://cristianlf23.github.io/engrena-site/?v=1.22
 
-Revisão 1.21.5: terceiro gráfico com o mesmo padrão dos dois primeiros. Valores somente junto aos pontos, sem repetição na base. Meses, valores completos, contexto, acessibilidade e animações preservados.
+Revisão 1.22: composição mais limpa, seções com limites claros e soluções apresentadas com imagens autorais. Método 3V em três cards conectados: vender mais, vender melhor e vender com recorrência. Desktop mostra os três; mobile permite navegar horizontalmente com toque, botões ou teclado.
 
-Revisão 1.21: textos mais concisos para visitantes de anúncios de pesquisa. Oferta explícita, ações concretas, benefícios e diagnóstico gratuito. Menos repetições nas soluções, no método, nos gráficos e no FAQ. Valores, clientes, períodos e limites dos cases preservados.
+Engrenagens 3D, gráficos animados, valores e contexto dos clientes preservados. Formulário único com sete campos em uma etapa, exposto no desktop e aberto após clique no mobile. Sem nova dependência ou integração publicitária.
 
-No mobile, o formulário abre somente após clique. No desktop, permanece exposto na abertura, com uma única ação de contato. A mesma instância conserva sete campos em uma etapa, texto livre e rascunho. Teclado, foco e validação preservados. Sem JavaScript funcional, os campos continuam disponíveis como alternativa.
-
-Identidade, cenas 3D, gráficos animados e demais interações preservados. Formulário demonstrativo, sem envio nem persistência de dados. Feedbacks fictícios identificados. Sem dependência nova ou integração publicitária.
+Formulário demonstrativo, sem envio nem persistência de dados. Feedbacks fictícios identificados. Movimento reduzido e alternativa sem JavaScript preservados.

@@ -4,56 +4,59 @@
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const cards = $$('[data-method-step]');
-  const journeyDiagram=$('.method-journey-diagram');
-  const journeyObserver=new IntersectionObserver(entries=>{
-    $('#metodo').classList.toggle('is-in-view',entries[0].isIntersecting&&!document.hidden);
-  });
-  if(journeyDiagram)journeyObserver.observe(journeyDiagram);
-  document.addEventListener('visibilitychange',()=>{
-    const box=journeyDiagram?.getBoundingClientRect();
-    $('#metodo').classList.toggle('is-in-view',!document.hidden&&Boolean(box&&box.top<innerHeight&&box.bottom>0));
-  });
-  addEventListener('pagehide',event=>{if(!event.persisted)journeyObserver.disconnect();});
-  const route = $$('.method-route li');
-  const examples = [
-    ['Sua oficina aparece na busca.', 'Quem procura uma revisão vê seu anúncio ou encontra sua página no Google.'],
-    ['O orçamento recebe acompanhamento.', 'A equipe entende a necessidade e define quem faz o próximo contato.'],
-    ['A equipe planeja o próximo contato.', 'Depois do serviço, o histórico ajuda a retomar a conversa na próxima necessidade.']
-  ];
-  let activeStep = -1, scrollFrame = 0;
-  function selectStep(index) {
-    if (index === activeStep) return;
-    activeStep = index;
-    cards.forEach((card, i) => card.classList.toggle('is-current', i === index));
-    route.forEach((item, i) => item.classList.toggle('is-current', i === index));
-    $('.method-position').textContent = '0' + (index + 1) + ' / 03';
-    $('#method-example-title').textContent = examples[index][0];
-    $('#method-example-copy').textContent = examples[index][1];
-    if (!reduced.matches) $('.method-example').animate([{opacity:.45, transform:'translateY(6px)'},{opacity:1, transform:'translateY(0)'}], {duration:240, easing:'ease-out'});
-    $('#metodo').dataset.activeStep = String(index);
-  }
+  const track = $('#method-track');
+  const previous = $('#method-prev'), next = $('#method-next');
   const chapters = $$('.rail-chapters a');
   const sections = $$('section[data-section]');
+  let activeStep = 0, scrollFrame = 0;
+  function selectStep(index) {
+    activeStep = Math.max(0, Math.min(cards.length - 1, index));
+    cards.forEach((card, i) => card.classList.toggle('is-current', i === activeStep));
+    $('.method-position').textContent = (activeStep + 1) + ' de ' + cards.length;
+    previous.disabled = activeStep === 0;
+    next.disabled = activeStep === cards.length - 1;
+    $('#metodo').dataset.activeStep = String(activeStep);
+  }
+  function goStep(index) {
+    selectStep(index);
+    if (track.scrollWidth > track.clientWidth + 2) {
+      const left = cards[activeStep].offsetLeft - cards[0].offsetLeft;
+      track.scrollTo({ left, behavior: reduced.matches ? 'instant' : 'smooth' });
+    }
+  }
+  function syncStep() {
+    if (track.scrollWidth <= track.clientWidth + 2) return;
+    const left = track.getBoundingClientRect().left;
+    const index = cards.reduce((best, card, i) => Math.abs(card.getBoundingClientRect().left - left) < Math.abs(cards[best].getBoundingClientRect().left - left) ? i : best, 0);
+    selectStep(index);
+  }
+  previous.addEventListener('click', () => goStep(activeStep - 1));
+  next.addEventListener('click', () => goStep(activeStep + 1));
+  track.addEventListener('scroll', syncStep, { passive: true });
+  track.addEventListener('keydown', event => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    goStep(event.key === 'Home' ? 0 : event.key === 'End' ? cards.length - 1 : activeStep + (event.key === 'ArrowRight' ? 1 : -1));
+  });
+  cards.forEach((card, index) => card.addEventListener('pointerenter', () => {
+    if (matchMedia('(hover: hover)').matches) selectStep(index);
+  }));
   function updatePosition() {
     scrollFrame = 0;
-    const target = innerHeight * .5;
-    let index = 0;
-    cards.forEach((card, i) => { if (card.getBoundingClientRect().top < target) index = i; });
-    selectStep(index);
-    const bounds = $('.method-stack').getBoundingClientRect();
-    $('.method-stack').style.setProperty('--method-progress', String(Math.max(0,Math.min(1,(target-bounds.top)/bounds.height))));
     let section = sections[0];
     sections.forEach(item => { if(item.getBoundingClientRect().top <= innerHeight * .35) section = item; });
     $('#rail-label').textContent = section.dataset.section;
     chapters.forEach(link => {
-      if(link.hash === '#'+section.id) link.setAttribute('aria-current','location');
+      if(link.hash === '#' + section.id) link.setAttribute('aria-current', 'location');
       else link.removeAttribute('aria-current');
     });
+    syncStep();
   }
   function schedulePosition() { if(!scrollFrame) scrollFrame=requestAnimationFrame(updatePosition); }
-  addEventListener('scroll',schedulePosition,{passive:true});
-  addEventListener('resize',schedulePosition,{passive:true});
-  updatePosition();
+  addEventListener('scroll', schedulePosition, { passive: true });
+  addEventListener('resize', schedulePosition, { passive: true });
+  $('.method-controls').hidden = false;
+  selectStep(0); updatePosition();
 
   // An illustrative sequence plays once on entry or tab selection, never rotates tabs.
   const demo = $('.product-demo'), replay = $('.demo-replay');
