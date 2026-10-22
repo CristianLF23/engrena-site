@@ -42,12 +42,11 @@
           e.setAttribute(attr.name,value);
         }));
         svg.setAttribute('aria-hidden','true');svg.removeAttribute('role');
-        if(mount.classList.contains('form-brand'))$$('[fill="#1261F4"],[fill="#00CFFF"]',svg).forEach(e=>e.setAttribute('fill','#fff'));
         mount.replaceChildren(document.importNode(svg,true));
       });
     }catch{
       mounts.forEach(mount=>{
-        const image=new Image();image.src=new URL('../assets/brand/'+(mount.classList.contains('form-brand')?'symbol-white.svg':'symbol.svg'),appURL).href;image.alt='';image.width=128;image.height=128;
+        const image=new Image();image.src=new URL('../assets/brand/symbol.svg',appURL).href;image.alt='';image.width=128;image.height=128;
         mount.replaceChildren(image);
       });
     }
@@ -61,13 +60,14 @@
     introPoseTimeline?.kill();introScene?.dispose();introScene=null;
     if(introLostHandler)$('#intro-gear')?.removeEventListener('premiumgear:lost',introLostHandler);
     introLostHandler=null;
-    $('#intro-gear')?.classList.remove('has-scene');
+    $('#intro-gear')?.classList.remove('has-scene','scene-preparing');
     document.documentElement.classList.remove('intro-active');
     $('#site-content').inert=false;
+    updateFloating();
     const skip=$('#skip-intro');skip.disabled=true;skip.tabIndex=-1;
     if(hadIntroFocus){
-      const target=introReturnFocus?.isConnected&&!loader.contains(introReturnFocus)?introReturnFocus:$('.brand-link');
-      target?.focus({preventScroll:true});
+      const target=introReturnFocus?.isConnected&&!loader.contains(introReturnFocus)?introReturnFocus:$('#conteudo');
+      if(target){target.setAttribute('tabindex','-1');target.focus({preventScroll:true});}
     }
     window.ScrollTrigger?.refresh();
   }
@@ -95,7 +95,7 @@
 
   function updateFloating(){
     document.body.classList.toggle('hero-is-visible',heroVisible);
-    $('#floating-contact').classList.toggle('is-visible',!heroVisible&&!contactVisible&&!footerVisible&&!$('dialog[open]'));
+    $('#floating-contact').classList.toggle('is-visible',!document.documentElement.classList.contains('intro-active')&&!$('dialog[open]'));
   }
   function show(dialog){if(!dialog.open){dialog.showModal();entrance(dialog)}$('#floating-contact').classList.remove('is-visible')}
   function entrance(element){
@@ -187,8 +187,14 @@
     stopCounter();formCompleted=true;form.hidden=true;$('#form-success').hidden=false;
     $('.form-steps').hidden=true;$('.demo-form-note').hidden=true;entrance($('#form-success'));$('#form-success').focus({preventScroll:true});
   });
+  document.addEventListener('engrena:contact-demo-complete',()=>stopCounter(),{ once:false });
   $$('[data-open-contact]').forEach(button=>button.addEventListener('click',e=>{
     e.preventDefault();finishIntro();close(menu);opener=button;
+    if(button.dataset.interest==='ambos'&&$('#contato-rapido')){
+      $('#contato-rapido').scrollIntoView({behavior:reduced.matches?'instant':'smooth',block:'start'});
+      $('#quick-name').focus({preventScroll:true});
+      return;
+    }
     if(formCompleted){form.reset();formCompleted=false}
     form.hidden=false;$('#form-success').hidden=true;$('.form-steps').hidden=false;$('.demo-form-note').hidden=false;
     $('#interest').value=button.dataset.interest||'ambos';
@@ -266,7 +272,7 @@
     const attempt=++sceneAttempt;sceneStarting=true;
     if(explore){explore.hidden=false;explore.disabled=true;explore.textContent='Preparando animação';}
     try{
-      const {initMechanism}=await import(new URL('hero-scene.js?v=1.13',appURL));
+      const {initMechanism}=await import(new URL('hero-scene.js?v=1.14',appURL));
       if(attempt!==sceneAttempt||!canAnimate())return;
       const nextScene=await initMechanism(stage,{holdAssembly:!introDone});
       if(attempt!==sceneAttempt||!canAnimate()){nextScene.dispose();return}
@@ -286,17 +292,25 @@
     const host=$('#intro-gear');
     if(!host||reduced.matches||saveData)return;
     try{
-      const {initPremiumGear}=await import(new URL('premium-gear.js?v=1.13',appURL));
+      const {initPremiumGear}=await import(new URL('premium-gear.js?v=1.14',appURL));
       if(run!==introRun||introDone)return;
       const candidate=await initPremiumGear(host);
-      if(run!==introRun||introDone||!candidate.stats.ready){candidate.dispose();return;}
+      if(run!==introRun||introDone||!candidate.stats.ready){candidate.dispose();host.classList.remove('scene-preparing');return;}
       introScene=candidate;
       introLostHandler=()=>{introPoseTimeline?.kill();candidate.dispose();introScene=null;host.classList.remove('has-scene');};
       host.addEventListener('premiumgear:lost',introLostHandler,{once:true});
       const pose={angle:-.65,tiltY:1.88,tiltX:-.1};
-      introScene.setPose(pose);host.classList.add('has-scene');
+      /* The module renders once during construction. Keep that first frame hidden
+         until the intended profile pose is applied, preventing a visible jump on
+         compact mobile viewports while ResizeObserver settles the canvas. */
+      host.classList.add('scene-preparing');
+      candidate.setVisible(false);
+      introScene.setPose(pose);
+      await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+      if(run!==introRun||introDone){candidate.dispose();return;}
+      candidate.setVisible(true);host.classList.remove('scene-preparing');host.classList.add('has-scene');
       if(window.gsap)introPoseTimeline=gsap.to(pose,{angle:.35,tiltY:0,tiltX:0,duration:1.85,ease:'power2.out',onUpdate:()=>introScene?.setPose(pose)});
-    }catch{/* The rendered gear remains the introduction's static fallback. */}
+    }catch{host.classList.remove('scene-preparing');/* The rendered gear remains the introduction's static fallback. */}
   }
   function beginIntro(replay=false){
     const run=++introRun;
@@ -313,6 +327,7 @@
     $('#site-content').inert=true;
     loader.setAttribute('aria-hidden','false');$('#skip-intro').disabled=false;$('#skip-intro').tabIndex=0;
     loader.focus({preventScroll:true});
+    $('#intro-gear')?.classList.add('scene-preparing');
     prepareIntroGear(run);
     // Restart CSS brand choreography, including cached/replayed introductions.
     loader.querySelectorAll('.loader-symbol,.loader-symbol svg,.loader-symbol [data-gear-piece],.loader-progress i').forEach(el=>el.getAnimations().forEach(animation=>{animation.cancel();animation.play();}));
@@ -386,7 +401,7 @@
     counterObserver.disconnect();visibility.disconnect();sections.disconnect();
   });
   window.engrenaPreview=Object.freeze({
-    version:'1.13',externalTransmission:false,
+    version:'1.14',externalTransmission:false,
     get heroVariant(){return heroVariant},
     get counter(){return{started:counterStarted,elapsed,seconds:counterSeconds,rate:illustrativeRate,stopped:contactCompleted}},
     get scene(){return scene?{...scene.stats,active:sceneActive}:{active:false}}
