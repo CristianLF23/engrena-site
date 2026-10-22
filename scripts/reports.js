@@ -12,7 +12,14 @@
   const charts = panels.flatMap((panel, panelIndex) => [...panel.querySelectorAll('.report-chart')].map(svg => ({
     panel, panelIndex, svg, values: (svg.dataset.values || '').split(',').map(Number), maximum: Number(svg.dataset.max || 1), base: Number(svg.dataset.base || 280), height: Number(svg.dataset.height || 216), xs: (svg.dataset.xs || '100,340,580').split(',').map(Number), line: svg.querySelector('.chart-line'), area: svg.querySelector('.chart-area'), points: [...svg.querySelectorAll('.chart-point')], labels: [...svg.querySelectorAll('[data-point-label]')], bars: [...svg.querySelectorAll('.chart-bar')], rows: [...panel.querySelectorAll('.chart-data dd')], phase: 0,
   })));
-  const chartValue = (chart, index, progress) => { const decimals = Number(chart.svg.dataset.labelDecimals || 0); const scale = Number(chart.svg.dataset.labelScale || 1); const prefix = chart.svg.dataset.labelPrefix || ''; const suffix = chart.svg.dataset.unit === 'x' ? 'x' : scale === 1000 ? '' : chart.svg.dataset.unit || ''; return `${prefix}${number(chart.values[index] * scale * progress, decimals)}${suffix}`; };
+  const chartValue = (chart, index, progress) => {
+    const decimals = Number(chart.svg.dataset.labelDecimals || 0);
+    const scale = Number(chart.svg.dataset.labelScale || 1);
+    const prefix = chart.svg.dataset.labelPrefix || '';
+    const unit = chart.svg.dataset.unit || '';
+    const suffix = unit === 'x' ? 'x' : scale === 1000 ? '' : unit;
+    return `${prefix}${number(chart.values[index] * scale * progress, decimals)}${suffix}`;
+  };
   function paintChart(chart, progress) {
     const eased = 1 - Math.pow(1 - Math.max(0, Math.min(1, progress)), 3); chart.phase = eased;
     const points = chart.values.map((value, index) => ({ x: chart.xs[index] ?? chart.xs[0], y: chart.base - value / chart.maximum * chart.height * eased }));

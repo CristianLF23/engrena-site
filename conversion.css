@@ -86,3 +86,11 @@ html.intro-active .floating-contact,body:has(dialog[open]) .floating-contact{vis
 .method-example{margin-top:20px}
 @media(max-width:1099px){.early-proof{grid-template-columns:1fr 1fr;gap:28px}.early-proof-action{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:28px}.early-proof-action>p{margin:0}}
 @media(max-width:599px){.early-proof{grid-template-columns:1fr;margin-top:30px;padding:24px;gap:22px}.early-proof h3{font-size:32px;margin-bottom:10px}.early-proof-result strong{font-size:clamp(44px,12.6vw,62px)}.early-proof-action{display:block;grid-column:auto}.early-proof-action>p{margin-top:12px}}
+
+/* v1.16: each offer explains the work and its practical value in place. */
+.offer-explainer{margin:2px 0 0;display:grid;gap:20px;flex:1;max-width:480px}
+.offer-explainer dt{color:#0755c7;font:600 13px/1.4 var(--body);margin-bottom:6px}
+.offer-explainer dd{margin:0;color:#385366;font:400 17px/1.5 var(--body)}
+.offer-fit{color:#385366;font:400 16px/1.5 var(--body);max-width:880px;border-top:1px solid #b5c9e5;margin-top:30px;padding-top:22px}
+.journey-block .journey-cta{flex-shrink:0}
+@media(max-width:599px){.offer-explainer{gap:16px}.offer-explainer dd{font-size:17px}.offer-fit{font-size:16px;margin-top:26px;padding-top:22px}}
