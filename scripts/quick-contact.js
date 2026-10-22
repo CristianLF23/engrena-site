@@ -12,6 +12,7 @@
   const submit = form.querySelector('button[type="submit"]');
   const first = form.querySelector('#contact-name');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const compact = matchMedia('(max-width: 899px)');
   const labels = {
     'contact-name': 'seu nome com pelo menos duas letras',
     whatsapp: 'um WhatsApp válido com DDD',
@@ -79,7 +80,7 @@
     opener = trigger;
     scrollPosition = scrollY;
     // Reserve the inline footprint so the page and its scroll-linked art do not jump.
-    home.style.minHeight = `${home.getBoundingClientRect().height}px`;
+    if (!compact.matches) home.style.minHeight = `${home.getBoundingClientRect().height}px`;
     slot.append(panel);
     dialog.showModal();
     dialog.scrollTop = 0;
@@ -117,15 +118,20 @@
 
   document.querySelector('.dock-cta')?.addEventListener('click', event => {
     event.preventDefault();
+    if (compact.matches) {
+      open(event.currentTarget);
+      return;
+    }
     home.scrollIntoView({ behavior: reduced.matches ? 'instant' : 'smooth', block: 'start' });
     (completed ? success : first).focus({ preventScroll: true });
   });
   window.engrenaContact = Object.freeze({
     open,
-    get state() { return { presentation: dialog.open ? 'dialog' : 'inline', completed, fields: controls.length }; },
+    get state() { return { presentation: dialog.open ? 'dialog' : compact.matches ? 'button' : 'inline', completed, fields: controls.length }; },
   });
   form.dataset.ready = 'true';
   submit.disabled = false;
+  document.body.classList.add('contact-enhanced');
   addEventListener('pagehide', event => {
     if (!event.persisted) { inlineObserver.disconnect(); cancelAnimationFrame(focusFrame); }
   });

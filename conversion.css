@@ -247,3 +247,8 @@ body.diagnosis-inline-visible .floating-contact{visibility:hidden;opacity:0;poin
  .hero .hero-dock,.site-header .header-contact{display:none}
  body.hero-is-visible .floating-contact{visibility:hidden;opacity:0;pointer-events:none}
 }
+
+/* Mobile contact is available on demand once its dialog handler is ready. */
+@media(max-width:899px){
+ body.contact-enhanced .quick-contact{display:none}
+}
