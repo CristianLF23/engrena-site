@@ -1,0 +1,88 @@
+/* Stage 1: a single mechanical assembly and an introduction inside the hero. */
+.mechanism-stage{isolation:isolate}
+.mechanism-stage::before{content:'';position:absolute;inset:8% 5% 4%;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 50% 85%,rgba(132,156,174,.09),transparent 64%)}
+.mechanism-canvas{z-index:1}
+.mechanism-image{z-index:0}
+.has-live-mechanism .mechanism-labels{position:relative;width:100%;max-width:none;height:66px;display:block}
+.has-live-mechanism .mechanism-label{position:absolute;top:0;width:27%;left:50%;transform:translateX(-50%);padding-bottom:13px;display:flex;flex-wrap:wrap;justify-content:center;align-content:flex-start;gap:3px 9px;text-align:center}
+.has-live-mechanism .mechanism-label small{flex-basis:100%}
+.has-live-mechanism .mechanism-label:nth-child(1){left:var(--piece-0-x,24%)}
+.has-live-mechanism .mechanism-label:nth-child(2){left:var(--piece-1-x,50%)}
+.has-live-mechanism .mechanism-label:nth-child(3){left:var(--piece-2-x,76%)}
+.has-live-mechanism .mechanism-label:hover{transform:translateX(-50%)}
+.has-live-mechanism .mechanism-label::after{left:50%;height:17px;transition:background .25s}
+.has-live-mechanism .mechanism-label[aria-pressed=true]::after{background:var(--blue)}
+.mechanism-toolbar p{transition:color .4s}
+.mechanism-wrap:has(.is-coupled) .mechanism-toolbar p{color:#37596e}
+
+/* Loading stays within the artwork; the headline and contact are always available. */
+.js .mechanism-stage .intro-loader{display:flex;position:absolute;inset:0;z-index:3;background:var(--paper);color:var(--ink);overflow:hidden;animation:loader-safety 0s 2.5s forwards}
+.mechanism-stage .loader-top,.mechanism-stage .loader-bottom{padding:8px 20px;font:9px var(--mono);color:var(--muted);gap:12px}
+.mechanism-stage .loader-top>span{color:var(--blue);font-size:9px}
+.mechanism-stage .loader-top button{color:var(--muted);font-size:9px;min-height:32px;padding:8px 0;border-color:var(--line)}
+.mechanism-stage .loader-center{flex:1;padding:0;perspective:700px}
+.mechanism-stage .loader-symbol{width:clamp(70px,9vw,124px);height:clamp(70px,9vw,124px);transform-style:preserve-3d}
+.mechanism-stage .loader-symbol img,.mechanism-stage .loader-symbol svg{display:block;width:100%;height:100%;animation:none;overflow:visible}
+.mechanism-stage .loader-symbol [data-gear-piece]{transform-origin:64px 64px;animation:engrena-assemble .62s cubic-bezier(.2,.7,.3,1) both}
+.mechanism-stage .loader-symbol [data-gear-piece=top]{--from-x:-8px;--from-y:-18px}
+.mechanism-stage .loader-symbol [data-gear-piece=middle]{--from-x:-17px;--from-y:10px}
+.mechanism-stage .loader-symbol [data-gear-piece=bottom]{--from-x:15px;--from-y:13px}
+.mechanism-stage .loader-caption{font:10px var(--mono);letter-spacing:.025em;color:var(--muted);margin-top:18px}
+.mechanism-stage .loader-bottom{flex-wrap:wrap;padding-top:7px;padding-bottom:8px}
+.mechanism-stage .loader-progress{background:var(--line);margin-bottom:2px}
+.mechanism-stage .loader-progress i{background:var(--blue);animation:loading-rule 1.6s cubic-bezier(.2,.7,.3,1) both}
+.mechanism-stage .intro-loader.leaving{transform:none;opacity:1;visibility:visible;transition:background .4s;background:transparent}
+.mechanism-stage .intro-loader.leaving .loader-center{pointer-events:none}
+.mechanism-stage .intro-loader[hidden]{display:none!important}
+@keyframes engrena-assemble{from{opacity:.5;transform:translate(var(--from-x),var(--from-y))}to{opacity:1;transform:translate(0,0)}}
+
+
+
+@media(prefers-reduced-motion:reduce){
+ .js .mechanism-stage .intro-loader{display:none!important}
+ .mechanism-stage .loader-symbol [data-gear-piece]{animation:none}
+}
+
+/* Rear-lit steel on a dark stage. These colors are scoped to the opening. */
+:root{--hero-surface:#0b1720;--hero-copy:#bdd0df;--hero-rule:#355266}
+.site-header,.hero{background:var(--hero-surface);color:#f2f6f8}
+.site-header{border-bottom-color:#1b3547}
+.site-header .header-contact .small-plus{color:var(--cyan)}
+.site-header .menu-trigger{background:#19303f;border:1px solid #355366;color:#f2f6f8}
+.site-header .hero-comparison,.site-header .hero-variants{border-color:var(--hero-rule)}
+.site-header .comparison-label{color:#a8c1d2}
+.site-header .hero-variants button{color:#c4d6e3}
+.site-header .hero-variants button[aria-pressed=true]{background:var(--cyan);color:#071018}
+.site-header .hero-variants button:hover:not([aria-pressed=true]){background:#1b3749}
+.site-header :is(a,button):focus-visible,.hero :is(a,button):focus-visible{outline-color:var(--cyan)}
+.hero h1{color:#f2f6f8}.hero h1 span{color:#c0d5e4}
+.hero .hero-intro p,.hero .mechanism-label small,.hero .hero-footnote{color:var(--hero-copy)}
+.hero .hero-intro .eyebrow,.hero .mechanism-label span{color:var(--cyan)}
+.hero .hero-intro .status-dot{background:var(--cyan)}
+.hero .mechanism-label{color:#edf6fc}.hero .mechanism-label::after{background:#7ca0b7;opacity:.65}
+.hero .mechanism-label:is(:hover,[aria-pressed=true]){color:var(--cyan)}
+.hero .mechanism-stage::before{inset:10% 0 -4%;background:radial-gradient(ellipse at 50% 72%,rgb(61 91 111 / .38),transparent 68%)}
+.hero .mechanism-toolbar p,.hero .mechanism-wrap:has(.is-coupled) .mechanism-toolbar p{color:#b8cddd}
+.hero .mechanism-toolbar button{color:#c9deeb;border-color:#486b82}
+.hero .mechanism-toolbar button:hover{color:var(--cyan)}
+.hero .dock-cta{background:#030b11}
+.hero[data-hero-variant=original] .mechanism-stage{background:var(--paper)}
+body.hero-is-visible .section-rail{background:var(--hero-surface);color:#d4e3ed;border-color:#2a4659}
+body.hero-is-visible .rail-chapters a,body.hero-is-visible .rail-label{color:#b7cddd}
+body.hero-is-visible .rail-chapters a[aria-current]{color:var(--cyan);border-color:#5d91ab;background:#133348}
+body.hero-is-visible .rail-chapters a:hover{background:#193a50;color:var(--cyan)}
+body.hero-is-visible .rail-track{background:#2e495b}
+body.hero-is-visible .rail-progress{background:var(--cyan)}
+body.hero-is-visible .rail-bottom{color:var(--cyan)}
+.hero .mechanism-stage .intro-loader{background:var(--hero-surface);color:white;animation:loader-safety 0s 4s forwards}
+.hero .mechanism-stage .loader-top,.hero .mechanism-stage .loader-bottom,.hero .mechanism-stage .loader-caption{color:#bfd3e1}
+.hero .mechanism-stage .loader-top>span{color:var(--cyan)}
+.hero .mechanism-stage .loader-top button{color:#d8e7f0;border-color:#587d94}
+.hero .mechanism-stage .loader-progress{background:#355368}
+.hero .mechanism-stage .loader-progress i{background:var(--cyan)}
+.hero .mechanism-stage .loader-symbol{animation:hero-brand-reveal 1.15s var(--ease) both}
+.hero .mechanism-stage .intro-loader.leaving{background:transparent}
+.hero .mechanism-stage .intro-loader.leaving .loader-symbol{animation:none}
+.hero .mechanism-stage .loader-symbol [data-gear-piece]{animation-duration:1.05s}
+@keyframes hero-brand-reveal{from{opacity:.2;transform:perspective(700px) rotateY(-65deg) rotateZ(-24deg) scale(.86)}to{opacity:1;transform:perspective(700px) rotateY(0) rotateZ(0) scale(1)}}
+html:not(.js) #replay-intro{display:none}

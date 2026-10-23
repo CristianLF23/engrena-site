@@ -1,0 +1,228 @@
+/* ENGRENA owned PDF compositions, implemented as readable, responsive HTML. */
+.section-art{position:absolute;display:block;pointer-events:none;user-select:none;z-index:0;max-width:none;object-fit:contain}
+.skip-link:not(:focus){clip-path:inset(50%)}
+.testimonial-slot>div{min-width:0}
+.testimonial-slot .eyebrow{white-space:normal}
+.video-placeholder{width:100%;max-width:100%}
+.method,.product,.inertia,.site-footer{position:relative;isolation:isolate;overflow:hidden}
+.method> :not(.section-art),.product-layout,.inertia> :not(.section-art),.site-footer> :not(.section-art){position:relative;z-index:1}
+
+/* The method is an open three-stage rail, as shown on PDF page 13. */
+.method{display:block;background:var(--paper);border-top:1px solid var(--line);padding-top:76px;padding-bottom:94px}
+.method .section-kicker{border:0;margin-bottom:36px;padding:0;color:var(--muted)}
+.method-intro{display:grid;grid-template-columns:1fr .36fr;gap:7%;position:relative;top:auto;align-items:end}
+.method-intro h2{font-size:clamp(55px,5.9vw,94px);line-height:.98;letter-spacing:-.035em}
+.method-intro p{font-size:21px;line-height:1.35;margin:0;max-width:310px;color:var(--ink)}
+.method-stack{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6%;margin-top:64px;border-top:1px solid #aebdc8;padding-top:42px}
+.method .method-card{position:relative;top:auto!important;background:none;color:var(--ink);border:0;padding:0;min-height:0;box-shadow:none;margin:0;overflow:visible}
+.method .method-card+.method-card{margin-top:0}
+.method-card::before{content:'';position:absolute;top:-51px;left:0;width:17px;height:17px;border:1px solid var(--ink);border-radius:50%;background:var(--paper);box-shadow:inset 0 0 0 4px var(--paper)}
+.method-one::before{border-color:var(--blue);background:var(--blue)}
+.method-card .method-number{font:400 38px/1 var(--mono);display:block;margin-bottom:25px;color:var(--ink)}
+.method-one .method-number,.method-one>svg{color:var(--blue)}
+.method-card>svg{width:50px;height:50px;margin-bottom:25px}
+.method .method-card h3{font-size:clamp(32px,3.3vw,51px);margin:0 0 15px;line-height:1.05}
+.method .method-card p{font-size:19px;line-height:1.4;max-width:290px;color:var(--muted)}
+.method .method-card-foot{display:block;margin-top:19px;font:13px/1.5 var(--body);color:var(--muted);border:0;padding:0;max-width:270px}
+.method-foot{display:flex;justify-content:space-between;align-items:end;gap:35px;margin-top:58px;padding-right:24%}
+.method-foot p{font-size:16px;line-height:1.5;color:var(--muted)}
+.method-foot .text-cta{font-weight:400;font-size:17px;min-width:210px;border-color:var(--blue)}
+.method-art{width:610px;height:610px;right:-295px;bottom:-340px;opacity:1}
+
+/* Dark mechanical stage, light browser, four benefits. PDF page 14. */
+.product{background:#071018;padding-top:102px;padding-bottom:100px;min-height:760px}
+.product-art{width:950px;height:950px;left:-340px;top:-290px;opacity:.92}
+.product::after{content:'';position:absolute;inset:auto 0 0;height:100px;background:radial-gradient(ellipse at 25% 100%,#123354 0,transparent 65%);pointer-events:none;z-index:0}
+.product-layout{display:grid;grid-template-columns:1.7fr .85fr;gap:5.5%;align-items:center}
+.product-copy{display:block}
+.product-copy>.eyebrow{color:var(--cyan);font-weight:600;font-size:13px;margin-bottom:17px}
+.product-copy h2{font-size:clamp(45px,4.6vw,73px);line-height:1.01;margin:0 0 28px;max-width:450px}
+.product-intro{font-size:17px;line-height:1.45;color:#bdcbd5;margin-bottom:17px;max-width:470px}
+.feature-row{display:flex;gap:18px;padding:18px 0;align-items:flex-start;border-bottom:1px solid #40505b}
+.feature-row>svg{width:26px;height:26px;flex-shrink:0;margin-top:1px;color:#e4edf2}
+.feature-row>div>span{font:400 18px/1.3 var(--body)}
+.feature-row p{font-size:13px;line-height:1.5;color:#afbfca;margin-top:6px}
+.product-copy .button{margin-top:32px;font-size:16px;min-height:57px}
+.product-caption{font-size:13px!important;line-height:1.5;color:#aebbc6;margin-top:18px!important}
+.product-demo{background:var(--paper);color:var(--ink);border:1px solid #536573;border-radius:9px;overflow:hidden;box-shadow:0 22px 38px rgb(0 0 0/.3)}
+.browser-chrome{height:30px;display:flex;align-items:center;gap:6px;background:#26343f;padding:0 12px;color:#c2d2de}
+.browser-chrome i{width:7px;height:7px;border-radius:50%;background:#a4b9c8}
+.browser-chrome span{margin-left:auto;font:8px var(--mono);opacity:.7}
+.demo-topbar{border-color:#ccd7df;padding:18px;background:#f6f9fa}
+.product-demo .demo-label{color:#526674}
+.demo-tabs{border-color:#ccd7df}
+.demo-tabs button{color:#526674;font-size:13px}
+.demo-tabs button[aria-selected=true]{color:#0b48c7;border-color:#1261f4}
+.product-demo button:focus-visible{outline-color:var(--blue)}
+.demo-panel{min-height:400px;padding:24px 16px 18px}
+.demo-view-heading{margin-bottom:21px}
+.product-demo .mini-label{color:#5c6e7b}
+.demo-view-heading h3{color:var(--ink);font-size:23px}
+.product-demo .live-badge{color:#425b6b}
+.demo-workspace{display:grid;grid-template-columns:.8fr 1.25fr;gap:16px}
+.demo-conversation{display:flex;flex-direction:column;gap:20px;border-right:1px solid #d0dce3;padding-right:16px;min-height:255px}
+.demo-conversation>.mini-label{font-size:8px}
+.conversation-message{max-width:95%;align-self:flex-start;padding:12px 13px;background:#e2e9ef;font:12px/1.45 var(--body);border-radius:0 7px 7px 7px}
+.conversation-message small{display:block;font-size:8px;color:#617787;margin-top:7px}
+.conversation-message.reply{align-self:flex-end;background:#1261f4;color:white;border-radius:7px 0 7px 7px}
+.conversation-message.reply small{color:#d5e5ff}
+.conversation-input{margin-top:auto;border:1px solid #c3d2dc;color:#687e8d;display:flex;justify-content:space-between;gap:8px;padding:9px;font-size:9px}
+.kanban{gap:7px}
+.kanban-column{background:#e4ecf2;padding:10px 6px;min-height:255px}
+.kanban-column h4{font-size:8px;white-space:normal;line-height:1.4;min-height:24px;color:#223948}
+.kanban-column h4>span{color:#506f85}
+.kanban-ticket{background:#f8fbfc;border-color:#c9d7e1;padding:10px 7px;box-shadow:0 2px 2px rgb(20 45 65/.03)}
+.ticket-tag{color:#215476;font-size:6px;letter-spacing:.01em;margin-bottom:10px}
+.kanban-ticket>strong{font-size:10px;line-height:1.35;color:#142b3b}
+.kanban-ticket>small{color:#5d7587;font-size:8px}
+.ticket-bottom{border-color:#d2dfe7}
+.ticket-bottom>span{font-size:6px;color:#617b8d}
+.ticket-bottom i{background:#d8e5ee;color:#36536a}
+.demo-notification{background:#e5eff6;border-color:#c6d8e5}
+.demo-notification .notification-icon{color:var(--blue)}
+.demo-notification strong{color:#223e52}
+.demo-notification p{color:#526e81}
+.demo-disclaimer{color:#526674;border-color:#ccd7df;background:#e8eff4}
+.product-demo .report-rows>div,.product-demo .return-flow li{border-color:#cbd9e3}
+.product-demo .report-rows strong,.product-demo .return-flow p{color:#50697a}
+.product-demo .return-flow li>span{color:var(--blue)}
+
+/* Documentary proof: synchronized counters, real lines and bars, no invented trend. */
+.results{background:#071018;color:var(--paper);padding-top:76px;padding-bottom:72px}
+.results .section-kicker{margin-bottom:28px;border-color:#394a56;color:#a8becd}
+.results .section-kicker>span:first-child{color:var(--cyan)}
+.results-heading{display:flex;justify-content:space-between;align-items:center;gap:35px;margin-bottom:36px}
+.results-heading h2{font-size:clamp(58px,6.4vw,101px);line-height:1}
+.results-heading>div{max-width:340px}
+.results-heading p{font-size:18px;line-height:1.4;color:#bdc9d1}
+#replay-results{font:11px var(--mono);color:var(--cyan);display:flex;gap:18px;align-items:center;border:0;border-bottom:1px solid #466674;background:none;padding:9px 0;margin-top:15px}
+#replay-results>span{font:22px/1 var(--body)}
+.proof-grid{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #435561;border-bottom:1px solid #435561}
+.proof-grid>article{padding:30px 34px 32px 0;min-width:0}
+.proof-grid>article+article{border-left:1px solid #435561;padding:30px 0 32px 35px}
+.proof-grid .eyebrow{color:#a6bdcc;font-size:10px}
+.proof-metric{font:600 clamp(90px,10vw,150px)/1 var(--display);letter-spacing:-.04em;color:var(--cyan);margin:19px 0 11px;white-space:nowrap}
+.proof-metric small{font-size:.73em;letter-spacing:-.025em}
+.proof-grid h3{font-size:clamp(32px,3vw,47px);line-height:1.05}
+.proof-period{font-size:18px;color:#afc2d0;margin-top:11px!important}
+.revenue-metric{font:600 clamp(54px,5.8vw,90px)/1 var(--display);white-space:nowrap;margin:29px 0 16px;letter-spacing:-.025em}
+.revenue-metric small{font-size:.66em}
+.report-figure{margin:25px -7px 0;min-width:0}
+.report-chart{width:100%;height:auto;display:block;overflow:visible}
+.chart-grid line{stroke:#334958;stroke-width:1;stroke-dasharray:3 6}
+.chart-grid text,.chart-month{fill:#9eb7c8;font:11px var(--mono)}
+.chart-line{fill:none;stroke:var(--cyan);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.chart-area{fill:#1261f4;fill-opacity:.09;stroke:none}
+.chart-point{fill:#071018;stroke:#d9f7ff;stroke-width:2.5}
+.chart-value{fill:#e0f2fa;font:11px var(--mono)}
+.chart-bar{fill:#1261f4;fill-opacity:.82;transform-box:view-box;transform-origin:0 246px}
+.chart-bar:nth-of-type(3){fill:#00cfff;fill-opacity:.78}
+.chart-caption{color:#acbfcc;font:11px/1.6 var(--body);margin-top:14px!important}
+.case-source{display:block;font:10px/1.6 var(--body);color:#8fa9ba;margin-top:18px}
+.case-primary .case-source,.case-revenue .case-source{margin-top:12px}
+.supporting-cases{display:grid;grid-template-columns:1fr 1fr;border:0;padding-top:32px;gap:0}
+.supporting-cases article{padding-right:34px;min-width:0}
+.supporting-cases article+article{border-left:1px solid #435561;padding-left:35px;padding-right:0}
+.supporting-cases strong{font-size:64px;color:#f2f6f8;margin:15px 0 12px;display:block;line-height:1}
+.supporting-cases h3{font-size:34px;margin-bottom:13px}
+.supporting-cases p{font-size:17px;max-width:340px;color:#b4c6d3}
+.supporting-cases .report-figure{max-width:440px;margin-top:15px}
+.supporting-cases .report-chart{max-height:190px}
+.testimonial-slot{margin-top:40px;padding-top:35px;grid-template-columns:1fr 1fr;gap:5%}
+.video-placeholder{background:#0b1722;border:1px dashed #567180;min-height:220px}
+.video-frame-mark{border-radius:0;border:0;width:44px;height:44px}
+.video-frame-mark::after{background:#c1d2de;top:10px;left:12px;width:22px;height:27px}
+.testimonial-slot h3{font-size:38px}
+.results-bottom{display:flex;align-items:center;justify-content:space-between;gap:35px;border-top:1px solid #435561;margin-top:34px;padding-top:27px}
+.results-note{max-width:620px;margin:0;font-size:11px;color:#a4bdcd;line-height:1.6}
+.results-bottom .button{flex-shrink:0;font-size:13px}
+
+/* The cost-of-waiting fold follows PDF page 16; the negative red value is user requested. */
+.inertia{padding-bottom:85px;min-height:650px}
+.inertia-intro{grid-template-columns:1.55fr .65fr;gap:4%;align-items:center}
+.inertia h2{font-size:clamp(54px,5.7vw,88px);line-height:1.02;letter-spacing:-.025em}
+.inertia-intro>p{font-size:21px;line-height:1.55;color:#657887}
+.inertia-intro>.eyebrow{margin-bottom:28px;color:#62798b}
+.counter-grid{position:relative;margin-top:49px;max-width:79%;border-top:0;border-bottom:1px solid var(--blue);padding-bottom:30px}
+.counter-grid::after{content:'';width:10px;height:10px;position:absolute;top:40%;left:calc(50% - 5px);background:var(--cyan);border-radius:50%}
+.counter-block{padding:10px 25px 0 0;min-width:0}
+.counter-block+.counter-block{padding:10px 0 0 32px;border-color:#a4b8c7}
+.counter-block>strong{font-size:clamp(35px,5.5vw,84px);letter-spacing:-.075em;line-height:1; margin:8px 0 21px;font-weight:600}
+.counter-money>strong{color:#be2e32;font-size:clamp(34px,4.9vw,75px)}
+.counter-block>.eyebrow{font-size:10px;font-weight:600;color:#657b8d;letter-spacing:.045em}
+.counter-foot{font-size:12px;display:block;margin-top:12px}
+.inertia-bottom{display:flex;flex-direction:column;align-items:flex-start;gap:26px;margin-top:24px;max-width:77%}
+.inertia-bottom>div>p{font-size:16px;color:#647b8d}
+.inertia-bottom small{display:block;font-size:11px;color:#677f90;margin-top:10px;max-width:590px;line-height:1.6}
+.button-ink{background:var(--ink);color:white;font:600 24px var(--display);min-height:59px;padding:15px 24px;min-width:300px}
+.button-ink:hover{background:#12354f}
+.inertia-art{width:590px;height:590px;right:-290px;bottom:-80px}
+
+/* PDF page 17: shared effort, monumental type, black action and cyan key. */
+.contact{padding-top:72px;padding-bottom:25px}
+.contact>.eyebrow{font-size:12px;letter-spacing:.1em;margin-bottom:32px}
+.contact::before{content:'';width:420px;height:420px;border:1px solid #c1eaff;position:absolute;right:-210px;top:-210px;border-radius:50%;pointer-events:none}
+.contact h2{font-size:clamp(85px,10.4vw,165px);line-height:.94;letter-spacing:-.028em;text-transform:uppercase}
+.contact h2>span{display:block;color:white;white-space:nowrap}
+.contact h2>span:last-child{color:var(--ink);font-size:.82em;letter-spacing:-.025em;margin-top:9px}
+.contact-bottom{grid-template-columns:1.3fr 1fr;gap:7%;align-items:center;margin-top:42px}
+.contact-bottom>div>p{font-size:23px;line-height:1.4;max-width:650px}
+.contact-cta{background:var(--ink);color:white;font-size:28px;min-height:78px;padding:0 0 0 23px;gap:18px}
+.contact-cta>span:first-child{padding:19px 0}
+.contact-cta .contact-plus{align-self:stretch;min-width:74px;display:grid;place-items:center;background:var(--cyan);color:var(--ink);font-size:49px;line-height:1}
+.contact-cta:hover{background:#10283e}
+.contact-cta:hover .contact-plus{transform:none;background:#a9f4ff}
+.contact-platform{display:inline-block;border-bottom:1px solid white;margin-top:13px;font-size:15px}
+.contact-foot{border-top:1px solid #93c3ff;font:10px/1.5 var(--mono);padding-top:13px;margin-top:42px!important;letter-spacing:.025em}
+
+/* Reference FAQ and giant approved wordmark, rather than a new identity. */
+.faq{grid-template-columns:.75fr 1.65fr;gap:7%}
+.faq-heading>.eyebrow{color:#637b8d}
+.faq-heading h2{font-size:clamp(55px,5.3vw,83px);line-height:1.02}
+.faq-heading h2>span{color:var(--blue)}
+.faq-heading>p{font-size:20px;line-height:1.4;max-width:270px}
+.faq-heading .text-cta{margin-top:65px;display:inline-flex;font:600 21px var(--display);border-color:var(--blue);gap:20px}
+.faq-list{counter-reset:faq}
+.faq-list details{counter-increment:faq}
+.faq-list summary{display:grid;grid-template-columns:35px 1fr 22px;gap:13px;font:600 26px/1.2 var(--display);padding:26px 0}
+.faq-list summary::before{content:counter(faq,decimal-leading-zero);font:12px var(--mono);color:var(--blue);align-self:start;margin-top:5px}
+.faq-list details[open] summary{color:var(--blue)}
+.faq-list details p{font-size:18px;line-height:1.5;padding:0 30px 28px 48px;color:var(--ink);max-width:740px}
+.faq-list summary>span{font-size:0;width:21px;height:21px;position:relative;transform:none!important}
+.faq-list summary>span::before,.faq-list summary>span::after{content:'';position:absolute;background:var(--blue);top:10px;left:0;width:21px;height:1.5px}
+.faq-list summary>span::after{transform:rotate(90deg)}
+.faq-list details[open] summary>span::after{transform:rotate(0)}
+.site-footer{padding-top:74px;padding-bottom:25px;background:#071018}
+.footer-top{grid-template-columns:1.6fr .6fr .8fr;gap:5%}
+.footer-intro>.eyebrow{color:var(--cyan);font-size:11px;letter-spacing:.1em;margin-bottom:22px}
+.footer-intro>p{font:600 clamp(35px,4.4vw,70px)/1.04 var(--display);max-width:580px}
+.footer-intro>small{display:block;font:18px/1.4 var(--body);color:#aebdc8;margin-top:23px}
+.footer-top nav{padding-left:28px;border-left:1px solid #344956;font-size:16px;gap:10px;align-self:start}
+.footer-top nav>strong,.footer-contact>strong{font:600 24px var(--display);display:block;color:white;margin-bottom:14px}
+.footer-contact{border-left:1px solid #344956;padding-left:28px;display:flex;flex-direction:column;gap:10px;align-self:start;font-size:16px;color:#b7c7d2}
+.footer-contact>strong{margin-bottom:5px}
+.footer-contact>p{font-size:12px;line-height:1.5;color:#9db2c0;margin-top:15px}
+.footer-wordmark{margin-top:100px}
+.footer-wordmark img{width:100%;height:auto;max-height:none;object-fit:contain;object-position:left}
+.footer-bottom{margin-top:24px;padding-top:15px;justify-content:flex-end;gap:30px}
+.footer-bottom>span:first-child{margin-right:auto}
+.footer-art{width:650px;height:650px;right:-310px;top:130px;opacity:.9}
+
+/* Cinematic dark loading from PDF page 20, retaining the approved identity. */
+.js .intro-loader{background:#071018;color:white}
+.loader-top>span{font:10px var(--mono);text-transform:uppercase;letter-spacing:.12em}
+.loader-top button{color:#d0dce4;border-bottom:1px solid #6d8c9f}
+.loader-center{position:relative;flex:1;justify-content:center;min-height:0;width:100%;padding:10px 20px 30px}
+.loader-mechanism{width:clamp(230px,29vw,440px);height:clamp(230px,29vw,440px);object-fit:contain;transform:rotate(-12deg);animation:loader-mechanical 1.2s var(--ease) both}
+.loader-identity img{width:230px;height:auto;margin-top:3px}
+.loader-caption{margin-top:13px;color:#dce8ee;font-size:11px;text-transform:none;letter-spacing:.15em}
+.loader-bottom{color:#a9bdcc;flex-wrap:wrap;gap:13px;padding-top:0;padding-bottom:24px}
+.loader-progress{flex:0 0 100%;height:1px;background:#536d7e;overflow:hidden;margin-bottom:7px}
+.loader-progress i{display:block;background:var(--cyan);height:100%;transform-origin:left;animation:loading-rule 1.7s cubic-bezier(.2,.7,.3,1) both}
+@keyframes loading-rule{from{transform:scaleX(.03)}to{transform:scaleX(1)}}
+@keyframes loader-mechanical{from{opacity:0;transform:perspective(800px) rotateY(-26deg) rotateZ(-18deg) scale(.94)}to{opacity:1;transform:perspective(800px) rotateY(0deg) rotateZ(-12deg) scale(1)}}
+
+
+
+
+@media(prefers-reduced-motion:reduce){.loader-mechanism,.loader-progress i{animation:none}.chart-line,.chart-bar,.chart-point{transition:none}}

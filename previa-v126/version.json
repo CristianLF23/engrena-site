@@ -1,0 +1,19 @@
+{
+  "version": "1.26",
+  "url": "https://cristianlf23.github.io/engrena-site/previa-v126/",
+  "drawings": "five exclusive Hairline figures",
+  "method2": "classic telephone with speech",
+  "files": {
+    "index.html": "1095af5f1ed8a20996a836421371e10dac2e1065ee630b556e3ce9cd62a873de",
+    "scripts/clarity-motion.js": "4d3bb8bf355fc63d9e5e5cada0154ad60a47c643b7f5bf6448a2f84a6eb3c354",
+    "scripts/clarity-motion.css": "3789e6c513e80cf36cdf2f33c5210e05200b790bc8ac2036c870179372fcee43",
+    "scripts/experience.js": "d5376cbc627f20d8227d20f3c13ab93a546d3bea1d642b88151c22ee14016e49",
+    "scripts/hairline-bridge.js": "a1b957b95c058dac5728041d606b9fba43a3737bf32b46c41952f2b3cd2d8e77",
+    "scripts/hairline-better-v126.js": "aa7848a6c628f016f14768f1ab1da578ecc54f906642a6ce5e60d1db14080e01",
+    "scripts/hairline-recurrence-v126.js": "1c8b4ee415584437d46c288725a3c12a4ef10ce51e0e69b62521134023f2a3cb",
+    "scripts/hairline-followup-v126.js": "4d12218e1531d56994e0dc3ed67a23d051439c4fa6a2e39777eef4904f389615",
+    "scripts/hairline-diagnosis-v126.js": "534d3fa7d5b08b016cb0e6f1998533eba9d5d479c136df36afc1eaf5112dbbb2",
+    "scripts/hairline-workshop-v125.js": "0b5f1625ba86a4a3c1e41b183868dbd9fd7005da5867859aa4021b8514c9b32e",
+    "scripts/workshop-spatial.js": "8d8257dd2b4aac7d846d2494108a75cd1f938b7cf90c2128ec59dabb0d4779a5"
+  }
+}
