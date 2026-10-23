@@ -1,0 +1,37 @@
+/* Layout correction: readable chart stories and complete mechanical images. */
+.case-study{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.25fr);gap:7%;padding:56px 0;border-top:1px solid #354b5b;align-items:center}
+.case-study>*{min-width:0}
+.case-story>.eyebrow{color:var(--cyan);font-size:11px;margin-bottom:20px}
+.case-story h3{font-size:clamp(38px,3.3vw,58px);line-height:1.04}
+.case-number{font:600 clamp(76px,7.5vw,120px)/1 var(--display);letter-spacing:-.035em;color:var(--cyan);margin:25px 0 20px;white-space:nowrap}
+.case-number small{display:block;font:400 16px/1.4 var(--body);letter-spacing:0;color:#bed1de;margin-top:7px}
+.money-number{font-size:clamp(60px,6.2vw,100px)}
+.metric-definition{font-size:19px;line-height:1.45;max-width:440px;color:#d1dfe8}
+.metric-definition strong{font-weight:600;color:white}
+.case-reading{font-size:16px;line-height:1.5;color:#a9bdcb;max-width:440px;margin-top:17px}
+.case-source{font-size:11px;line-height:1.6;margin-top:23px;color:#91acbd}
+.case-chart .report-figure{margin:0}
+.report-figure figcaption{display:flex;justify-content:space-between;align-items:baseline;gap:18px;margin-bottom:17px}
+.report-figure figcaption>span:first-child{font:600 24px/1.2 var(--display);color:#f2f6f8}
+.report-figure figcaption>span:last-child{font-size:13px;color:#abc0ce;white-space:nowrap}
+.case-chart .report-chart{width:100%;max-height:none;overflow:visible}
+.chart-grid text,.chart-month{font:13px var(--body);fill:#aac0cf}
+.chart-grid line{stroke:#294150;stroke-dasharray:3 5}
+.chart-value{font:600 14px var(--body);fill:#e7f5ff}
+.chart-line{stroke-width:3.2}
+.chart-bar{transform-origin:0 280px;fill:#1261f4;fill-opacity:.65}
+.chart-data{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0 0;padding:18px 0 0;border-top:1px solid #354b5b}
+.chart-data dt{font-size:12px;color:#9fb8c9;margin:0 0 4px}
+.chart-data dd{margin:0;font:600 clamp(17px,1.5vw,25px)/1.25 var(--body);color:white;white-space:nowrap}
+.chart-data>div:last-child dd{color:var(--cyan)}
+.chart-reading{font-size:14px;line-height:1.5;color:#a9bdcb;margin:20px 0 0!important;max-width:640px}
+.chart-reading strong{font-weight:600;color:#d9e6ef}
+.followup-case{border-top:1px solid #354b5b;border-bottom:1px solid #354b5b;padding:34px 0;display:grid;grid-template-columns:minmax(210px,.85fr) minmax(0,1.25fr);gap:7%;align-items:center}
+.followup-case .eyebrow{font-size:11px;color:#a5bfce}
+.followup-case strong{display:block;font:600 70px/1 var(--display);margin-top:15px}
+.followup-case h3{font-size:34px;margin-bottom:11px}
+.followup-case p{font-size:17px;color:#b1c7d5;max-width:580px}
+.followup-case small{display:block;font-size:11px;color:#8faaba;margin-top:12px}
+.product-features{min-width:0}
+.product-features .feature-row{min-width:0}
+.case-study .case-reading strong{color:#d8e9f4}
