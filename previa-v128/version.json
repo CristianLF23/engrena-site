@@ -1,0 +1,15 @@
+{
+  "version": "1.28",
+  "url": "https://cristianlf23.github.io/engrena-site/previa-v128/",
+  "change": "prioritize letter assembly; deferred WebGL, cached portal bounds and deferred offscreen measurement",
+  "files": {
+    "index.html": "7d1afcda956da2be672a11c1c2da3e4dbfdd9ec20a211bc15a1b45f71eb4c64b",
+    "scripts/app.js": "9c6ae0278e70db34e790edbc7e8e600adb9deb222a5f08d273422808e2fd6ed6",
+    "scripts/refinements.js": "7a7a5c92b27bbdf5a562d63196002ec85754a68e8cc92d73491ba458aee1a3b7",
+    "scripts/clarity-motion.js": "f0252f090a29662c310f0a8b21aeb2bcf2065de20107d46e1f84f3dfff4f02bf",
+    "scripts/hairline-bridge.js": "fd6e4c68d894e2b2191fed010cfae8b8ab7d743baa649a35c2394cf7e890edaa",
+    "scripts/workshop-spatial.js": "8d8257dd2b4aac7d846d2494108a75cd1f938b7cf90c2128ec59dabb0d4779a5",
+    "fullscreen-intro.css": "77073cc9cd7e440205c522042eb4ae3ff522bb4d72d361e248398be7974b4e16",
+    "scripts/copy-readability.css": "1fbdbd5361e426681d6a15c8b0a0fdd899727370ff690fc252aae5dccdaa8cb2"
+  }
+}
