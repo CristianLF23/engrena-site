@@ -1,0 +1,19 @@
+{
+  "version": "1.27",
+  "url": "https://cristianlf23.github.io/engrena-site/previa-v127/",
+  "drawings": "six exclusive Hairline figures",
+  "change": "clearer pain and solution copy, commercial training, larger demo typography, animated money, magnifier and question",
+  "files": {
+    "index.html": "3eeea52f320fcfa1cbd2813a0fad90487383bec821c9834cdb30975b607ba6e7",
+    "scripts/copy-readability.css": "1fbdbd5361e426681d6a15c8b0a0fdd899727370ff690fc252aae5dccdaa8cb2",
+    "scripts/hairline-bridge.js": "fabfe3d0b2fe40bfdb4fc95e6a2c2ee04c1bd43091b5879985f5b81ea8fca3ac",
+    "scripts/hairline-money-v127.js": "2eed0e5750742488849bf84c6e06a3bf7e6dfe4352332b06325481cfe1235e98",
+    "scripts/hairline-diagnosis-v127.js": "8112514d93cd55084f48f195f9d4238d76e5a661fe377d16d9194f586b309ef4",
+    "scripts/hairline-question-v127.js": "28a49a58a736c7746b76c52130b3456770b930fe3730d2db352e02d9bd86f8a2",
+    "scripts/hairline-better-v126.js": "aa7848a6c628f016f14768f1ab1da578ecc54f906642a6ce5e60d1db14080e01",
+    "scripts/hairline-recurrence-v126.js": "1c8b4ee415584437d46c288725a3c12a4ef10ce51e0e69b62521134023f2a3cb",
+    "scripts/hairline-workshop-v125.js": "0b5f1625ba86a4a3c1e41b183868dbd9fd7005da5867859aa4021b8514c9b32e",
+    "scripts/clarity-motion.js": "4d3bb8bf355fc63d9e5e5cada0154ad60a47c643b7f5bf6448a2f84a6eb3c354",
+    "scripts/workshop-spatial.js": "8d8257dd2b4aac7d846d2494108a75cd1f938b7cf90c2128ec59dabb0d4779a5"
+  }
+}
