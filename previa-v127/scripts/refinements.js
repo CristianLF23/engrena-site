@@ -148,7 +148,7 @@
     }
     const scale = lerp(1, dockLayout.width / baseSize, blend);
     const fade = clamp((y - start) / Math.max(1, innerHeight * .2));
-    const opacity = lerp(innerWidth < 600 ? .04 : .055, .14, blend ** 3) * fade;
+    const opacity = lerp(innerWidth < 600 ? .04 : .055, .60, blend ** 3) * fade;
     targetPose = { x, y: top, scale, opacity, progress, dockTarget };
     if (!pose) {
       pose = { x, y: top, scale, opacity };

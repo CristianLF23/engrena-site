@@ -4,8 +4,9 @@
   "drawings": "six exclusive Hairline figures",
   "change": "clearer pain and solution copy, commercial training, larger demo typography, animated money, magnifier and question",
   "files": {
-    "index.html": "3eeea52f320fcfa1cbd2813a0fad90487383bec821c9834cdb30975b607ba6e7",
+    "index.html": "08c3a18b26f10fd63ad7eee875a60de6234fbde06bd57acbcfc5436078dcc612",
     "scripts/copy-readability.css": "1fbdbd5361e426681d6a15c8b0a0fdd899727370ff690fc252aae5dccdaa8cb2",
+    "scripts/refinements.js": "93c85de93dd694978a0a1abf72b4585ce282c332f425549a65f8cafc53a758ae",
     "scripts/hairline-bridge.js": "fabfe3d0b2fe40bfdb4fc95e6a2c2ee04c1bd43091b5879985f5b81ea8fca3ac",
     "scripts/hairline-money-v127.js": "2eed0e5750742488849bf84c6e06a3bf7e6dfe4352332b06325481cfe1235e98",
     "scripts/hairline-diagnosis-v127.js": "8112514d93cd55084f48f195f9d4238d76e5a661fe377d16d9194f586b309ef4",
