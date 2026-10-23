@@ -2,7 +2,7 @@ import * as T from '../vendor/three/three.module.min.js';
 import {makeCar,roundedBox,material,disposeObject} from './hero-workshop.js';
 
 const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x)), lerp=T.MathUtils.lerp;
-const V=(x,z)=>new T.Vector3(x,0,z), LOOP=30, ROOF=3.55;
+const V=(x,z)=>new T.Vector3(x,0,z), LOOP=30, CARS=6, HEADWAY=LOOP/CARS, ROOF=3.55;
 // Both service lanes are drive-through: every bend is outside the building.
 function route(lane){
   const curves=[
@@ -17,22 +17,23 @@ function route(lane){
 }
 const paths=[route(-1.6),route(1.6)];
 function sample(seconds,index){
-  const t=((seconds+index*7.5)%LOOP+LOOP)%LOOP,lane=index%2;
+  const t=((seconds+index*HEADWAY)%LOOP+LOOP)%LOOP,lane=index%2;
   let segment,u,state;
-  if(t<5){segment=0;u=t/5;state='approaching'}
-  else if(t<8){segment=1;u=1-Math.pow(1-(t-5)/3,2);state='entering'}
-  else if(t<11){segment=1;u=1;state='servicing'}
-  else if(t<15){segment=2;u=Math.pow((t-11)/4,1.5);state='leaving'}
-  else if(t<19){segment=3;u=(t-15)/4;state='circulating'}
-  else if(t<25){segment=4;u=(t-19)/6;state='circulating'}
-  else{segment=5;u=(t-25)/5;state='departing'}
+  if(t<4.5){segment=0;u=1-Math.pow(1-t/4.5,1.35);state='approaching'}
+  else if(t<5.5){segment=0;u=1;state='waiting'}
+  else if(t<8.5){segment=1;u=(1-Math.cos(Math.PI*(t-5.5)/3))/2;state='entering'}
+  else if(t<11.5){segment=1;u=1;state='servicing'}
+  else if(t<15.5){segment=2;u=Math.pow((t-11.5)/4,1.5);state='leaving'}
+  else if(t<19.5){segment=3;u=(t-15.5)/4;state='circulating'}
+  else if(t<25.5){segment=4;u=(t-19.5)/6;state='circulating'}
+  else{segment=5;u=(t-25.5)/4.5;state='departing'}
   const curve=paths[lane][segment],point=curve.getPointAt(u),tangent=curve.getTangentAt(u);
   return {point,heading:Math.atan2(-tangent.z,tangent.x),state,t,segment,lane};
 }
 
 // Collision audit uses conservative oriented footprints, rather than screen projections.
 export function auditWorkshopPaths(){
-  let minClearance=Infinity,violations=0;
+  let minClearance=Infinity,violations=0,minVehicleClearance=Infinity,vehicleCollisions=0,waitingSamples=0,samples=0;
   const obstacles=[[-3.35,-1.7,.15,2.9],[3.35,-1.7,.15,2.9],[0,1,.15,.18],[-3.35,1,.15,.18],[3.35,1,.15,.18]];
   for(const lane of [-1.6,1.6])for(const x of [lane-.94,lane+.94])obstacles.push([x,-2,.075,.12]);
   function separation(a,b){
@@ -42,8 +43,19 @@ export function auditWorkshopPaths(){
       return Math.abs(x*(a.point.x-b[0])+z*(a.point.z-b[1]))-ra-b[2]*Math.abs(x)-b[3]*Math.abs(z);
     }));
   }
-  for(let i=0;i<4;i++)for(let s=0;s<LOOP;s+=.025){const a=sample(s,i);for(const o of obstacles){const d=separation(a,o);minClearance=Math.min(minClearance,d);if(d<0)violations++}}
-  return {samples:4800,violations,minClearance,roofHeight:ROOF,coinMinimumHeight:4.75,carWidth:1.06,doorClearWidth:3.05};
+  function vehicleSeparation(a,b){
+    const axes=[a.heading,a.heading+Math.PI/2,b.heading,b.heading+Math.PI/2].map(h=>[Math.cos(h),-Math.sin(h)]);
+    return Math.max(...axes.map(([x,z])=>{
+      const radius=p=>1.09*Math.abs(x*Math.cos(p.heading)-z*Math.sin(p.heading))+.53*Math.abs(x*Math.sin(p.heading)+z*Math.cos(p.heading));
+      return Math.abs(x*(a.point.x-b.point.x)+z*(a.point.z-b.point.z))-radius(a)-radius(b);
+    }));
+  }
+  for(let s=0;s<LOOP;s+=.01){const positions=Array.from({length:CARS},(_,i)=>sample(s,i));for(let i=0;i<CARS;i++){
+    const a=positions[i];samples++;if(a.state==='waiting')waitingSamples++;
+    for(const o of obstacles){const d=separation(a,o);minClearance=Math.min(minClearance,d);if(d<0)violations++}
+    for(let j=i+1;j<CARS;j++){const d=vehicleSeparation(a,positions[j]);minVehicleClearance=Math.min(minVehicleClearance,d);if(d<0)vehicleCollisions++}
+  }}
+  return {samples,violations,minClearance,vehicleCollisions,minVehicleClearance,waitingSamples,cars:CARS,entryInterval:HEADWAY,roofHeight:ROOF,coinMinimumHeight:4.75,carWidth:1.06,doorClearWidth:3.05};
 }
 
 function mergeStatic(group){
@@ -57,7 +69,7 @@ function textTexture(text,color,bg=null){const c=document.createElement('canvas'
 
 export async function initMechanism(stage,{holdAssembly=false,compact=false}={}){
   let disposed=false,visible=true,paused=false,held=holdAssembly,raf=0,last=0,clock=2,lastRender=0;
-  const stats={renderer:'three-spatial',ready:false,active:true,running:false,paused:false,fallback:false,frames:0,elapsedSeconds:0,loopDuration:LOOP,cars:4,carStates:[],arrivals:0,moneyColor:'#16a56a',coinPositions:[],roofHeight:ROOF,vertices:0,drawcalls:0,dpr:1,stage:'find',geometryAudit:auditWorkshopPaths()};
+  const stats={renderer:'three-spatial',ready:false,active:true,running:false,paused:false,fallback:false,frames:0,elapsedSeconds:0,loopDuration:LOOP,cars:CARS,carStates:[],arrivals:0,moneyColor:'#16a56a',coinPositions:[],roofHeight:ROOF,vertices:0,drawcalls:0,dpr:1,stage:'find',geometryAudit:auditWorkshopPaths()};
   const canvas=document.createElement('canvas');canvas.className='mechanism-canvas';canvas.setAttribute('aria-hidden','true');
   const renderer=new T.WebGLRenderer({canvas,alpha:true,antialias:true,powerPreference:'high-performance'});
   renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.16;
@@ -115,31 +127,41 @@ export async function initMechanism(stage,{holdAssembly=false,compact=false}={})
   // Parking guides and low planting stay outside vehicle trajectories.
   for(const z of [-3.7,-2.9]){box(.65,.42,.6,-4.25,.2,z,white,.07);cyl(.24,.45,-4.25,.58,z,material(0x579b86,.8,.01),12)}
   scene.add(mergeStatic(staticRoot));
+  // Roof landmark: a solid, bevelled gear mounted on a short metal support.
+  const support=new T.Mesh(new T.CylinderGeometry(.105,.14,1.35,20),silver);support.position.set(-1.35,4.22,-2.1);support.castShadow=true;scene.add(support);
+  const mount=new T.Mesh(new T.CylinderGeometry(.36,.36,.08,24),silver);mount.position.set(-1.35,3.63,-2.1);scene.add(mount);
+  const gearStand=new T.Group();gearStand.position.set(-1.35,5.02,-2.1);gearStand.rotation.y=.53;scene.add(gearStand);
+  const gearShape=new T.Shape();for(let i=0;i<56;i++){const a=i/56*Math.PI*2,r=i%4===1||i%4===2?1.21:1.04;const x=Math.cos(a)*r,y=Math.sin(a)*r;i?gearShape.lineTo(x,y):gearShape.moveTo(x,y)}gearShape.closePath();const gearHole=new T.Path();gearHole.absarc(0,0,.45,0,Math.PI*2,true);gearShape.holes.push(gearHole);
+  const gearGeo=new T.ExtrudeGeometry(gearShape,{depth:.22,bevelEnabled:true,bevelSegments:3,bevelSize:.035,bevelThickness:.035,curveSegments:32});gearGeo.center();
+  const roofGear=new T.Group(),gearBody=new T.Mesh(gearGeo,blue);gearBody.castShadow=true;roofGear.add(gearBody);
+  for(const z of [-.135,.135]){const ring=new T.Mesh(new T.TorusGeometry(.55,.035,8,48),silver);ring.position.z=z;roofGear.add(ring);for(let i=0;i<6;i++){const bolt=new T.Mesh(new T.CylinderGeometry(.047,.047,.025,8),silver);bolt.rotation.x=Math.PI/2;bolt.position.set(Math.cos(i*Math.PI/3)*.77,Math.sin(i*Math.PI/3)*.77,z);roofGear.add(bolt)}}gearStand.add(roofGear);
   const floor=new T.Mesh(new T.PlaneGeometry(200,200),new T.ShadowMaterial({opacity:.17,color:0x506789}));floor.rotation.x=-Math.PI/2;floor.position.y=-.066;floor.receiveShadow=true;scene.add(floor);
   const cars=[];
   const carMats=[material(0xe7edf5,.23,.45),material(0x1261f4,.22,.35),material(0x9bb0c8,.24,.5),material(0xf7fbff,.23,.35)];
-  for(let i=0;i<4;i++){
-    const car=makeCar(carMats[i],blue);car.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true}});
+  for(let i=0;i<CARS;i++){
+    const carMat=carMats[i%carMats.length],car=makeCar(carMat,blue);car.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true}});
     // Side mirrors and door handles remain solid geometry, at the same scale as the body.
-    for(const z of [-.47,.47]){const mirror=roundedBox(.16,.08,.12,carMats[i],.018);mirror.position.set(.28,.73,z);car.add(mirror);const handle=roundedBox(.12,.025,.025,silver,.005);handle.position.set(-.27,.61,z);car.add(handle)}
+    for(const z of [-.47,.47]){const mirror=roundedBox(.16,.08,.12,carMat,.018);mirror.position.set(.28,.73,z);car.add(mirror);const handle=roundedBox(.12,.025,.025,silver,.005);handle.position.set(-.27,.61,z);car.add(handle)}
     car.userData.steers=[];
     for(const wheel of car.userData.wheels.filter(w=>w.position.x>0)){const pivot=new T.Group();pivot.position.copy(wheel.position);car.add(pivot);pivot.add(wheel);wheel.position.set(0,0,0);car.userData.steers.push(pivot)}
     scene.add(car);cars.push(car);
   }
-  const coins=[],arrived=new Map();
+  const coins=[],arrived=new Map();let nextCoinAt=2,emission=0;
   const coinCanvas=document.createElement('canvas');coinCanvas.width=256;coinCanvas.height=256;const cc=coinCanvas.getContext('2d');cc.fillStyle='#16a56a';cc.fillRect(0,0,256,256);cc.strokeStyle='#91edbc';cc.lineWidth=5;cc.beginPath();cc.arc(128,128,112,0,Math.PI*2);cc.stroke();cc.fillStyle='#ffffff';cc.font='bold 96px Arial';cc.textAlign='center';cc.textBaseline='middle';cc.fillText('R$',128,134);const coinMap=new T.CanvasTexture(coinCanvas);coinMap.colorSpace=T.SRGBColorSpace;
-  function spawnCoin(lane){
-    for(let n=0;n<3;n++){
+  function spawnCoin(lane,ambient=false){
+    for(let n=0;n<(ambient?1:2);n++){
       const group=new T.Group(),face=new T.MeshBasicMaterial({map:coinMap,transparent:false});
       const rim=new T.Mesh(new T.CylinderGeometry(.36,.36,.085,32),material(0x16a56a,.25,.25));rim.rotation.x=Math.PI/2;group.add(rim);
       const label=new T.Mesh(new T.CircleGeometry(.335,32),face);label.position.z=.047;group.add(label);scene.add(group);
-      coins.push({group,birth:clock+n*.26,x:lane+(n-1)*.34});
+      const stream=emission++%3;coins.push({group,birth:clock+n*.72,x:[.8,2.4,3.7][stream],z:[-.4,-1.5,.5][stream]});
     }
-    stats.arrivals++;stage.dispatchEvent(new CustomEvent('workshop:arrival',{detail:{total:stats.arrivals}}));
+    if(!ambient){stats.arrivals++;stage.dispatchEvent(new CustomEvent('workshop:arrival',{detail:{total:stats.arrivals}}))}stats.emissions=emission;
   }
   function pose(){
+    roofGear.rotation.z=-(clock-2)*.38;stats.roofGearAngle=roofGear.rotation.z;
+    if(clock>=nextCoinAt){spawnCoin(0,true);nextCoinAt=clock+1.35}
     stats.carStates=cars.map((car,i)=>{
-      const p=sample(clock,i),previous=car.userData.prev,cycle=Math.floor((clock+i*7.5)/LOOP);
+      const p=sample(clock,i),previous=car.userData.prev,cycle=Math.floor((clock+i*HEADWAY)/LOOP);
       const distance=previous?previous.distanceTo(p.point):0;
       const angle=car.userData.heading===undefined?0:Math.atan2(Math.sin(p.heading-car.userData.heading),Math.cos(p.heading-car.userData.heading));
       car.userData.steers.forEach(pivot=>pivot.rotation.y=distance>.001&&distance<1?clamp(Math.atan(1.3*angle/distance),-.5,.5):0);car.userData.heading=p.heading;
@@ -150,7 +172,7 @@ export async function initMechanism(stage,{holdAssembly=false,compact=false}={})
       return {x:p.point.x,z:p.point.z,heading:p.heading,state:p.state,visible:car.visible,wheelRotation:car.userData.wheels[0].rotation.z};
     });
     stats.coinPositions=[];
-    for(let i=coins.length-1;i>=0;i--){const c=coins[i],age=clock-c.birth;if(age>2.5){scene.remove(c.group);c.group.traverse(o=>{o.geometry?.dispose();o.material?.dispose()});coins.splice(i,1);continue}c.group.visible=age>=0;if(age<0)continue;c.group.position.set(c.x,4.75+age*.85,-1.8);c.group.quaternion.copy(camera.quaternion);c.group.rotateY(Math.sin(age*2)*.24);c.group.scale.setScalar(Math.min(1,age*7)*Math.min(1,(2.5-age)*2));stats.coinPositions.push({y:c.group.position.y,screenY:c.group.position.clone().project(camera).y});}
+    for(let i=coins.length-1;i>=0;i--){const c=coins[i],age=clock-c.birth;if(age>2.5){scene.remove(c.group);c.group.traverse(o=>{o.geometry?.dispose();o.material?.dispose()});coins.splice(i,1);continue}c.group.visible=age>=0;if(age<0)continue;c.group.position.set(c.x,4.75+age*.65,c.z);c.group.quaternion.copy(camera.quaternion);c.group.rotateY(Math.sin(age*2)*.24);c.group.scale.setScalar(Math.min(1,age*7)*Math.min(1,(2.5-age)*2));stats.coinPositions.push({x:c.x,y:c.group.position.y,screenY:c.group.position.clone().project(camera).y});}
     stats.elapsedSeconds=clock-2;stats.stage=stats.carStates[0].state==='servicing'?'service':stats.carStates[0].state==='entering'?'contact':'find';
   }
   function render(){pose();renderer.render(scene,camera);stats.frames++;stats.drawcalls=renderer.info.render.calls;stats.triangles=renderer.info.render.triangles;}
