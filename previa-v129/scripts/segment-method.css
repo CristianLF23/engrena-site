@@ -1,0 +1,14 @@
+.segments-track{animation-name:segments-continuous;animation-duration:var(--segments-duration,36s);animation-timing-function:linear;animation-iteration-count:infinite;width:max-content}
+.segments-group{min-width:100vw;justify-content:space-around}
+@keyframes segments-continuous{to{transform:translate3d(var(--segments-distance,-50%),0,0)}}
+#method-title .method-brand{color:#1261f4;font-weight:700}
+.method-words{display:grid;max-width:100%;line-height:1.22;margin-top:.04em;overflow:hidden}
+.method-words>span{grid-area:1/1;opacity:0;visibility:hidden;white-space:nowrap}
+.method-words>span:first-child{opacity:1;visibility:visible}
+.method-word-fallback{display:none}
+.js .method-words.is-cycling>span{visibility:visible;animation:method-word-cycle 6s linear infinite both}
+.js .method-words.is-cycling>span:nth-child(2){animation-delay:-4s}
+.js .method-words.is-cycling>span:nth-child(3){animation-delay:-2s}
+@keyframes method-word-cycle{0%,27%{opacity:1;transform:translateY(0)}32%,95%{opacity:0;transform:translateY(-.22em)}96%{opacity:0;transform:translateY(.22em)}100%{opacity:1;transform:translateY(0)}}
+html.motion-paused .method-words>span{animation-play-state:paused!important}
+@media(prefers-reduced-motion:reduce){.segments-track{animation:none!important;transform:none!important}.method-words{display:none}.method-word-fallback{display:block}}
