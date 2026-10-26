@@ -165,7 +165,7 @@
   },{threshold:.25});
   counterObserver.observe($('.counter-grid'));
 
-  document.addEventListener('engrena:contact-demo-complete',()=>stopCounter());
+  document.addEventListener('engrena:contact-sent',()=>stopCounter());
   $$('[data-open-contact]').forEach(button=>button.addEventListener('click',e=>{
     if(!window.engrenaContact)return;
     e.preventDefault();finishIntro();close(menu);
@@ -369,7 +369,7 @@
   });
   document.addEventListener('visibilitychange',()=>{if(!document.hidden&&introDone)queueHeroScene()});
   window.engrenaPreview=Object.freeze({
-    version:'1.28',externalTransmission:false,
+    version:'1.28',externalTransmission:true,
     get heroVariant(){return heroVariant},
     get counter(){return{started:counterStarted,elapsed,seconds:counterSeconds,rate:illustrativeRate,stopped:contactCompleted}},
     get scene(){return scene?{...scene.stats,active:sceneActive}:{active:false}}

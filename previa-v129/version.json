@@ -2,9 +2,17 @@
   "version": "1.29.1",
   "url": "https://cristianlf23.github.io/engrena-site/previa-v129/",
   "files": {
-    "index.html": "a9c84aada3c47dcfb3ada3e9aec0984b086aceff788523597c5c9fee40758959",
+    "index.html": "ec4f1f0079fe418d0b9ff11806840b69b706781791b5f7223632372024643daa",
     "scripts/segment-method.js": "9fed84f425eef3e4f0a841ab6bdd6f7474738c5b9f68c11636f987b5d594cf43",
     "scripts/segment-method.css": "2d21fcdf1a3c5941c7310be4b60d003aaca64360451a3f0f6ad0f8905aa753d8",
-    "scripts/app.js": "9c6ae0278e70db34e790edbc7e8e600adb9deb222a5f08d273422808e2fd6ed6"
+    "scripts/app.js": "1503c858156934c241c43b33c7fa0a7c4eec69bc0f06b1900fd201457c41d0a1",
+    "scripts/quick-contact.js": "a178c3177583a47ef491297c2d735fe8cff0be62d543a4ba7c75a716b50c3b2c",
+    "scripts/contact-delivery.css": "5d62088b06df6cda6216d4d8e6fe6b61a707ba27e07f1bf00cd9f63704c5bdc1"
+  },
+  "updated": "2026-10-26",
+  "contact": {
+    "provider": "FormSubmit",
+    "recipient": "engrenaoficinas@gmail.com",
+    "activation": "owner confirmation required; real delivery not yet verified"
   }
 }

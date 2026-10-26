@@ -1,0 +1,11 @@
+.diagnosis-trap{display:none!important}
+.diagnosis-form[aria-busy=true] .diagnosis-submit{cursor:wait;opacity:.72}
+.diagnosis-panel .diagnosis-error{color:#b5223e;font-size:15px;line-height:1.5}
+.diagnosis-panel .diagnosis-success{padding:30px;border:1px solid #cdddf0;border-radius:12px;background:#fff;color:#173c66}
+.diagnosis-panel .diagnosis-success .eyebrow{color:#1261f4}
+.diagnosis-panel .diagnosis-success h3{font:600 clamp(28px,3vw,40px)/1.15 var(--body);color:#173c66;max-width:22ch}
+.diagnosis-panel .diagnosis-success>p{font:400 18px/1.5 var(--body);color:#526b85}
+.diagnosis-success .diagnosis-success-actions button{background:#1261f4;color:#fff;border-color:#1261f4;border-radius:7px;padding:13px 20px}
+.diagnosis-success .diagnosis-success-actions button:hover{background:#0753cd}
+.diagnosis-privacy{font:400 12px/1.5 var(--body);color:#526b85;margin-top:12px}
+.diagnosis-privacy a{text-decoration:underline}

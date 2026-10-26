@@ -6,7 +6,7 @@
   const dialog = document.querySelector('#contact-dialog');
   const slot = document.querySelector('#diagnosis-dialog-body');
   if (!form || !panel || !home || !dialog || !slot) return;
-  const controls = [...form.querySelectorAll('input,select,textarea')];
+  const controls = [...form.querySelectorAll('input:not([data-form-honey]),select,textarea')];
   const error = form.querySelector('#diagnosis-error');
   const success = panel.querySelector('#diagnosis-success');
   const submit = form.querySelector('button[type="submit"]');
@@ -25,6 +25,9 @@
   let opener = null;
   let scrollPosition = 0;
   let completed = false;
+  let sending = false;
+  const endpoint='https://formsubmit.co/ajax/engrenaoficinas@gmail.com';
+  const submitLabel=submit.textContent;
   let focusFrame = 0;
   const nationalPhone = value => String(value).replace(/\D/g, '').replace(/^55(?=\d{10,11}$)/, '');
   const inlineObserver = new IntersectionObserver(entries => {
@@ -36,9 +39,9 @@
     if (!form.querySelector('[aria-invalid="true"]')) error.textContent = '';
   }));
 
-  form.addEventListener('submit', event => {
+  form.addEventListener('submit', async event => {
     event.preventDefault();
-    if (completed) return;
+    if (completed || sending || form.querySelector('[data-form-honey]')?.value) return;
     controls.forEach(control => {
       control.removeAttribute('aria-invalid');
       if (control.tagName !== 'SELECT') control.value = control.value.trim();
@@ -56,15 +59,24 @@
       invalid[0].focus();
       return;
     }
-    // This preview neither transmits nor durably stores contact information.
-    completed = true;
-    form.hidden = true;
-    success.hidden = false;
-    success.focus();
-    form.dispatchEvent(new CustomEvent('engrena:contact-demo-complete', { bubbles: true }));
+    sending=true;submit.disabled=true;submit.textContent='Enviando seu formulário…';form.setAttribute('aria-busy','true');
+    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),25000);
+    const data={_subject:'Novo diagnóstico gratuito | ENGRENA',_template:'table',_url:location.origin+location.pathname};
+    controls.forEach(control=>{const label=form.querySelector(`label[for="${control.id}"]`)?.textContent||control.name;data[label]=control.tagName==='SELECT'?control.selectedOptions[0].textContent:control.id==='whatsapp'?nationalPhone(control.value):control.value});
+    try{
+      const response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},credentials:'omit',signal:controller.signal,body:JSON.stringify(data)});
+      const result=await response.json();
+      if(/activat|confirm.*email|verif.*email/i.test(String(result.message||'')))throw new Error('activation');
+      if(!response.ok||!(result.success===true||result.success==='true'))throw new Error('rejected');
+      completed=true;form.hidden=true;success.hidden=false;success.focus();
+      form.dispatchEvent(new CustomEvent('engrena:contact-sent',{bubbles:true}));
+    }catch(failure){
+      error.textContent=failure.message==='activation'?'O recebimento está sendo ativado. Tente novamente em instantes.':'Não conseguimos confirmar o envio. Confira sua conexão e tente novamente. Seus dados continuam preenchidos.';
+      error.tabIndex=-1;error.focus();
+    }finally{clearTimeout(timer);sending=false;submit.disabled=false;submit.textContent=submitLabel;form.removeAttribute('aria-busy')}
   });
 
-  panel.querySelector('[data-diagnosis-edit]').addEventListener('click', () => {
+  panel.querySelector('[data-diagnosis-edit]')?.addEventListener('click', () => {
     completed = false;
     success.hidden = true;
     form.hidden = false;
@@ -127,7 +139,7 @@
   });
   window.engrenaContact = Object.freeze({
     open,
-    get state() { return { presentation: dialog.open ? 'dialog' : compact.matches ? 'button' : 'inline', completed, fields: controls.length }; },
+    get state() { return { presentation: dialog.open ? 'dialog' : compact.matches ? 'button' : 'inline', completed, sending, fields: controls.length }; },
   });
   form.dataset.ready = 'true';
   submit.disabled = false;
