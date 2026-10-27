@@ -20,6 +20,7 @@
 .inertia .counter-grid{grid-column:1;grid-row:2;display:block;margin:0;padding:1.5rem 0;border-block:1px solid #d4e1f2;width:100%;min-width:0}
 .inertia .counter-money strong{font-size:clamp(42px,5vw,76px);color:#cf2148;font-variant-numeric:tabular-nums;white-space:nowrap}
 .counter-description{display:block;font-size:16px;color:#365b80;margin-top:.7rem}
+.inertia .counter-calculation{grid-column:1;grid-row:3;max-width:68ch;font-size:14px;line-height:1.65;color:#456989;margin:0;text-wrap:pretty}
 .product .process-case,.product .owner-notification,.product .management-ledger>div,.product .process-ledger>li,.product .return-flow>li{background:#eef5ff;color:#214770;border-color:#cfdef1}
 .product .process-case strong,.product .owner-notification strong,.product .management-ledger dd,.product .process-ledger strong,.product .return-flow strong{color:#163f6b}
 .product .process-case>span,.product .owner-notification p,.product .management-ledger dt,.product .process-ledger p,.product .return-flow p{color:#365b80}
