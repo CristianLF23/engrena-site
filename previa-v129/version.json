@@ -2,14 +2,15 @@
   "version": "1.29.1",
   "url": "https://cristianlf23.github.io/engrena-site/previa-v129/",
   "files": {
-    "index.html": "9de15ffacf078459f9c94c76b33acd90216fa507ec2e89eb72fe6cc4583bf4b0",
     "scripts/segment-method.js": "9fed84f425eef3e4f0a841ab6bdd6f7474738c5b9f68c11636f987b5d594cf43",
     "scripts/segment-method.css": "2d21fcdf1a3c5941c7310be4b60d003aaca64360451a3f0f6ad0f8905aa753d8",
-    "scripts/app.js": "1503c858156934c241c43b33c7fa0a7c4eec69bc0f06b1900fd201457c41d0a1",
     "scripts/quick-contact.js": "a178c3177583a47ef491297c2d735fe8cff0be62d543a4ba7c75a716b50c3b2c",
-    "scripts/contact-delivery.css": "5d62088b06df6cda6216d4d8e6fe6b61a707ba27e07f1bf00cd9f63704c5bdc1"
+    "scripts/contact-delivery.css": "5d62088b06df6cda6216d4d8e6fe6b61a707ba27e07f1bf00cd9f63704c5bdc1",
+    "index.html": "0bd2eda853271b7bcfa77e98bda3b1e767869c508feadc61adbe6070ad72251a",
+    "scripts/app.js": "be7d2e888f9bdbe85b7b82f9b54b9a3903e2005525432a81b3a91ee30603e1b8",
+    "scripts/journey-update.css": "6abb2f9206724044a4b66ddbd8924848576f99ac50b3f6074cc51e6efc170271"
   },
-  "updated": "2026-10-26",
+  "updated": "2026-10-27",
   "contact": {
     "provider": "FormSubmit",
     "recipient": "engrenaoficinas@gmail.com",

@@ -7,7 +7,7 @@
   const saveData = Boolean(navigator.connection?.saveData);
   const loader=$('#intro-loader'), contact=$('#contact-dialog'), menu=$('#menu-dialog'), privacy=$('#privacy-dialog');
   const stage=$('#mechanism-stage'), explore=$('#explore-mechanism');
-  const originalDescription=$('#mechanism-description').textContent;
+  const originalDescription=$('#mechanism-description')?.textContent || 'Da primeira busca ao próximo serviço.';
   const hero=$('#inicio'),mechanismImage=$('.mechanism-image');
   const gearImage={src:mechanismImage.getAttribute('src'),srcset:mechanismImage.getAttribute('srcset'),alt:mechanismImage.alt};
   const originalImage={src:'assets/images/mechanism-original.webp',srcset:'assets/images/mechanism-original-small.webp 1086w, assets/images/mechanism-original.webp 2172w',alt:'Três peças industriais originais em aço escuro, azul e prata, em perspectiva oblíqua.'};
@@ -18,7 +18,7 @@
   let scene=null, sceneActive=false, sceneProgress=0, selectedPiece=null, sceneStarting=false, sceneAttempt=0;
   let sceneStartFrame=0;
   let counterStarted=false, contactCompleted=false, counterStart=0, elapsed=0, counterSeconds=0, interval=0;
-  const illustrativeRate=10;
+  const illustrativeRate=400/3600;
   let heroVisible=true, contactVisible=false, footerVisible=false, scrollFrame=0;
   const money=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
   async function loadSymbols(){
@@ -146,7 +146,6 @@
   $$('[data-close-contact]').forEach(button=>button.addEventListener('click',()=>close(contact)));
 
   function renderCounter(){
-    $('#elapsed-time').textContent=[Math.floor(elapsed/3600),Math.floor(elapsed%3600/60),elapsed%60].map(n=>String(n).padStart(2,'0')).join(':');
     const value=$('#missed-value'),formatted='- '+money.format(counterSeconds*illustrativeRate);
     if(value.textContent!==formatted){value.textContent=formatted;}
     const bucket=Math.floor(counterSeconds/2);
@@ -155,7 +154,7 @@
   function stopCounter(){
     if(counterStarted&&!contactCompleted){counterSeconds=(performance.now()-counterStart)/1000;elapsed=Math.floor(counterSeconds);renderCounter()}
     contactCompleted=true;clearInterval(interval);
-    $('.counter-block .counter-foot').textContent='Formulário concluído. Contadores pausados.';
+    $('.counter-description').textContent='Diagnóstico solicitado. Próximo passo iniciado.';
   }
   const counterObserver=new IntersectionObserver(entries=>{
     if(!entries.some(e=>e.isIntersecting)||counterStarted||contactCompleted)return;
@@ -202,7 +201,7 @@
   $$('.mechanism-label').forEach((button,i)=>button.addEventListener('click',()=>{
     selectedPiece=selectedPiece===i?null:i;
     $$('.mechanism-label').forEach((b,j)=>b.setAttribute('aria-pressed',String(j===selectedPiece)));
-    $('#mechanism-description').textContent=selectedPiece===null?originalDescription:descriptions[selectedPiece];
+    const caption=$('#mechanism-description');if(caption)caption.textContent=selectedPiece===null?originalDescription:descriptions[selectedPiece];
     scene?.setFocus(selectedPiece);
   }));
   function exploreLabel(playing){
@@ -230,7 +229,7 @@
   selectHeroVariant(heroVariant,false);
   stage.addEventListener('mechanism:fallback',()=>{
     scene=null;sceneActive=false;exploreLabel(false);
-    $('#mechanism-description').textContent=selectedPiece===null?originalDescription:descriptions[selectedPiece];
+    const caption=$('#mechanism-description');if(caption)caption.textContent=selectedPiece===null?originalDescription:descriptions[selectedPiece];
   });
   async function startScene(){
     if(!canAnimate()||sceneStarting||sceneActive||!heroVisible||document.hidden||document.documentElement.classList.contains('intro-active'))return;

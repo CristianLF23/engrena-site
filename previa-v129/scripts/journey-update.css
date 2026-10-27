@@ -1,0 +1,30 @@
+/* Content revision: preserve the existing blue and white visual system. */
+.hero-heading h1{max-width:19ch;text-wrap:balance}
+.hero-form-invitation{font-size:clamp(15px,1.2vw,18px);line-height:1.5;margin-top:1.2rem}
+.mobile-form-invitation{display:none}
+.workshop-flow,.working-journey>.clarity-heading>.eyebrow,.contact .diagnosis-message>.eyebrow,.faq-heading>.eyebrow{display:none}
+.hero .hero-specialty{font-size:16px}
+#engrena .clarity-heading h2{max-width:29ch;text-wrap:balance}
+#resultados .results-heading h2{max-width:27ch;text-wrap:balance}
+.working-journey{background:#f2f7ff;color:#103e69}
+.working-journey .clarity-heading h2{max-width:29ch;text-wrap:balance}
+.working-steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));list-style:none;margin:3rem 0 0;padding:0;gap:0}
+.working-steps li{position:relative;min-width:0;border-top:1px solid #aac9f0;padding:1.8rem 1.2rem 0 0}
+.working-number{display:grid;place-items:center;width:2.8rem;height:2.8rem;border:1px solid #1261f4;border-radius:50%;color:#1261f4;background:#f2f7ff;font-size:1rem;margin-top:-3.2rem;margin-bottom:1.5rem;font-variant-numeric:tabular-nums}
+.working-steps h3{font-size:clamp(19px,1.6vw,25px);line-height:1.2;max-width:16ch;margin:0 0 .8rem;text-wrap:balance}
+.working-steps p{font-size:16px;line-height:1.5;max-width:22ch;margin:0}
+.working-note{font-size:13px;line-height:1.6;margin-top:2.5rem;color:#456989}
+#contato .diagnosis-message h2{max-width:23ch;text-wrap:balance}
+.inertia .inertia-intro h2{max-width:25ch;text-wrap:balance}
+.inertia .opportunity-intro{font-size:18px;line-height:1.6;margin-top:1.5rem;max-width:43ch}
+.inertia .counter-grid{grid-column:1;grid-row:2;display:block;margin:0;padding:1.5rem 0;border-block:1px solid #d4e1f2;width:100%;min-width:0}
+.inertia .counter-money strong{font-size:clamp(42px,5vw,76px);color:#cf2148;font-variant-numeric:tabular-nums;white-space:nowrap}
+.counter-description{display:block;font-size:16px;color:#365b80;margin-top:.7rem}
+.product .process-case,.product .owner-notification,.product .management-ledger>div,.product .process-ledger>li,.product .return-flow>li{background:#eef5ff;color:#214770;border-color:#cfdef1}
+.product .process-case strong,.product .owner-notification strong,.product .management-ledger dd,.product .process-ledger strong,.product .return-flow strong{color:#163f6b}
+.product .process-case>span,.product .owner-notification p,.product .management-ledger dt,.product .process-ledger p,.product .return-flow p{color:#365b80}
+.product .process-state,.product .ticket-tag{background:#e0ecff;color:#174a8a}
+.product .process-ledger .process-index,.product .return-flow>li>span{display:grid;place-items:center;flex:none;align-self:start;width:32px;height:32px;background:#deebff;color:#0752bc;border:1px solid #b9d3fa;border-radius:50%;font-size:16px;font-weight:600;line-height:1}
+.product .mini-label,.product .demo-panel>p,.product .guide-task{font-size:15px}
+@media(max-width:1000px){.working-steps{grid-template-columns:1fr;margin-top:2.5rem}.working-steps li{border-top:0;border-left:1px solid #aac9f0;padding:0 0 2rem 4rem;margin-left:1.4rem}.working-steps li:last-child{border-left-color:transparent;padding-bottom:0}.working-number{position:absolute;left:-1.4rem;top:0;margin:0}.working-steps h3,.working-steps p{max-width:42ch}}
+@media(max-width:767px){.desktop-form-invitation{display:none}.mobile-form-invitation{display:inline}.hero-heading h1{max-width:20ch}.working-steps h3{font-size:23px}.working-steps li{padding-left:2.5rem}.working-note{margin-top:1.8rem}}
