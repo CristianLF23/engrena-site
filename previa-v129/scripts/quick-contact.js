@@ -128,7 +128,7 @@
     }
   });
 
-  document.querySelector('.dock-cta')?.addEventListener('click', event => {
+  document.querySelectorAll('.dock-cta, .hero-form-link').forEach(trigger => trigger.addEventListener('click', event => {
     event.preventDefault();
     if (compact.matches) {
       open(event.currentTarget);
@@ -136,7 +136,7 @@
     }
     home.scrollIntoView({ behavior: reduced.matches ? 'instant' : 'smooth', block: 'start' });
     (completed ? success : first).focus({ preventScroll: true });
-  });
+  }));
   window.engrenaContact = Object.freeze({
     open,
     get state() { return { presentation: dialog.open ? 'dialog' : compact.matches ? 'button' : 'inline', completed, sending, fields: controls.length }; },
