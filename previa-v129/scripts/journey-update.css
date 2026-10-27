@@ -23,6 +23,12 @@
 .working-number{display:grid;place-items:center;width:2.8rem;height:2.8rem;border:1px solid #1261f4;border-radius:50%;color:#1261f4;background:#f2f7ff;font-size:1rem;margin-top:-3.2rem;margin-bottom:1.5rem;font-variant-numeric:tabular-nums}
 .working-steps h3{font-size:clamp(19px,1.6vw,25px);line-height:1.2;max-width:16ch;margin:0 0 .8rem;text-wrap:balance}
 .working-steps p{font-size:16px;line-height:1.5;max-width:22ch;margin:0}
+.working-number{position:relative;z-index:1;transition:background-color .2s,color .2s}
+.working-progress{position:absolute;left:0;top:-2px;width:100%;height:3px;background:#1261f4;transform:scaleX(0);transform-origin:left center;pointer-events:none}
+.journey-current .working-number,.journey-done .working-number{background:#1261f4;color:#fff}
+.working-steps .journey-current h3{color:#0752bc}
+@media(max-width:1000px){.working-progress{left:-2px;top:0;width:3px;height:100%;transform:scaleY(0);transform-origin:center top}}
+@media(prefers-reduced-motion:reduce){.working-number{transition:none}.working-progress{display:none}}
 .working-note{font-size:13px;line-height:1.6;margin-top:2.5rem;color:#456989}
 #contato .diagnosis-message h2{max-width:23ch;text-wrap:balance}
 .inertia .inertia-intro h2{max-width:25ch;text-wrap:balance}

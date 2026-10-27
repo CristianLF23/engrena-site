@@ -7,8 +7,9 @@
     "scripts/contact-delivery.css": "5d62088b06df6cda6216d4d8e6fe6b61a707ba27e07f1bf00cd9f63704c5bdc1",
     "scripts/app.js": "be7d2e888f9bdbe85b7b82f9b54b9a3903e2005525432a81b3a91ee30603e1b8",
     "scripts/quick-contact.js": "c9aff7fa83da5b1364cb76c87a501ba85729c0cbc9bac4ad5d3852625ea2fbcb",
-    "index.html": "fee868553ce41df7b3e133a0e6780799778fc22330c97763ebcc95b3632dc119",
-    "scripts/journey-update.css": "652fd1b6abb7c9d51f16faee47db6bd591cee650f07e62afb64ee06034b52f65"
+    "index.html": "80c1ad496cb2ff91a4ccea17e2a7699ca7d5514940b182b469c26594a45bec1f",
+    "scripts/journey-update.css": "b219f84bd549865d524fa7dbaf36caa7488d719b4620431ca7d936965f8f7d47",
+    "scripts/journey-motion.js": "b36f14e0b1499cd87504852edeb3e08e48b587e8d2cbc4b3c8de688169cf97f4"
   },
   "updated": "2026-10-27",
   "contact": {
