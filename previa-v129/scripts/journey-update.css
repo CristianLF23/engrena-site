@@ -1,6 +1,7 @@
 /* Content revision: preserve the existing blue and white visual system. */
 .hero-heading h1{max-width:19ch;text-wrap:balance}
 .hero-form-invitation{font-size:clamp(15px,1.2vw,18px);line-height:1.5;margin-top:1.2rem}
+.hero .hero-intro .hero-form-invitation{display:block;margin-top:1.2rem}
 .mobile-form-invitation{display:none}
 .workshop-flow,.working-journey>.clarity-heading>.eyebrow,.contact .diagnosis-message>.eyebrow,.faq-heading>.eyebrow{display:none}
 .hero .hero-specialty{font-size:16px}
@@ -21,6 +22,13 @@
 .inertia .counter-money strong{font-size:clamp(42px,5vw,76px);color:#cf2148;font-variant-numeric:tabular-nums;white-space:nowrap}
 .counter-description{display:block;font-size:16px;color:#365b80;margin-top:.7rem}
 .inertia .counter-calculation{grid-column:1;grid-row:3;max-width:68ch;font-size:14px;line-height:1.65;color:#456989;margin:0;text-wrap:pretty}
+.inertia .counter-explanation{grid-column:1;grid-row:3;max-width:65ch;color:#365b80;font-size:16px;line-height:1.6}
+.counter-explanation summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;width:fit-content;min-height:44px;color:#17549a;font-size:15px;border-bottom:1px solid #bed2eb}
+.counter-explanation summary::-webkit-details-marker{display:none}
+.counter-explanation summary::after{content:'+';font-size:20px}
+.counter-explanation[open] summary::after{content:'×'}
+.counter-explanation summary:focus-visible{outline:2px solid #1261f4;outline-offset:5px}
+.counter-explanation p{margin:1rem 0 0;font-size:16px;line-height:1.65}
 .product .process-case,.product .owner-notification,.product .management-ledger>div,.product .process-ledger>li,.product .return-flow>li{background:#eef5ff;color:#214770;border-color:#cfdef1}
 .product .process-case strong,.product .owner-notification strong,.product .management-ledger dd,.product .process-ledger strong,.product .return-flow strong{color:#163f6b}
 .product .process-case>span,.product .owner-notification p,.product .management-ledger dt,.product .process-ledger p,.product .return-flow p{color:#365b80}
@@ -29,3 +37,4 @@
 .product .mini-label,.product .demo-panel>p,.product .guide-task{font-size:15px}
 @media(max-width:1000px){.working-steps{grid-template-columns:1fr;margin-top:2.5rem}.working-steps li{border-top:0;border-left:1px solid #aac9f0;padding:0 0 2rem 4rem;margin-left:1.4rem}.working-steps li:last-child{border-left-color:transparent;padding-bottom:0}.working-number{position:absolute;left:-1.4rem;top:0;margin:0}.working-steps h3,.working-steps p{max-width:42ch}}
 @media(max-width:767px){.desktop-form-invitation{display:none}.mobile-form-invitation{display:inline}.hero-heading h1{max-width:20ch}.working-steps h3{font-size:23px}.working-steps li{padding-left:2.5rem}.working-note{margin-top:1.8rem}}
+@media(max-width:899px){.method #method-track,.method #method-track .method-card,.method #method-track .hairline-figure,.method #method-track [data-hairline],.method #method-track svg{touch-action:pan-x pan-y pinch-zoom}.method #method-track{overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}}
